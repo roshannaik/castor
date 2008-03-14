@@ -1,0 +1,16 @@
+Functional programming
+  + partial application
+  + function composition
+  + continuation passing
+     + exception handling in cps style ?
+     + backtracking and 
+  + oneach faster than accumulate
+
+Logic programming
+  + 
+
+Object oriented programming
+  + inheritance/type erasure/parametric polymorphism
+  + 
+
+MP programming
