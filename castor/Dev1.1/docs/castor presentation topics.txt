@@ -1,0 +1,21 @@
+Presentation
+------------------------
+Topic
+Agenda 
+Underlying theme
+Programming paradigms + LP
+Functions and Relations
+
+
+
+15mins: intro
+   Programming paradigms
+   LP
+   relations
+
+
+20 mins :  family example
+15 mins :
+      range_item  : 10 mins
+      iterators  :  10 mins
+10 mins : chess
