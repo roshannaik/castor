@@ -1,0 +1,19 @@
+Whats new in Castor 1.1
+
+- OneSolution relation is now deprecated. use custom_relation
+- class custom_relation and coroutine macros rel_begin, rel_end, rel_return, rel_yield
+- writeAll and writeAllTo  (**need docs and tests)
+
+
+Bug fixes:
+- head_n and tail_n now fails instead of throwing exception if n>seq_.size()
+- UnifyL  ... had a const member relation preventing copy construction
+- Data member Read_r<T>::in is now a pointer instead of a reference to allow assignment of Read_r.
+- fixed #include of header ??
+
+
+
+todo
+------------
+tabling support
+
