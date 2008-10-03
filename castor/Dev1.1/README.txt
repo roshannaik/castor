@@ -84,3 +84,4 @@ aCC  (on HP-UX)
   To compile:   aCC -I../ test_castor.cpp -o test_castor
   To Run    :   ./test_castor
 
+test
