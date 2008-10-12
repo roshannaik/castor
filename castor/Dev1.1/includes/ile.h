@@ -383,38 +383,38 @@ public:
 };
 
 
-template<typename T>
+template<typename T> inline
 Ile<CreateWith0<T> > create() {
     return CreateWith0<T>();
 }
 
-template<typename T, typename A1>
+template<typename T, typename A1> inline
  Ile<CreateWith1<T,A1> > create(const A1& a1) {
     return CreateWith1<T,A1>(a1);
 }
 
-template<typename T, typename A1, typename A2>
+template<typename T, typename A1, typename A2> inline
  Ile<CreateWith2<T,A1,A2> > create(const A1& a1, const A2& a2) {
     return CreateWith2<T,A1,A2>(a1,a2);
 }
 
-template<typename T, typename A1, typename A2, typename A3>
+template<typename T, typename A1, typename A2, typename A3> inline
  Ile<CreateWith3<T,A1,A2,A3> > create(const A1& a1, const A2& a2, const A3& a3) {
     return CreateWith3<T,A1,A2,A3>(a1,a2,a3);
 }
 
-template<typename T, typename A1, typename A2, typename A3, typename A4>
+template<typename T, typename A1, typename A2, typename A3, typename A4> inline
  Ile<CreateWith4<T,A1,A2,A3,A4> > create(const A1& a1, const A2& a2, const A3& a3, const A4& a4) {
     return CreateWith4<T,A1,A2,A3,A4>(a1,a2,a3,a4);
 }
 
-template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5>
- Ile<CreateWith5<T,A1,A2,A3,A4,A5> > create(const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5) {
+template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+Ile<CreateWith5<T,A1,A2,A3,A4,A5> > create(const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5) {
     return CreateWith5<T,A1,A2,A3,A4,A5>(a1,a2,a3,a4,a5);
 }
 
-template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
- Ile<CreateWith6<T,A1,A2,A3,A4,A5,A6> > create(const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6) {
+template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+Ile<CreateWith6<T,A1,A2,A3,A4,A5,A6> > create(const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6) {
     return CreateWith6<T,A1,A2,A3,A4,A5,A6>(a1,a2,a3,a4,a5,a6);
 }
 

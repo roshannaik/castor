@@ -945,36 +945,36 @@ void test_Create_with() {
 }
 
 
-void test_Create() {
+void test_create() {
     {
     if(create<pair<int,int> >(1,2)().first!=1)
-        throw "failed test_create_with 1";
+        throw "failed test_create 1";
     if(create<My>()().i != 0)
-        throw "failed test_create_with 1";
+        throw "failed test_create 1";
     if(create<My>(1)().i != 1)
-        throw "failed test_create_with 1";
+        throw "failed test_create 1";
     if(create<My>(1,2)().i != 2)
-        throw "failed test_create_with 1";
+        throw "failed test_create 1";
     if(create<My>(1,2,3)().i != 3)
-        throw "failed test_create_with 1";
+        throw "failed test_create 1";
     if(create<My>(1,2,3,4)().i != 4)
-        throw "failed test_create_with 1";
+        throw "failed test_create 1";
     if(create<My>(1,2,3,4,5)().i != 5)
-        throw "failed test_create_with 1";
+        throw "failed test_create 1";
     if(create<My>(1,2,3,4,5,6)().i != 6)
-        throw "failed test_create_with 1";
+        throw "failed test_create 1";
     int i=1,j=2,k=3; lref<int> l = 4, m =5;
     if(create<My>(i,j,k,l,m,6)().i != 6)
-        throw "failed test_create_with 1";
+        throw "failed test_create 1";
     }
     {
     lref<string> hello = "hello", world="world";
     if((create<string>(hello)+world)() != (hello+world)())
-        throw "failed test_create_with 2";
+        throw "failed test_create 2";
 
     lref<string> dear="dear";
     if((create<string>(hello)+world)() == (hello+dear)())
-        throw "failed test_create_with 2";
+        throw "failed test_create 2";
     }
 }
 
@@ -2537,26 +2537,26 @@ void test_deref() {
 
 }
 
-void test_read() {
+void test_readFrom() {
     { // read value into undefined lref
 	stringstream sstrm;
 	sstrm << "Hello";
 	lref<string> s;
 	if(!readFrom(sstrm,s)())
-		throw "failed test_read 1";
+		throw "failed test_readFrom 1";
 	}
 	{ // read value into defined lref
 	stringstream sstrm;
 	sstrm << "Hello";
 	lref<string> s = "Hello";
 	if(!readFrom(sstrm,s)())
-		throw "failed test_read 2";
+		throw "failed test_readFrom 2";
 	}
 	{ // read value into defined lref
 	stringstream sstrm;
 	sstrm << "Hello";
 	if(readFrom(sstrm,"World")())
-		throw "failed test_read 3";
+		throw "failed test_readFrom 3";
 	}
 	{ // read all values from stream
 	stringstream sstrm;
@@ -2564,22 +2564,71 @@ void test_read() {
 	lref<string> s;
 	relation r = readFrom(sstrm,s);
 	if(!r() || *s!="Hello")
-		throw "failed test_read 4";
+		throw "failed test_readFrom 4";
 	if(!r() || *s!="World")
-		throw "failed test_read 4";
+		throw "failed test_readFrom 4";
 	}
 }
 
-void test_write() {
+void test_writeTo() {
 	{ // write value to stream
 	stringstream sstrm;
 	if(!writeTo(sstrm, "Hello")())
-        throw "failed test_write 1"; 
+        throw "failed test_writeTo 1"; 
     string s;
     sstrm >> s;
     if(s!="Hello")
-        throw "failed test_write 1"; 
+        throw "failed test_writeTo 1"; 
     }
+}
+
+void test_writeAllTo() {
+  string as[] = {"1","2","3","4"};
+	{ // write to stream using pointers
+	  stringstream sstrm;
+	  if(!writeAllTo(sstrm,as,as+4, " ")())
+        throw "failed test_writeAllTo 1"; 
+    string s; int i=0;
+    while(sstrm >> s) {
+      if(s!=as[i++])
+          throw "failed test_writeAllTo 1"; 
+    }
+  }
+	{ // write to stream using iterators
+	  stringstream sstrm;
+    vector<string> vs (as,as+4);
+    if(!writeAllTo(sstrm,vs.begin(),vs.end())())
+        throw "failed test_writeAllTo 2"; 
+    string s; int i=0;
+    while(sstrm >> s) {
+      if(s!=as[i++])
+          throw "failed test_writeAllTo 2"; 
+    }
+  }	
+  { // write container to stream
+	  stringstream sstrm;
+    lref<vector<string> > vls = vector<string>(as,as+4);
+    if(!writeAllTo(sstrm,vls)())
+        throw "failed test_writeAllTo 3"; 
+    string s; int i=0;
+    while(sstrm >> s) {
+      if(s!=as[i++])
+          throw "failed test_writeAllTo 3"; 
+    }
+  }
+  {
+    // acquire lref<iterators> relationally and then use them with writeAllTo
+    stringstream sstrm;
+    lref<vector<string> > lvs = vector<string>(as,as+4);
+    lref<vector<string>::iterator> b,e;
+    relation r = begin(lvs,b) && end(lvs,e) && writeAllTo(sstrm,b,e);
+    while(r());
+    string s; int i=0;
+    while(sstrm >> s) {
+      if(s!=as[i++])
+          throw "failed test_writeAllTo 4"; 
+    }
+  }
 }
 
 namespace test_details {
@@ -2615,25 +2664,25 @@ ostream& operator << (ostream &o, const num& n) {
 }//namespace test_details
 
 
-void test_write_f() {
+void test_writeTo_f() {
 	typedef test_details::num num;
 	{ // write value of computing an ILE to stream
 	stringstream sstrm;
 	lref<num> i=3;
 	writeTo_f(sstrm, i+i*i)();
 	if(sstrm.str()!="12")
-		throw "failed test_write_f 1";
+		throw "failed test_writeTo_f 1";
 	}
 	{ // write value of computing a func
 	stringstream sstrm;
 	lref<num> i=3;
 	writeTo_f(sstrm, &num::static_compute, i,i,i)();
 	if(sstrm.str()!="4")
-		throw "failed test_write_f 2";
+		throw "failed test_writeTo_f 2";
 	}
 }
 
-void test_write_mf() {
+void test_writeTo_mf() {
 	{
 	typedef test_details::num num;
 	stringstream sstrm;
@@ -2641,16 +2690,16 @@ void test_write_mf() {
 	lref<num> n(5);
 	writeTo_mf(sstrm, n,&num::nonstatic_compute, i,i,i)();
 	if(sstrm.str()!="4")
-		throw "failed test_write_mf 1";
+		throw "failed test_writeTo_mf 1";
 	}
 }
 
-void test_write_read() {
+void test_writeTo_readFrom() {
   { // write value to stream and then read it
     stringstream sstrm;
     relation r = writeTo(sstrm, "Hello") && readFrom(sstrm,"Hello");
     if(!r())
-      throw "failed test_write_read 1"; 
+      throw "failed test_writeTo_readFrom 1"; 
   }
   {// copy words from one stream to another
     stringstream inputData, outputData;
@@ -2660,7 +2709,7 @@ void test_write_read() {
     int count=0;
     while(copyWords()) { ++count; }
     if(count!=2 ||  ls.defined())
-      throw "failed test_write_read 2";
+      throw "failed test_writeTo_readFrom 2";
   }
 }
 
@@ -2815,6 +2864,7 @@ void runtests() {
     run_test( test_ILE );
     run_test( test_eq_ILE );
     run_test( test_Create_with );
+    run_test( test_create );
 
     // merge
      run_test( test_merge );
@@ -2878,12 +2928,13 @@ void runtests() {
 
     run_test( test_deref );
     
-    run_test( test_read );
-    run_test( test_write );
-    run_test( test_write_f );
-    run_test( test_write_mf );
+    run_test( test_readFrom );
+    run_test( test_writeTo );
+    run_test( test_writeAllTo );
+    run_test( test_writeTo_f );
+    run_test( test_writeTo_mf );
 
-    run_test( test_write_read );
+    run_test( test_writeTo_readFrom );
 
     run_test( test_op_and_fast );
     run_test( test_op_exor );
