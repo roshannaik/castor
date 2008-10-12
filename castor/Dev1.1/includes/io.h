@@ -40,20 +40,22 @@ Write_r<std::string> write(const char* obj_) {
 //--------------------------------------------------------
 //  WriteAll relation : Prints lrefs and POTs to std::cout
 //--------------------------------------------------------
+// Concepts : Itr is an iterator, pointer, or lref<Iterator> or lref<pointer>
 template<typename Itr>
 class WriteAll_r : public TestOnlyRelation<WriteAll_r<Itr> > {
-    Itr itr, end_;
+    Itr beg_, end_;
     std::string sep;
     std::ostream* out;
 public:
-    explicit WriteAll_r(Itr beg_, Itr end_, const std::string& sep, std::ostream& outputStream=std::cout) : itr(beg_), end_(end_), sep(sep), out(&outputStream)
+    explicit WriteAll_r(Itr beg_, Itr end_, const std::string& sep, std::ostream& outputStream=std::cout) : beg_(beg_), end_(end_), sep(sep), out(&outputStream)
     { }
     
     bool apply(void) {
-      for(Itr first = effective_value(itr); effective_value(itr)!=effective_value(end_); ++effective_value(itr) ) {
-          if( effective_value(itr)!=effective_value(first) )
+      effective_type<Itr>::result_type f = effective_value(beg_), e = effective_value(end_), i;
+      for( i=f; i!=e; ++i ) {
+        if( i!=f ) {}
             *out << sep;
-          *out << *effective_value(itr);
+          *out << *i;
       }
       return true;
     }
@@ -65,6 +67,7 @@ WriteAll_r<Itr> writeAll(Itr begin_, Itr end_, const std::string& separator=" ")
     return WriteAll_r<Itr>(begin_, end_, separator);
 }
 
+// Concepts : Cont support methods begin() and end()
 template<typename Cont> inline
 relation writeAll(lref<Cont>& cont_, const std::string& separator=" ") {
   typedef typename Cont::iterator Itr;
@@ -73,12 +76,12 @@ relation writeAll(lref<Cont>& cont_, const std::string& separator=" ") {
 }
 
 template<typename Itr> inline
-WriteAll_r<Itr> writeAllTo(Itr begin_, Itr end_, std::ostream& outputStrm, const std::string& separator=" ") {
+WriteAll_r<Itr> writeAllTo(std::ostream& outputStrm, Itr begin_, Itr end_, const std::string& separator=" ") {
     return WriteAll_r<Itr>(begin_, end_, separator, outputStrm);
 }
 
 template<typename Cont> inline
-relation writeAllTo(lref<Cont>& cont_, std::ostream& outputStrm, const std::string& separator=" ") {
+relation writeAllTo(std::ostream& outputStrm, lref<Cont>& cont_, const std::string& separator=" ") {
   typedef typename Cont::iterator Itr;
   lref<Itr> b, e;
   return begin(cont_,b) && end(cont_,e) && WriteAll_r<lref<Itr> >(b, e, separator, outputStrm);
