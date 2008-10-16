@@ -53,7 +53,7 @@ public:
     bool apply(void) {
       effective_type<Itr>::result_type f = effective_value(beg_), e = effective_value(end_), i;
       for( i=f; i!=e; ++i ) {
-        if( i!=f ) {}
+        if( i!=f )
             *out << sep;
           *out << *i;
       }
