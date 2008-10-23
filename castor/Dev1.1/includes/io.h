@@ -479,7 +479,7 @@ WriteMF6_r<Obj, MemFunT, A1, A2, A3, A4, A5, A6> write_mf(lref<Obj>& obj_, MemFu
 
 // Concepts: T supports operator==(const T&, const T&), Copy Assignment and Default construction
 template<typename T>
-class Read_r : public custom_relation {
+class Read_r : public Coroutine {
   lref<T> val;
   std::istream* in;
   T tmp;
@@ -488,17 +488,17 @@ public:
   { }
 
   bool operator()(void) {
-    rel_begin();
+    co_begin();
     while(*in >> tmp) {
       if(!val.defined()) {
         val=tmp;
-        rel_yield(true);
+        co_yield(true);
         val.reset();
       }
       else 
-        rel_return(*val==tmp);
+        co_return(*val==tmp);
     }
-    rel_end();
+    co_end();
   }
 };
 

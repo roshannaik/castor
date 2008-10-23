@@ -11,21 +11,21 @@
 
 namespace castor {
 #ifdef CASTOR_ALL_REGULAR_OPS
-    #undef CASTOR_USE_GENERIC_OR
-    #define CASTOR_USE_REGULAR_OR
-    #undef CASTOR_USE_GENERIC_AND
-    #define CASTOR_USE_REGULAR_AND
-    #undef CASTOR_USE_GENERIC_EXOR
-    #define CASTOR_USE_REGULAR_EXOR
+	#undef CASTOR_USE_GENERIC_OR
+	#define CASTOR_USE_REGULAR_OR
+	#undef CASTOR_USE_GENERIC_AND
+	#define CASTOR_USE_REGULAR_AND
+	#undef CASTOR_USE_GENERIC_EXOR
+	#define CASTOR_USE_REGULAR_EXOR
 #endif
 
 #ifdef CASTOR_ALL_GENERIC_OPS
-    #define CASTOR_USE_GENERIC_OR
-    #undef  CASTOR_USE_REGULAR_OR
-    #define CASTOR_USE_GENERIC_AND
-    #undef  CASTOR_USE_REGULAR_AND
-    #define CASTOR_USE_GENERIC_EXOR
-    #undef  CASTOR_USE_REGULAR_EXOR
+	#define CASTOR_USE_GENERIC_OR
+	#undef  CASTOR_USE_REGULAR_OR
+	#define CASTOR_USE_GENERIC_AND
+	#undef  CASTOR_USE_REGULAR_AND
+	#define CASTOR_USE_GENERIC_EXOR
+	#undef  CASTOR_USE_REGULAR_EXOR
 #endif
 
 
@@ -44,25 +44,25 @@ namespace castor {
 //---------------------------------------------------------------
 //    Relational OR operator : provides backtracking
 //---------------------------------------------------------------
-//Concepts: L supports  bool operator() 
+//Concepts: L supports  bool operator()
 //        : R supports  bool operator()
 
 template<typename L, typename R>
-class Or_r : public custom_relation {
-    L l;
-    R r;
+class Or_r : public Coroutine {
+	L l;
+	R r;
 public:
-    Or_r(const L & l, const R & r) : l(l), r(r)
-    { }
+	Or_r(const L & l, const R & r) : l(l), r(r)
+	{ }
 
-    bool operator() (void) {
-      rel_begin();
-      while(l())
-        rel_yield(true);
-      while(r())
-        rel_yield(true);
-      rel_end();
-    }
+	bool operator() (void) {
+	  co_begin();
+	  while(l())
+		co_yield(true);
+	  while(r())
+		co_yield(true);
+	  co_end();
+	}
 };
 
 #ifdef CASTOR_USE_GENERIC_OR
@@ -81,7 +81,7 @@ Or_r<relation,relation> operator || (const relation& l, const relation& r) {
 //---------------------------------------------------------------
 
 template<typename L, typename R, bool fast=false>
-class And_r : public custom_relation {
+class And_r : public Coroutine {
   L l;
   relation r; R rbegin;
 public:
@@ -89,18 +89,18 @@ public:
 	{ }
 
   bool operator () (void) { // SLOW
-    rel_begin();
+    co_begin();
     while(l()) {
-      while(r())
-        rel_yield(true);
+	  while(r())
+        co_yield(true);
       r=rbegin;
     }
-    rel_end();
+    co_end();
   }
 };
 
 template<typename L, typename R> 
-class And_r <L,R,true> : public custom_relation {
+class And_r <L,R,true> : public Coroutine {
   L l;
   R r;
 public:
@@ -108,13 +108,13 @@ public:
 	{ }
 
   bool operator () (void) {
-    rel_begin();
-    while(l()) {
-      if(r())
-        rel_yield(true);
-      r.reset();
-    }
-    rel_end();
+    co_begin();
+	while(l()) {
+	  if(r())
+		co_yield(true);
+	  r.reset();
+	}
+	co_end();
   }
 };
 
@@ -132,8 +132,8 @@ struct IsTestOnlyRelation {
 
 template<typename Rel>
 struct IsRelation_Constraint {
-  static void constraints(Rel a) { 
-    relation r = a;
+  static void constraints(Rel a) {
+	relation r = a;
   }
 };
 
@@ -160,7 +160,7 @@ And_r<relation,R,IsTestOnlyRelation<R>::result> operator && (const relation & l,
 
 
 template<typename L, typename R>
-class ExOr_r : public custom_relation {
+class ExOr_r : public Coroutine {
 	bool lSucceeded;
     L l; 
     R r;
@@ -169,16 +169,16 @@ public:
     { }
 
     bool operator () (void) {
-      rel_begin();
+      co_begin();
       while(l()) {
         lSucceeded=true;
-        rel_yield(true);
+        co_yield(true);
       }
       if(lSucceeded)
-        rel_return(false);
+        co_return(false);
       while(r())
-        rel_yield(true);
-      rel_end();
+        co_yield(true);
+      co_end();
     }
 };
 
