@@ -1,8 +1,9 @@
 Whats new in Castor 1.1
 
-- OneSolution relation is now deprecated. use custom_relation
-- class custom_relation and coroutine macros rel_begin, rel_end, rel_return, rel_yield
-- writeAll and writeAllTo
+- OneSolution relation is now deprecated. use Coroutine
+- Class Coroutine and macros co_begin, co_end, co_return & co_yield that support coroutine style programming
+- I/O relations writeAll and writeAllTo to write collections and iterators bound sequences to console or ostreams.
+    : Must ensure the stream exists when evaluation occurs.
 
 
 Bug fixes:
