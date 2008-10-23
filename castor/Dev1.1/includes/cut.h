@@ -38,7 +38,7 @@ namespace detail {
 //-----------------------------------------
 
 template<typename LRel, typename RRel>
-class CutAnd : public custom_relation {
+class CutAnd : public Coroutine {
 	enum {A, A1, A2, B, C} state;
     LRel l;
     RRel rbegin;

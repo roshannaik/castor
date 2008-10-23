@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "workaround.h"
+#include "coroutine.h"
+
 namespace castor {
 
  struct InvalidState{}; // Exception type
@@ -65,38 +67,24 @@ public:
 	}
 };
 
-// macros for implementing relations imperatively (as coroutines)
-#define rel_begin()    switch (rel_entryPt) { case 0:
-#define rel_yield(x)   { rel_entryPt = (x)? __LINE__ : -1; return (x); case __LINE__: ; }
-#define rel_return(x)  { rel_entryPt = -1; return (x); }
-#define rel_end()      break; } rel_entryPt = -1; return false;
-
-
-class custom_relation {
-protected:
-  int rel_entryPt;
-public:
-  custom_relation() : rel_entryPt(0)
-  { }
-};
 
 //---------------------------------------------------------------
 // TestOnlyRelation : Helper for creating custom relations that
 //                    do not produce any side effects
 //---------------------------------------------------------------
 template<typename Derived>
-class TestOnlyRelation : public custom_relation {
+class TestOnlyRelation : public Coroutine {
 public:
     typedef int UseFastAnd;
     TestOnlyRelation()
     { }
     
-    void reset() { rel_entryPt=0; }
+    void reset() { co_entryPt=0; }
 
     bool operator()(void) {
-      rel_begin();
-      rel_return( (static_cast<Derived*>(this))->apply() );
-      rel_end();
+      co_begin();
+      co_return( (static_cast<Derived*>(this))->apply() );
+      co_end();
     }
 };
 
@@ -148,11 +136,11 @@ struct False {
 //---------------------------------------------------------------
 //    True Relation : Generates 'true' once
 //---------------------------------------------------------------
-struct True : public custom_relation {
+struct True : public Coroutine {
     bool operator ()(void) {
-        rel_begin();
-        rel_return(true);
-        rel_end();
+        co_begin();
+        co_return(true);
+        co_end();
     }
 };
 

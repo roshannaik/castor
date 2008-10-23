@@ -97,22 +97,22 @@ relation not_empty(const Cont& c) {
 //          : T is default constructable
 
 template<typename T>
-class Range_r : public custom_relation {
+class Range_r : public Coroutine {
     lref<T> val, min_, max_;
 public:
     Range_r(const lref<T>& val, const lref<T>& min_, const lref<T>& max_) : min_(min_), max_(max_), val(val)
     { }
 
     bool operator() () {
-      rel_begin();
+      co_begin();
       if(val.defined())
-         rel_return(    ( *min_<*val && *val<*max_ ) 
+         co_return(    ( *min_<*val && *val<*max_ ) 
                      || ( *min_==*val ) 
                      || ( *max_==*val ) );
       for(val=min_; (*val<*max_) || (*val==*max_); ++val.get())
-        rel_yield(true);
+        co_yield(true);
       val.reset();
-      rel_end();
+      co_end();
     }
 };
 
@@ -131,23 +131,23 @@ Range_r<T> range(lref<T> val, T min_, T max_) {
 //  Relation range (with step)
 //--------------------
 template<typename T>
-class Range_Step_r : public custom_relation {
+class Range_Step_r : public Coroutine {
     lref<T> val, min_, max_, step_;
 public:
     Range_Step_r(lref<T> val, const lref<T>& min_, const lref<T>& max_, const lref<T>& step_) : min_(min_), max_(max_), step_(step_), val(val)
     { }
 
     bool operator () (void) {
-      rel_begin();
+      co_begin();
       if(val.defined())
-        rel_return (    ( *min_<*val && *val<*max_ )
+        co_return (    ( *min_<*val && *val<*max_ )
                      || ( *min_==*val )
                      || ( *max_==*val ) );
 
       for (val=min_; *val<*max_ || *val==*max_; *val+=*step_)
-        rel_yield(true);
+        co_yield(true);
       val.reset();
-      rel_end();
+      co_end();
     }
 };
 
@@ -167,7 +167,7 @@ Range_Step_r<T> range(lref<T> val, T min_, T max_, T step_) {
 //  Relation item
 //--------------------
 template<typename Itr>
-class Item_r : public custom_relation {
+class Item_r : public Coroutine {
     Itr itr, end_;
     typedef typename ::castor::detail::Pointee<Itr>::result_type pointee_type;
     lref<pointee_type> obj;
@@ -176,16 +176,16 @@ public:
     { }
 
     bool operator () (void) {
-      rel_begin();
+      co_begin();
       if(obj.defined()) 
-        rel_return ( std::count( effective_value(itr), effective_value(end_), *obj)!=0 );
+        co_return ( std::count( effective_value(itr), effective_value(end_), *obj)!=0 );
 
       for ( ; effective_value(itr)!=effective_value(end_); ++effective_value(itr) ) {
         obj=*effective_value(itr);
-        rel_yield(true)
+        co_yield(true)
       }
       obj.reset();
-      rel_end();
+      co_end();
     }
 };
 
@@ -205,7 +205,7 @@ relation item(lref<typename Cont::value_type> obj, lref<Cont>& cont_) {
 //------------------------------------------------------------------------
 
 template<typename T>
-class Unique_r : public custom_relation {
+class Unique_r : public Coroutine {
     lref<std::set<T> > items;
     lref<T> item_;
 public:
@@ -213,12 +213,12 @@ public:
     { }
 
     bool operator () (void) {
-      rel_begin();
+      co_begin();
       if( items->find(*item_) != items->end() )
-        rel_return(false);
+        co_return(false);
       items->insert(*item_);
-      rel_return(true);
-      rel_end();
+      co_return(true);
+      co_end();
     }
 };
 
@@ -230,7 +230,7 @@ Unique_r<T> unique(lref<T> item_) {
 
 // FuncObj = Nullary function object that has member typedef result_type
 template<typename FuncObj>
-class Unique_f_r : public custom_relation {
+class Unique_f_r : public Coroutine {
     typedef typename FuncObj::result_type item_type;
     lref<std::set<typename FuncObj::result_type> > items;
     FuncObj func;
@@ -239,13 +239,13 @@ public:
     { }
 
     bool operator() (void) {
-        rel_begin();
+        co_begin();
         item_type value = func();
         if( items->find(value) != items->end() )
-          rel_return(false);
+          co_return(false);
         items->insert(value);
-        rel_return(true);
-        rel_end();
+        co_return(true);
+        co_end();
     }
 };
 
@@ -319,7 +319,7 @@ relation prev(T curr_, const T& p) {
 // head/tail/head_tail : For operating on Collections
 //-------------------------------------------------------------
 template<typename Seq>
-class Head_r : public custom_relation {
+class Head_r : public Coroutine {
     typedef typename Seq::value_type T;
     lref<Seq> seq_;
     lref<T> h;
@@ -328,15 +328,15 @@ public:
     { }
 
     bool operator () (void) {
-      rel_begin();
+      co_begin();
       if(seq_->empty())
-        rel_return(false);
+        co_return(false);
       if(h.defined())
-          rel_return( *h==*(seq_->begin()) );
+          co_return( *h==*(seq_->begin()) );
       h=*(seq_->begin());
-      rel_yield(true);
+      co_yield(true);
       h.reset();
-      rel_end();
+      co_end();
     }
 };
 
@@ -349,7 +349,7 @@ Head_r<Seq> head(lref<Seq>& seq_, lref<typename Seq::value_type> h) {
 //   Head : h consists of 1st n (n>0) items in the collection
 //------------------------------------------------------------------
 template<typename Seq, typename HeadSeq>
-class Head_n_r : public custom_relation {
+class Head_n_r : public Coroutine {
     lref<HeadSeq> h;
     lref<typename HeadSeq::size_type> n_;
     lref<Seq> seq_;
@@ -358,22 +358,22 @@ public:
     { }
     bool operator () (void) {
       typename HeadSeq::const_iterator start, end;
-      rel_begin();
+      co_begin();
       if( *n_ > seq_->size() )
-        rel_return(false);
+        co_return(false);
       if(seq_->empty())
-        rel_return(false);
+        co_return(false);
       if(h.defined()) {
           if( h->size() > seq_->size() )
-              rel_return(false);
-          rel_return( std::equal(h->begin(),h->end(),seq_->begin()) );
+              co_return(false);
+          co_return( std::equal(h->begin(),h->end(),seq_->begin()) );
       }
       start = end = seq_->begin();
       std::advance(end, *n_);
       h=HeadSeq(start,end);
-      rel_yield(true);
+      co_yield(true);
       h.reset();
-      rel_end();
+      co_end();
     }
 };
 
@@ -387,7 +387,7 @@ relation head_n(lref<Seq>& seq_, lref<typename HeadSeq::size_type> n, lref<HeadS
 //Concepts: Collection should have a constructor taking (T* begin, T* end)
 //          Collection should comparable using operator==
 template<typename Seq, typename TailSeq>
-class Tail_r : public custom_relation {
+class Tail_r : public Coroutine {
     lref<Seq> seq_;
     lref<TailSeq> t;
 public:
@@ -396,18 +396,18 @@ public:
 
     bool operator() (void) {
       typename Seq::iterator b;
-      rel_begin();
+      co_begin();
       if(seq_->empty())
-        rel_return(false);
+        co_return(false);
 		  if(t.defined()) {
 			  b = seq_->begin();
-        rel_return( *t == Seq(++b, seq_->end()) );
+        co_return( *t == Seq(++b, seq_->end()) );
 		  }
 		  b = seq_->begin();
       t = Seq(++b, seq_->end());
-      rel_yield(true);
+      co_yield(true);
       t.reset();
-      rel_end();
+      co_end();
     }
 };
 
@@ -421,7 +421,7 @@ Tail_r<Seq,TailSeq> tail(lref<Seq>& seq_, lref<TailSeq>& t) {
 //   Tail : 
 //------------------------------------------------------------------
 template<typename Seq, typename TailSeq=Seq>
-class Tail_N_r : public custom_relation {
+class Tail_N_r : public Coroutine {
     lref<Seq> seq_;
     lref<typename TailSeq::size_type> n_;
     lref<TailSeq> t;
@@ -431,21 +431,21 @@ public:
 
     bool operator() (void) {
       typename TailSeq::const_iterator start = seq_->begin(), end = seq_->end();
-      rel_begin();
+      co_begin();
       if(*n_ > seq_->size())
-        rel_return(false);
+        co_return(false);
       if(t.defined()) {
           if( t->size() > seq_->size() )
-            rel_return(false);
+            co_return(false);
           start = seq_->begin();
           std::advance(start, seq_->size() - *n_);
-          rel_return( std::equal(t->begin(),t->end(),start) );
+          co_return( std::equal(t->begin(),t->end(),start) );
       }
       std::advance(start, seq_->size() - *n_);
       t=TailSeq(start,end);
-      rel_yield(true);
+      co_yield(true);
       t.reset();
-      rel_end();
+      co_end();
     }
 };
 
@@ -505,7 +505,7 @@ relation insert_seq(lref<typename Seq::iterator> valuesB_, lref<typename Seq::it
 //----------------------------------------------------------------------
 
 template<typename T>
-class Inc_r : public custom_relation {
+class Inc_r : public Coroutine {
     lref<T> obj;
     lref<T> oldValue;
 public:
@@ -513,12 +513,12 @@ public:
     { }
 
     bool operator ()(void) {
-      rel_begin();
+      co_begin();
       oldValue=obj; // copy the original value
       ++(*obj);
-      rel_yield(true);
+      co_yield(true);
       obj=*oldValue;
-      rel_end();
+      co_end();
     }
 };
 
@@ -529,7 +529,7 @@ Inc_r<T> inc(lref<T>& value_) {
 
 
 template<typename T>
-class Dec_r : public custom_relation {
+class Dec_r : public Coroutine {
     lref<T> obj;
     lref<T> oldValue;
 public:
@@ -537,12 +537,12 @@ public:
     { }
 
     bool operator()(void) {
-      rel_begin();
+      co_begin();
       oldValue=obj; // copy the original value
       --(*obj);
-      rel_yield(true);
+      co_yield(true);
       obj=*oldValue;
-      rel_end();
+      co_end();
     }
 };
 
@@ -760,7 +760,7 @@ Sequence_r<Seq> sequence(lref<Seq>& seq) {
 //--------------------------------------------------------
 
 template<typename Cont>
-class Size_r : public custom_relation {
+class Size_r : public Coroutine {
     lref<typename Cont::size_type> sz;
     lref<Cont> cont_;
 public:
@@ -768,13 +768,13 @@ public:
     { }
 
     bool operator() (void) {
-      rel_begin();
+      co_begin();
       if(sz.defined())
-        rel_return( *sz==cont_->size() );
+        co_return( *sz==cont_->size() );
       sz=cont_->size();
-      rel_yield(true);
+      co_yield(true);
       sz.reset();
-      rel_end();
+      co_end();
     }
 };
 // Concept: Cont provides member function size and member typedef size_type
@@ -817,7 +817,7 @@ relation merge(lref<Seq>& l_, lref<Seq>& r_, lref<Seq>& m) {
 //  begin relation : For working with iterators
 //--------------------------------------------------------
 template<typename Cont>
-class Begin_r : public custom_relation {
+class Begin_r : public Coroutine {
     typedef typename Cont::iterator Iter;
     lref<Cont> cont_;
     lref<Iter> iter;
@@ -826,13 +826,13 @@ public:
     { }
 
     bool operator()(void) {
-      rel_begin();
+      co_begin();
       if(iter.defined())
-        rel_return( *iter==cont_->begin() );
+        co_return( *iter==cont_->begin() );
       iter=cont_->begin();
-      rel_yield(true);
+      co_yield(true);
       iter.reset();
-      rel_end();
+      co_end();
     }
 };
 
@@ -848,7 +848,7 @@ Begin_r<Cont> begin(lref<Cont>& cont_, lref<typename Cont::iterator> iter) {
 //  end relation : For working with iterators 
 //--------------------------------------------------------
 template<typename Cont>
-class End_r : public custom_relation {
+class End_r : public Coroutine {
     typedef typename Cont::iterator IterT;
     lref<Cont> cont_;
     lref<IterT> iter;
@@ -857,13 +857,13 @@ public:
     { }
     
     bool operator()(void) {
-      rel_begin();
+      co_begin();
       if(iter.defined())
-        rel_return( *iter==cont_->end() );
+        co_return( *iter==cont_->end() );
       iter=cont_->end();
-      rel_yield(true);
+      co_yield(true);
       iter.reset();
-      rel_end();
+      co_end();
     }
 };
 
