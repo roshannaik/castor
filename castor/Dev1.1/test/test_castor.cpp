@@ -35,18 +35,13 @@ bool isEven2(int i) {
 		return i % 2 == 0;
 }
 
-void foo()
-{
-  lref<int> i;
-  clock_t start = clock();
-  relation r = range(i,1,1000000) && predicate(isEven2,i);
-  while(r());
-  cout << "\nTime taken " << (clock() - start) << "\n\n Testing Complete! ";
+
+void foo() {
 }
 
 int main()
 {
-  //foo();
+  foo();
   clock_t start = clock();
   runtests();
   cout << "\nTime taken " << (clock() - start) << "\n\n Testing Complete! ";
@@ -1772,8 +1767,8 @@ relation runFA(lref<string> input,  lref<int> startState=0)
 }
 
 void test_FA() {
-    if( ! runFA<Nfa>("abba")() )
-        throw "failed test_FA";
+	if( ! runFA<Nfa>("abba")() )
+		throw "failed test_FA";
     if( runFA<Nfa>("aabba")() )
         throw "failed test_FA";
 
@@ -2713,32 +2708,37 @@ void test_writeTo_readFrom() {
   }
 }
 
-class myTestOnlyRel : public TestOnlyRelation<myTestOnlyRel> {
+class myFastAndTestRel : public TestOnlyRelation<myFastAndTestRel> {
   lref<int> i;
 public:
-  myTestOnlyRel(lref<int> i) : i(i) 
+  myFastAndTestRel(lref<int> i) : i(i)
   {}
-  myTestOnlyRel(const myTestOnlyRel& rhs) : i(rhs.i){
-    static int times=0;
-    if(++times>2)
-      throw "Copy construction not allowed for this relation";
+  myFastAndTestRel(const myFastAndTestRel& rhs) : i(rhs.i){
+#ifndef __BCPLUSPLUS__
+	static int times=0;
+	if(++times>2)
+	  throw "Relation myFastAndTestRel copy constructed too many times " ;
+#endif
   }
 
   bool operator () (void) {
-    rel_begin();   
-    rel_return(*i<20);
-    rel_end();
+	co_begin();
+	co_return(*i<20);
+	co_end();
   }
 };
-    
+
 
 void test_op_and_fast() {
   {
-    lref<int> i;
-    relation r = range(i,18,22) && myTestOnlyRel(i);
-    while(r());
+	lref<int> i;
+	relation r = range(i,18,22) && myFastAndTestRel(i);
+	cout << " ";
+	while(r());
   }
 }
+
+
 void test_op_exor() {
     {
     lref<int> i;
@@ -2801,11 +2801,11 @@ int failCount=0;
 
 void run_test( void(*testFunc)(void) ) {
 	try {
-        ++testCount;
-        testFunc();
-        ++passCount;
-    }
-    catch (char* err){
+		++testCount;
+		testFunc();
+		++passCount;
+	}
+    catch (const char* err){
         ++failCount;
         cout << err <<"\n";
     }
