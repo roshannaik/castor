@@ -1,49 +1,57 @@
 [Closed Files]
-File_0=TSourceModule,'C:\Users\RUNA\Documents\Projects\castor sandbox\castor\includes\relation.h',0,1,142,19,154,0,0,,
-File_1=TSourceModule,'C:\Users\RUNA\Documents\Projects\castor sandbox\castor\includes\utils.h',0,1,877,33,897,0,0,,
-File_2=TSourceModule,'C:\Users\RUNA\Documents\Projects\castor sandbox\castor\includes\refcountedptr.h',0,1,154,1,168,0,0,,
-File_3=TSourceModule,'c:\program files\codegear\rad studio\5.0\include\dinkumware\istream',0,1,605,1,618,0,0,,
-File_4=TSourceModule,'C:\Documents and Settings\Roshan\My Documents\Visual Studio 2005\Projects\castor\src\eq.h',0,1,191,27,218,0,0,,
-File_5=TSourceModule,'C:\Documents and Settings\Roshan\My Documents\Visual Studio 2005\Projects\castor\src\relation.h',0,1,1,1,1,0,0,,
-File_6=TSourceModule,'C:\Documents and Settings\Roshan\My Documents\Visual Studio 2005\Projects\castor\src\workaround.h',0,1,1,23,15,0,0,,
-File_7=TSourceModule,'C:\Documents and Settings\Roshan\My Documents\Visual Studio 2005\Projects\castor\src\ops.h',0,1,1,1,1,0,0,,
-File_8=TSourceModule,'C:\Documents and Settings\Roshan\My Documents\Visual Studio 2005\Projects\castor\src\recurse.h',0,1,1,1,1,0,0,,
+File_0=TSourceModule,'C:\Users\RUNA\Documents\Projects\castor 1.1\includes\lref.h',0,1,21,1,36,0,0,,
+File_1=TSourceModule,'c:\program files\codegear\rad studio\5.0\include\dinkumware\memory',0,1,456,1,473,0,0,,
+File_2=TSourceModule,'C:\Users\RUNA\Documents\Projects\castor 1.1\includes\coroutine.h',0,1,1,1,11,0,0,,
+File_3=TSourceModule,'C:\Users\RUNA\Documents\Projects\castor sandbox\castor\castor.h',0,1,1,22,15,0,0,,
+File_4=TSourceModule,'C:\Users\RUNA\Documents\Projects\castor sandbox\castor\includes\ops.h',0,1,1,1,1,0,0,,
+File_5=TSourceModule,'C:\Users\RUNA\Documents\Projects\castor sandbox\castor\includes\workaround.h',0,1,1,1,13,0,0,,
+File_6=TSourceModule,'C:\Users\RUNA\Documents\Projects\castor sandbox\castor\test\test_castor.cpp',0,1,58,39,64,0,0,,
+File_7=TSourceModule,'C:\Users\RUNA\Documents\Projects\castor sandbox\castor\includes\relation.h',0,1,142,19,154,0,0,,
+File_8=TSourceModule,'C:\Users\RUNA\Documents\Projects\castor sandbox\castor\includes\utils.h',0,1,877,33,897,0,0,,
+File_9=TSourceModule,'C:\Users\RUNA\Documents\Projects\castor sandbox\castor\includes\refcountedptr.h',0,1,154,1,168,0,0,,
 
 [Modules]
-Module0=C:\Users\RUNA\Documents\Projects\castor sandbox\castor\test\test_castor.cpp
-Module1=C:\Users\RUNA\Documents\Projects\castor sandbox\castor\castor.h
-Module2=C:\Users\RUNA\Documents\Projects\castor sandbox\castor\includes\ops.h
-Module3=C:\Users\RUNA\Documents\Projects\castor sandbox\castor\includes\workaround.h
-Count=4
+Module0=C:\Users\RUNA\Documents\Projects\castor 1.1\test\test_castor.cpp
+Module1=C:\Users\RUNA\Documents\Projects\castor 1.1\includes\relation.h
+Module2=C:\Users\RUNA\Documents\Projects\castor 1.1\includes\config.h
+Module3=C:\Users\RUNA\Documents\Projects\castor 1.1\includes\workaround.h
+Module4=C:\Users\RUNA\Documents\Projects\castor 1.1\includes\ops.h
+Count=5
 EditWindowCount=1
 
-[C:\Users\RUNA\Documents\Projects\castor sandbox\castor\test\test_castor.cpp]
+[C:\Users\RUNA\Documents\Projects\castor 1.1\test\test_castor.cpp]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
-[C:\Users\RUNA\Documents\Projects\castor sandbox\castor\castor.h]
+[C:\Users\RUNA\Documents\Projects\castor 1.1\includes\relation.h]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
-[C:\Users\RUNA\Documents\Projects\castor sandbox\castor\includes\ops.h]
+[C:\Users\RUNA\Documents\Projects\castor 1.1\includes\config.h]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
-[C:\Users\RUNA\Documents\Projects\castor sandbox\castor\includes\workaround.h]
+[C:\Users\RUNA\Documents\Projects\castor 1.1\includes\workaround.h]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[C:\Users\RUNA\Documents\Projects\castor 1.1\includes\ops.h]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
 [EditWindow0]
-ViewCount=4
-CurrentEditView=C:\Users\RUNA\Documents\Projects\castor sandbox\castor\test\test_castor.cpp
+ViewCount=5
+CurrentEditView=C:\Users\RUNA\Documents\Projects\castor 1.1\test\test_castor.cpp
 View0=0
 View1=1
 View2=2
 View3=3
+View4=4
 PercentageSizes=1
 Create=1
 Visible=1
@@ -62,8 +70,8 @@ MessageView=MessageView@EditWindow0
 BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
 LeftPanelSize=1672
-LeftPanelClients=DockSite2
-LeftPanelData=0000080001010000000075110000000000000188060000000000000100000000EE1B000009000000446F636B5369746532FFFFFFFF
+LeftPanelClients=StructureView
+LeftPanelData=0000080001010000000075110000000000000188060000000000000100000000EE1B00001100000053747275637475726556696577466F726DFFFFFFFF
 RightPanelSize=0
 RightPanelClients=ToolForm
 RightPanelData=0000080001010100000008000000546F6F6C466F726DBD12000000000000010000000000000000FFFFFFFF
@@ -75,50 +83,62 @@ BottomMiddlePanelClients=DockSite0
 BottomMiddelPanelData=0000080001000100000009000000446F636B53697465303219000000000000007E1B000000000000FFFFFFFF
 TabDockLeftClients=PropertyInspector=0
 TabDockBottomClients=DockSite1=0
+TabDockRightClients=DockSite2=0
 
 [View0]
 CustomEditViewType=TEditView
-Module=C:\Users\RUNA\Documents\Projects\castor sandbox\castor\test\test_castor.cpp
-CursorX=13
-CursorY=27
-TopLine=17
+Module=C:\Users\RUNA\Documents\Projects\castor 1.1\test\test_castor.cpp
+CursorX=53
+CursorY=2725
+TopLine=2711
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=C:\Users\RUNA\Documents\Projects\castor sandbox\castor\test\test_castor.cpp
+EditViewName=C:\Users\RUNA\Documents\Projects\castor 1.1\test\test_castor.cpp
 
 [View1]
 CustomEditViewType=TEditView
-Module=C:\Users\RUNA\Documents\Projects\castor sandbox\castor\castor.h
-CursorX=22
-CursorY=15
+Module=C:\Users\RUNA\Documents\Projects\castor 1.1\includes\ops.h
+CursorX=21
+CursorY=10
 TopLine=1
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=C:\Users\RUNA\Documents\Projects\castor sandbox\castor\castor.h
+EditViewName=C:\Users\RUNA\Documents\Projects\castor 1.1\includes\ops.h
 
 [View2]
 CustomEditViewType=TEditView
-Module=C:\Users\RUNA\Documents\Projects\castor sandbox\castor\includes\ops.h
-CursorX=1
-CursorY=1
+Module=C:\Users\RUNA\Documents\Projects\castor 1.1\includes\workaround.h
+CursorX=22
+CursorY=8
 TopLine=1
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=C:\Users\RUNA\Documents\Projects\castor sandbox\castor\includes\ops.h
+EditViewName=C:\Users\RUNA\Documents\Projects\castor 1.1\includes\workaround.h
 
 [View3]
 CustomEditViewType=TEditView
-Module=C:\Users\RUNA\Documents\Projects\castor sandbox\castor\includes\workaround.h
-CursorX=1
-CursorY=13
+Module=C:\Users\RUNA\Documents\Projects\castor 1.1\includes\config.h
+CursorX=27
+CursorY=9
 TopLine=1
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=C:\Users\RUNA\Documents\Projects\castor sandbox\castor\includes\workaround.h
+EditViewName=C:\Users\RUNA\Documents\Projects\castor 1.1\includes\config.h
+
+[View4]
+CustomEditViewType=TEditView
+Module=C:\Users\RUNA\Documents\Projects\castor 1.1\includes\relation.h
+CursorX=1
+CursorY=58
+TopLine=44
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=C:\Users\RUNA\Documents\Projects\castor 1.1\includes\relation.h
 
 [Watches]
 Count=0
@@ -178,12 +198,12 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=1672
-Height=6550
+Width=2000
+Height=5825
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1672
-ClientHeight=6550
+ClientWidth=2000
+ClientHeight=5825
 TBDockHeight=5900
 LRDockWidth=2352
 Dockable=1
@@ -402,12 +422,12 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=1672
-Height=6550
+Width=2000
+Height=5825
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1672
-ClientHeight=6550
+ClientWidth=2000
+ClientHeight=5825
 TBDockHeight=4875
 LRDockWidth=7148
 Dockable=1
@@ -441,12 +461,12 @@ Docked=1
 State=0
 Left=0
 Top=0
-Width=1672
-Height=6550
+Width=2000
+Height=5825
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1672
-ClientHeight=6550
+ClientWidth=2000
+ClientHeight=5825
 TBDockHeight=4875
 LRDockWidth=5305
 Dockable=1
@@ -560,7 +580,7 @@ Visible=1
 Docked=1
 State=0
 Left=0
-Top=0
+Top=23
 Width=1672
 Height=6862
 MaxLeft=-1
@@ -635,7 +655,7 @@ Dockable=1
 StayOnTop=0
 TabPosition=1
 ActiveTabID=RefactoringForm
-TabDockClients=RefactoringForm,FindReferencsForm,ToDo List,RefactoringsView,UsagesView,QAView,MetricsView
+TabDockClients=RefactoringForm,FindReferencsForm,ToDo List,QAView,MetricsView,RefactoringsView,UsagesView
 
 [DockSite1]
 HostDockSite=BottomDockTabSet
@@ -662,26 +682,26 @@ ActiveTabID=WatchWindow
 TabDockClients=DebugLogView,BreakpointWindow,ThreadStatusWindow,CallStackWindow,WatchWindow,LocalVarsWindow
 
 [DockSite2]
-HostDockSite=DockLeftPanel
+HostDockSite=RightTabDock
 DockSiteType=1
 PercentageSizes=1
 Create=1
-Visible=1
+Visible=0
 Docked=1
 State=0
-Left=0
-Top=23
-Width=1672
-Height=6862
+Left=999
+Top=68
+Width=2000
+Height=6138
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1672
-ClientHeight=6862
-TBDockHeight=4662
-LRDockWidth=1672
+ClientWidth=2000
+ClientHeight=6138
+TBDockHeight=6138
+LRDockWidth=2000
 Dockable=1
 StayOnTop=0
 TabPosition=1
 ActiveTabID=ProjectManager
-TabDockClients=StructureView,DataExplorer,ModelViewTool,ProjectManager
+TabDockClients=ProjectManager,ModelViewTool,DataExplorer
 

@@ -188,6 +188,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\includes\coroutine.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\includes\cut.h"
 				>
 			</File>
