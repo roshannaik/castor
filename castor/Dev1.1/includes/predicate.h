@@ -15,282 +15,426 @@ namespace castor {
 // predicate : Adaptor relation for treating predicate functions as relations
 //----------------------------------------------------------------------------
 template<typename Pred>
-struct Predicate0_r : public TestOnlyRelation<Predicate0_r<Pred> > {
+struct Predicate0_r : public Coroutine {
 	Pred pred;
 
 	Predicate0_r (const Pred& pred) : pred(pred)
 	{ }
 
-	bool apply() {
-		return pred();
+	bool operator()(void) {
+        co_begin();
+		co_return(pred());
+        co_end();
 	}
 };
 
 template<typename Pred, typename A1>
-struct Predicate1_r : public TestOnlyRelation<Predicate1_r<Pred,A1> > {
+struct Predicate1_r : public Coroutine {
 	Pred pred;
 	A1 a1;
 
 	Predicate1_r (const Pred& pred, const A1& a1) : pred(pred), a1(a1)
 	{ }
 
-	bool apply() {
-		return pred(effective_value(a1));
+	bool operator()(void) {
+        co_begin();
+	    co_return( pred(effective_value(a1)) );
+        co_end();
 	}
 };
 
 template<typename Pred, typename A1, typename A2>
-struct Predicate2_r : public TestOnlyRelation<Predicate2_r<Pred, A1, A2> > {
+struct Predicate2_r : public Coroutine {
 	Pred pred;
 	A1 a1;	A2 a2;
 
 	Predicate2_r (const Pred& pred, const A1& a1, const A2& a2) : pred(pred), a1(a1), a2(a2)
 	{ }
 
-	bool apply() {
-		return pred(effective_value(a1),effective_value(a2));
+	bool operator()(void) {
+        co_begin();
+	    co_return( pred(effective_value(a1),effective_value(a2)) );
+        co_end();
 	}
 };
 
 template<typename Pred, typename A1, typename A2, typename A3>
-struct Predicate3_r : public TestOnlyRelation<Predicate3_r<Pred, A1, A2, A3> > {
+struct Predicate3_r : public Coroutine {
 	Pred pred;
 	A1 a1;	A2 a2;	A3 a3;
 
 	Predicate3_r (const Pred& pred, const A1& a1, const A2& a2, const A3& a3) : pred(pred), a1(a1), a2(a2), a3(a3)
 	{ }
 
-	bool apply() {
-		return pred(effective_value(a1),effective_value(a2),effective_value(a3));
+	bool operator()(void) {
+        co_begin();
+	    co_return( pred(effective_value(a1),effective_value(a2),effective_value(a3)) );
+        co_end();
 	}
 };
 
 
 template<typename Pred, typename A1, typename A2, typename A3, typename A4>
-struct Predicate4_r : public TestOnlyRelation<Predicate4_r<Pred, A1, A2, A3, A4> > {
+struct Predicate4_r : public Coroutine {
 	Pred pred;
 	A1 a1;	A2 a2;	A3 a3;	A4 a4;
 
 	Predicate4_r (const Pred& pred, const A1& a1, const A2& a2, const A3& a3, const A4& a4) : pred(pred), a1(a1), a2(a2), a3(a3), a4(a4)
 	{ }
 
-	bool apply() {
-		return pred(effective_value(a1),effective_value(a2),effective_value(a3),effective_value(a4));
+	bool operator()(void) {
+        co_begin();
+	    co_return( pred(effective_value(a1),effective_value(a2),effective_value(a3),effective_value(a4)) );
+        co_end();
 	}
 };
 
 template<typename Pred, typename A1, typename A2, typename A3, typename A4, typename A5>
-struct Predicate5_r : public TestOnlyRelation<Predicate5_r<Pred, A1, A2, A3, A4, A5> > {
+struct Predicate5_r : public Coroutine {
 	Pred pred;
 	A1 a1;	A2 a2;	A3 a3;	A4 a4;	A5 a5;
 
 	Predicate5_r (const Pred& pred, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5) : pred(pred), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5)
 	{ }
 
-	bool apply() {
-		return pred(effective_value(a1),effective_value(a2),effective_value(a3),effective_value(a4),effective_value(a5));
+	bool operator()(void) {
+        co_begin();
+	    co_return( pred(effective_value(a1),effective_value(a2),effective_value(a3),effective_value(a4),effective_value(a5)) );
+        co_end();
 	}
 };
 
 template<typename Pred, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
-struct Predicate6_r : public TestOnlyRelation<Predicate6_r<Pred, A1, A2, A3, A4, A5, A6> > {
+struct Predicate6_r : public Coroutine {
 	Pred pred;
 	A1 a1;	A2 a2;	A3 a3;	A4 a4;	A5 a5;  A6 a6;
 
 	Predicate6_r (const Pred& pred, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6) : pred(pred), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5), a6(6)
 	{ }
 
-	bool apply() {
-		return pred(effective_value(a1),effective_value(a2),effective_value(a3),effective_value(a4),effective_value(a5),effective_value(a6));
+	bool operator()(void) {
+        co_begin();
+	    co_return( pred(effective_value(a1),effective_value(a2),effective_value(a3),effective_value(a4),effective_value(a5),effective_value(a6)) );
+        co_end();
 	}
 };
 
-
+// support for function objects
 template<typename Pred> inline
 Predicate0_r<Pred> predicate(Pred pred) {
 	return Predicate0_r<Pred>(pred);
 }
 
 template<typename Pred, typename A1> inline 
-Predicate1_r<Pred,A1> predicate(Pred pred, const A1 & a1) {
-	return Predicate1_r<Pred,A1>(pred,a1);
+Predicate1_r<Pred,A1> predicate(Pred pred, const A1& a1_) {
+	return Predicate1_r<Pred,A1>(pred,a1_);
 }
 
 template<typename Pred, typename A1, typename A2> inline
-Predicate2_r<Pred,A1,A2> predicate(Pred pred, const A1 & a1, const A2 & a2) {
-	return Predicate2_r<Pred,A1,A2>(pred,a1,a2);
+Predicate2_r<Pred,A1,A2> predicate(Pred pred, const A1& a1_, const A2& a2_) {
+	return Predicate2_r<Pred,A1,A2>(pred,a1_,a2_);
 }
 
 template<typename Pred, typename A1, typename A2, typename A3> inline
-Predicate3_r<Pred,A1,A2,A3> predicate(Pred pred, const A1 & a1, const A2 & a2, const A3 & a3) {
-	return Predicate3_r<Pred,A1,A2,A3>(pred,a1,a2,a3);
+Predicate3_r<Pred,A1,A2,A3> predicate(Pred pred, const A1& a1_, const A2& a2_, const A3& a3_) {
+	return Predicate3_r<Pred,A1,A2,A3>(pred,a1_,a2_,a3_);
 }
 
 template<typename Pred, typename A1, typename A2, typename A3, typename A4> inline 
-Predicate4_r<Pred,A1,A2,A3,A4> predicate(Pred pred, const A1 & a1, const A2 & a2, const A3 & a3, const A4 & a4) {
-	return Predicate4_r<Pred,A1,A2,A3,A4>(pred,a1,a2,a3,a4);
+Predicate4_r<Pred,A1,A2,A3,A4> predicate(Pred pred, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
+	return Predicate4_r<Pred,A1,A2,A3,A4>(pred,a1_,a2_,a3_,a4_);
 }
 
 template<typename Pred, typename A1, typename A2, typename A3, typename A4 ,typename A5> inline 
-Predicate5_r<Pred,A1,A2,A3,A4,A5> predicate(Pred pred, const A1 & a1, const A2 & a2, const A3 & a3, const A4 & a4, const A5 & a5) {
-	return Predicate5_r<Pred,A1,A2,A3,A4,A5>(pred,a1,a2,a3,a4,a5);
+Predicate5_r<Pred,A1,A2,A3,A4,A5> predicate(Pred pred, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
+	return Predicate5_r<Pred,A1,A2,A3,A4,A5>(pred,a1_,a2_,a3_,a4_,a5_);
 }
 
 template<typename Pred, typename A1, typename A2, typename A3, typename A4 ,typename A5, typename A6> inline 
-Predicate6_r<Pred,A1,A2,A3,A4,A5,A6> predicate(Pred pred, const A1 & a1, const A2 & a2, const A3 & a3, const A4 & a4, const A5 & a5, const A6 & a6) {
-	return Predicate6_r<Pred,A1,A2,A3,A4,A5,A6>(pred,a1,a2,a3,a4,a5,a6);
+Predicate6_r<Pred,A1,A2,A3,A4,A5,A6> predicate(Pred pred, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
+	return Predicate6_r<Pred,A1,A2,A3,A4,A5,A6>(pred,a1_,a2_,a3_,a4_,a5_,a6_);
 }
 
+
+// support for function pointers
+template<typename R> inline
+Predicate0_r<R(*)(void)> 
+predicate(R(* pred)(void)) {
+    return Predicate0_r<R(*)(void)>(pred);
+}
+
+template<typename R, typename P1, typename A1> inline
+Predicate1_r<R(*)(P1),A1> 
+predicate(R(* pred)(P1), const A1& a1_) {
+    return Predicate1_r<R(*)(P1),A1>(pred,a1_);
+}
+
+template<typename R, typename P1, typename P2, typename A1, typename A2> inline
+Predicate2_r<R(*)(P1,P2),A1,A2> 
+predicate(R(* pred)(P1,P2), const A1& a1_, const A2& a2_) {
+    return Predicate2_r<R(*)(P1,P2),A1,A2>(pred,a1_,a2_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename A1, typename A2, typename A3> inline
+Predicate3_r<R(*)(P1,P2,P3),A1,A2,A3> 
+predicate(R(* pred)(P1,P2,P3), const A1& a1_, const A2& a2_, const A3& a3_) {
+    return Predicate3_r<R(*)(P1,P2,P3),A1,A2,A3>(pred,a1_,a2_,a3_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename A1, typename A2, typename A3, typename A4> inline
+Predicate4_r<R(*)(P1,P2,P3,P4),A1,A2,A3,A4> 
+predicate(R(* pred)(P1,P2,P3,P4), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
+    return Predicate4_r<R(*)(P1,P2,P3,P4),A1,A2,A3,A4>(pred,a1_,a2_,a3_,a4_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+Predicate5_r<R(*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5> 
+predicate(R(* pred)(P1,P2,P3,P4,P5), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
+    return Predicate5_r<R(*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5>(pred,a1_,a2_,a3_,a4_,a5_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+Predicate6_r<R(*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6> 
+predicate(R(* pred)(P1,P2,P3,P4,P5,P6), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
+	return Predicate6_r<R(*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6>(pred,a1_,a2_,a3_,a4_,a5_,a6_);
+}
+
+    
 //----------------------------------------------------------------------------
 // predicate_mf : Adaptor relation for treating predicate methods as relations
 //----------------------------------------------------------------------------
 template<typename Obj, typename MemPred>
-struct MemPredicate0_r : public TestOnlyRelation<MemPredicate0_r<Obj,MemPred> > {
+class MemPredicate0_r : public Coroutine {
     lref<Obj> obj_;
 	MemPred pred;
-
+public:
 	MemPredicate0_r (lref<Obj> obj_, MemPred pred) : obj_(obj_), pred(pred)
 	{ }
 
-	bool apply() {
-		return ((*obj_).*pred)();
+	bool operator()(void) {
+        co_begin();
+		co_return( ((*obj_).*pred)() );
+        co_end();
 	}
 };
 
 template<typename Obj, typename MemPred, typename A1>
-struct MemPredicate1_r : public TestOnlyRelation<MemPredicate1_r<Obj,MemPred,A1> > {
+class MemPredicate1_r : public Coroutine {
     lref<Obj> obj_;
 	MemPred pred;
 	A1 arg1;
-
+public:
 	MemPredicate1_r (lref<Obj> obj_, MemPred pred, const A1& arg1) : obj_(obj_), pred(pred), arg1(arg1)
 	{ }
 
-	bool apply() {
-		return ((*obj_).*pred)(effective_value(arg1));
+	bool operator()(void) {
+        co_begin();
+		co_return( ((*obj_).*pred)(effective_value(arg1)) );
+        co_end();
 	}
 };
 
 template<typename Obj, typename MemPred, typename A1, typename A2>
-struct MemPredicate2_r : public TestOnlyRelation<MemPredicate2_r<Obj,MemPred,A1,A2> > {
+class MemPredicate2_r : public Coroutine {
     lref<Obj> obj_;
 	MemPred pred;
-	A1 arg1;
-    A2 arg2;
+	A1 arg1; A2 arg2;
+public:
 	MemPredicate2_r (lref<Obj> obj_, MemPred pred, const A1& arg1, const A2& arg2) : obj_(obj_), pred(pred), arg1(arg1), arg2(arg2)
 	{ }
 
-	bool apply() {
-		return ((*obj_).*pred)( effective_value(arg1), effective_value(arg2) );
+	bool operator()(void) {
+        co_begin();
+		co_return( ((*obj_).*pred)( effective_value(arg1), effective_value(arg2) ) );
+        co_end();
 	}
 };
 
 template<typename Obj, typename MemPred, typename A1, typename A2, typename A3>
-class MemPredicate3_r : public TestOnlyRelation<MemPredicate3_r<Obj,MemPred,A1,A2,A3> > {
+class MemPredicate3_r : public Coroutine {
     lref<Obj> obj_;
 	MemPred pred;
-	A1 arg1;
-    A2 arg2;
-    A3 arg3;
+	A1 arg1; A2 arg2; A3 arg3;
 public:
 	MemPredicate3_r (lref<Obj> obj_, MemPred pred, const A1& arg1, const A2& arg2, const A2& arg3) : obj_(obj_), pred(pred), arg1(arg1), arg2(arg2), arg3(arg3)
 	{ }
 
-	bool apply() {
-		return ((*obj_).*pred)(effective_value(arg1), effective_value(arg2), effective_value(arg3));
+	bool operator()(void) {
+        co_begin();
+		co_return( ((*obj_).*pred)(effective_value(arg1), effective_value(arg2), effective_value(arg3)) );
+        co_end();
 	}
 };
 
 template<typename Obj, typename MemPred, typename A1, typename A2, typename A3, typename A4>
-class MemPredicate4_r : public TestOnlyRelation<MemPredicate4_r<Obj,MemPred,A1,A2,A3,A4> > {
+class MemPredicate4_r : public Coroutine {
 	lref<Obj> obj_;
 	MemPred pred;
-	A1 arg1;
-    A2 arg2;
-    A3 arg3;
-    A4 arg4;
+	A1 arg1; A2 arg2; A3 arg3; A4 arg4;
 public:
 	MemPredicate4_r (lref<Obj> obj_, MemPred pred, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4) :obj_(obj_), pred(pred), arg1(arg1), arg2(arg2), arg3(arg3), arg4(arg4)
 	{ }
 
-	bool apply() {
-		return ((*obj_).*pred)(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4) );
+	bool operator()(void) {
+        co_begin();
+		co_return( ((*obj_).*pred)(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4) ) );
+        co_end();
 	}
 };
 
 template<typename Obj, typename MemPred, typename A1, typename A2, typename A3, typename A4, typename A5>
-class MemPredicate5_r : public TestOnlyRelation<MemPredicate5_r<Obj,MemPred,A1,A2,A3,A4,A5> > {
+class MemPredicate5_r : public Coroutine {
     lref<Obj> obj_;
 	MemPred pred;
-	A1 arg1;
-    A2 arg2;
-    A3 arg3;
-    A4 arg4;
-    A5 arg5;
+	A1 arg1; A2 arg2; A3 arg3; A4 arg4; A5 arg5;
 public:
 	MemPredicate5_r (lref<Obj> obj_, MemPred pred, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, const A5& arg5) : obj_(obj_), pred(pred), arg1(arg1), arg2(arg2), arg3(arg3), arg4(arg4), arg5(arg5)
 	{ }
 
-	bool apply() {
-		return ((*obj_).*pred)(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4), effective_value(arg5) );
+	bool operator()(void) {
+        co_begin();
+		co_return( ((*obj_).*pred)(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4), effective_value(arg5) ) );
+        co_end();
 	}
 };
 
 template<typename Obj, typename MemPred, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
-class MemPredicate6_r : public TestOnlyRelation<MemPredicate6_r<Obj,MemPred,A1,A2,A3,A4,A5,A6> > {
+class MemPredicate6_r : public Coroutine {
     lref<Obj> obj_;
 	MemPred pred;
-	A1 arg1;
-    A2 arg2;
-    A3 arg3;
-    A4 arg4;
-    A5 arg5;
-    A6 arg6;
+	A1 arg1; A2 arg2; A3 arg3; A4 arg4; A5 arg5; A6 arg6;
 public:
-	MemPredicate6_r (lref<Obj> obj_, MemPred pred, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, const A5& arg5, const A6& arg6) : obj_(obj_), pred(pred), arg1(arg1), arg2(arg2), arg3(arg3), arg4(arg4), arg5(arg5), arg6(arg6)
+	MemPredicate6_r (const lref<Obj>& obj_, MemPred pred, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, const A5& arg5, const A6& arg6) : obj_(obj_), pred(pred), arg1(arg1), arg2(arg2), arg3(arg3), arg4(arg4), arg5(arg5), arg6(arg6)
 	{ }
 
-	bool apply() {
-		return ((*obj_).*pred)(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4), effective_value(arg5), effective_value(arg6));
+	bool operator()(void) {
+        co_begin();
+		co_return( ((*obj_).*pred)(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4), effective_value(arg5), effective_value(arg6)) );
+        co_end();
 	}
 };
 
 
-template<typename Obj, typename MemPred0> inline
-MemPredicate0_r<Obj,MemPred0> predicate_mf(lref<Obj>& obj_, MemPred0 mpred0) {
-	return MemPredicate0_r<Obj,MemPred0>(obj_, mpred0);
+// 0
+template<typename R, typename Obj> inline
+MemPredicate0_r<Obj,R(Obj::*)(void)> 
+predicate_mf(lref<Obj>& obj_, R(Obj::* mempred)(void) ) {
+	return MemPredicate0_r<Obj,R(Obj::*)(void)>(obj_, mempred);
 }
 
-template<typename Obj, typename MemPred1, typename A1> inline
-MemPredicate1_r<Obj,MemPred1,A1> predicate_mf(lref<Obj>& obj_, MemPred1 mpred1, const A1& arg1) {
-	return MemPredicate1_r<Obj,MemPred1,A1>(obj_, mpred1, arg1);
+template<typename R, typename Obj> inline
+MemPredicate0_r<Obj,R(Obj::*)(void) const> 
+predicate_mf(lref<Obj>& obj_, R(Obj::* mempred)(void) const) {
+	return MemPredicate0_r<Obj,R(Obj::*)(void) const>(obj_, mempred);
 }
 
-template<typename Obj, typename MemPred2, typename A1, typename A2> inline
-MemPredicate2_r<Obj,MemPred2,A1,A2> predicate_mf(lref<Obj>& obj_, MemPred2 mpred2, const A1& arg1, const A2& arg2) {
-	return MemPredicate2_r<Obj,MemPred2,A1,A2>(obj_, mpred2, arg1, arg2);
+// 1
+template<typename R, typename P1, typename Obj, typename A1> inline
+MemPredicate1_r<Obj,R(Obj::*)(P1),A1> 
+predicate_mf(lref<Obj>& obj_, R(Obj::* mempred)(P1), const A1& arg1) {
+	return MemPredicate1_r<Obj,R(Obj::*)(P1),A1>(obj_, mempred, arg1);
 }
 
-template<typename Obj, typename MemPred3, typename A1, typename A2, typename A3> inline
-MemPredicate3_r<Obj,MemPred3,A1,A2,A3> predicate_mf(lref<Obj>& obj_, MemPred3 mpred3, const A1& arg1, const A2& arg2, const A3& arg3) {
-	return MemPredicate3_r<Obj,MemPred3,A1,A2,A3>(obj_, mpred3, arg1, arg2, arg3);
+template<typename R, typename P1, typename Obj, typename A1> inline
+MemPredicate1_r<Obj,R(Obj::*)(P1) const,A1> 
+predicate_mf(lref<Obj>& obj_, R(Obj::* mempred)(P1) const, const A1& arg1) {
+	return MemPredicate1_r<Obj,R(Obj::*)(P1) const,A1>(obj_, mempred, arg1);
 }
 
-template<typename Obj, typename MemPred4, typename A1, typename A2, typename A3, typename A4>  inline
-MemPredicate4_r<Obj,MemPred4,A1,A2,A3,A4> predicate_mf(lref<Obj>& obj_, MemPred4 mpred4, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4) {
-	return MemPredicate4_r<Obj,MemPred4,A1,A2,A3,A4>(obj_, mpred4, arg1, arg2, arg3, arg4);
+// 2
+template<typename R, typename P1, typename P2, typename Obj, typename A1, typename A2> inline
+MemPredicate2_r<Obj,R(Obj::*)(P1,P2),A1,A2> 
+predicate_mf(lref<Obj>& obj_, R(Obj::* mempred)(P1,P2), const A1& arg1, const A2& arg2) {
+	return MemPredicate2_r<Obj,R(Obj::*)(P1,P2),A1,A2>(obj_, mempred, arg1, arg2);
 }
 
-template<typename Obj, typename MemPred5, typename A1, typename A2, typename A3, typename A4, typename A5> inline
-MemPredicate5_r<Obj,MemPred5,A1,A2,A3,A4,A5> predicate_mf(lref<Obj>& obj_, MemPred5 mpred5, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, const A5& arg5) {
-	return MemPredicate5_r<Obj,MemPred5,A1,A2,A3,A4,A5>(obj_, mpred5, arg1, arg2, arg3, arg4, arg5);
+template<typename R, typename P1, typename P2, typename Obj, typename A1, typename A2> inline
+MemPredicate2_r<Obj,R(Obj::*)(P1,P2) const,A1,A2> 
+predicate_mf(lref<Obj>& obj_, R(Obj::* mempred)(P1,P2) const, const A1& arg1, const A2& arg2) {
+	return MemPredicate2_r<Obj,R(Obj::*)(P1,P2) const,A1,A2>(obj_, mempred, arg1, arg2);
 }
 
-template<typename Obj, typename MemPred6, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
-MemPredicate6_r<Obj,MemPred6,A1,A2,A3,A4,A5,A6> predicate_mf(lref<Obj>& obj_, MemPred6 mpred6, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, const A5& arg5, const A6& arg6) {
-	return MemPredicate6_r<Obj,MemPred6,A1,A2,A3,A4,A5,A6>(obj_, mpred6, arg1, arg2, arg3, arg4, arg5, arg6);
+// 3
+template<typename R, typename P1, typename P2, typename P3, typename Obj, typename A1, typename A2, typename A3> inline
+MemPredicate3_r<Obj,R(Obj::*)(P1,P2,P3),A1,A2,A3> 
+predicate_mf(lref<Obj>& obj_, R(Obj::* mempred)(P1,P2,P3), const A1& arg1, const A2& arg2, const A3& arg3) {
+	return MemPredicate3_r<Obj,R(Obj::*)(P1,P2,P3),A1,A2,A3>(obj_, mempred, arg1, arg2, arg3);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename Obj, typename A1, typename A2, typename A3> inline
+MemPredicate3_r<Obj,R(Obj::*)(P1,P2,P3) const,A1,A2,A3> 
+predicate_mf(lref<Obj>& obj_, R(Obj::* mempred)(P1,P2,P3) const, const A1& arg1, const A2& arg2, const A3& arg3) {
+	return MemPredicate3_r<Obj,R(Obj::*)(P1,P2,P3) const,A1,A2,A3>(obj_, mempred, arg1, arg2, arg3);
+}
+
+// 4
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename A1, typename A2, typename A3, typename A4>  inline
+MemPredicate4_r<Obj,R(Obj::*)(P1,P2,P3,P4),A1,A2,A3,A4> 
+predicate_mf(lref<Obj>& obj_, R(Obj::* mempred)(P1,P2,P3,P4), const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4) {
+	return MemPredicate4_r<Obj,R(Obj::*)(P1,P2,P3,P4),A1,A2,A3,A4>(obj_, mempred, arg1, arg2, arg3, arg4);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename A1, typename A2, typename A3, typename A4>  inline
+MemPredicate4_r<Obj,R(Obj::*)(P1,P2,P3,P4) const,A1,A2,A3,A4> 
+predicate_mf(lref<Obj>& obj_, R(Obj::* mempred)(P1,P2,P3,P4) const, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4) {
+	return MemPredicate4_r<Obj,R(Obj::*)(P1,P2,P3,P4) const,A1,A2,A3,A4>(obj_, mempred, arg1, arg2, arg3, arg4);
+}
+
+
+// 5
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+MemPredicate5_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5> 
+predicate_mf(lref<Obj>& obj_, R(Obj::* mempred)(P1,P2,P3,P4,P5), const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, const A5& arg5) {
+	return MemPredicate5_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5>(obj_, mempred, arg1, arg2, arg3, arg4, arg5);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+MemPredicate5_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5) const,A1,A2,A3,A4,A5> 
+predicate_mf(lref<Obj>& obj_, R(Obj::* mempred)(P1,P2,P3,P4,P5) const, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, const A5& arg5) {
+	return MemPredicate5_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5) const,A1,A2,A3,A4,A5>(obj_, mempred, arg1, arg2, arg3, arg4, arg5);
+}
+
+// 6
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+MemPredicate6_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6> 
+predicate_mf(lref<Obj>& obj_, R(Obj::* mempred)(P1,P2,P3,P4,P5,P6), const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, const A5& arg5, const A6& arg6) {
+	return MemPredicate6_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6>(obj_, mempred, arg1, arg2, arg3, arg4, arg5, arg6);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+MemPredicate6_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,A1,A2,A3,A4,A5,A6> 
+predicate_mf(lref<Obj>& obj_, R(Obj::* mempred)(P1,P2,P3,P4,P5,P6) const, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, const A5& arg5, const A6& arg6) {
+	return MemPredicate6_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,A1,A2,A3,A4,A5,A6>(obj_, mempred, arg1, arg2, arg3, arg4, arg5, arg6);
+}
+
+
+//----------------------------------------------------------------
+// predicate_mem : Unify with a member variable
+//----------------------------------------------------------------
+
+template<typename Obj, typename MemberT>
+class Predicate_mem_r : public Coroutine {
+	lref<Obj> obj_;
+	MemberT Obj::*  mem;
+public:
+	Predicate_mem_r(const lref<Obj>& obj_, MemberT Obj::* mem) : obj_(obj_), mem(mem)
+	{ }
+
+	bool operator() (void) {
+		co_begin();
+		co_yield((*obj_).*mem);
+		co_end();
+	}
+};
+
+
+template<typename Obj, typename MemberT> inline
+Predicate_mem_r<Obj, MemberT> 
+predicate_mem(lref<Obj>& obj_, MemberT Obj::* mem) {
+	return Predicate_mem_r<Obj, MemberT>(obj_, mem);
 }
 
 } // namespace castor
+
 
 #endif
