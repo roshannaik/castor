@@ -161,3 +161,25 @@ T        : Less efficient for everything but primitive types.
 T&       : Does not allow passing of rvalues. Prevents copies being passed eventually.
 const T& : Preferred. Same as T, but more efficient if arg is not primitive POT.
            Copy is made if arg is POT.
+
+
+
+3) Overloads for *_mf relations:
+-------------------------------
+Two overloads are provided for each arity. One for const methods and the other for non const methods.
+
+template<typename L, typename R, typename P1, typename Obj, typename A1>
+Eq_mf_r1<L,Obj,R(Obj::*)(P1) const,A1> 
+eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1), const A1& a1_) ;
+
+
+template<typename L, typename R, typename P1, typename Obj, typename A1>
+Eq_mf_r1<L,Obj,R(Obj::*)(P1) const,A1> 
+eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1) const, const A1& a1_) ;
+
+
+This implies that 'const lref<Obj>' to the objects cannot be used. This is fine, since for suporting them
+we would have to use an overload with 'const lref<Obj>&'  which means a POT could be passed as argument
+leading to incorrect behavior (as its copy will be made). We workaround by converting const lref<Obj> to 
+lref<T> before use.
+
