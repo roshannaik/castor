@@ -5,6 +5,7 @@
 #if !defined CASTOR_EQ_H
 #define CASTOR_EQ_H 1
 
+#include "coroutine.h"
 #include "lref.h"
 #include "ile.h"
 #include "relation.h"
@@ -12,8 +13,8 @@
 #include <cstring>
 namespace castor {
 
-template<typename Derived, typename L, typename R, typename Cmp=::castor::detail::None>
-class UnifyBase : public OneSolutionRelation<Derived> {
+template<typename L, typename R, typename Cmp=::castor::detail::None>
+class UnifyBase {
     Cmp cmp;
 public:
     UnifyBase(const Cmp& cmp) : cmp(cmp)
@@ -24,8 +25,8 @@ public:
     }
 };
 
-template<typename Derived, typename L, typename R>
-struct UnifyBase<Derived, L, R, ::castor::detail::None> : public OneSolutionRelation<Derived> {
+template<typename L, typename R>
+struct UnifyBase<L, R, ::castor::detail::None> {
     UnifyBase(const ::castor::detail::None&)
     { }
 
@@ -35,60 +36,49 @@ struct UnifyBase<Derived, L, R, ::castor::detail::None> : public OneSolutionRela
 };
 
 template<typename L, typename R, typename Cmp=::castor::detail::None>
-struct UnifyL : public UnifyBase<UnifyL<L,R,Cmp>, L, R, Cmp> {
+struct UnifyL : public UnifyBase<L, R, Cmp>, public Coroutine {
     lref<L> l;
     R r;
-    typedef UnifyBase<UnifyL<L,R,Cmp>, L, R, Cmp> Base;
-    bool changed;
+    typedef UnifyBase<L, R, Cmp> Base;
 
-    UnifyL(const lref<L>& l, const R& r, const Cmp& cmp) : Base(cmp), l(l), r(r), changed(false)
+    UnifyL(const lref<L>& l, const R& r, const Cmp& cmp) : Base(cmp), l(l), r(r)
     { }
 
-    bool apply(void) {
+    bool operator() (void) {
+        co_begin();
         if(l.defined())
-            return Base::compare(*l,r);
+            co_return( Base::compare(*l,r) ) ;
         l=r;
-        changed=true;
-        return true;
-    }
-    void revert() {
-        if(changed) {
-            l.reset();
-            changed=false;
-        }
+        co_yield(true);
+        l.reset();
+        co_end();
     }
 };
 
 template<typename L, typename R, typename Cmp=::castor::detail::None>
-class UnifyLR: public UnifyBase<UnifyLR<L,R,Cmp>, L, R, Cmp> {
+class UnifyLR: public UnifyBase<L,R,Cmp> , public Coroutine {
     lref<L> l;
     lref<R> r;
-	enum {nochange, lchanged, rchanged} state;
-    typedef UnifyBase<UnifyLR<L,R,Cmp>, L, R, Cmp> Base;
+    typedef UnifyBase<L,R,Cmp> Base;
 public:
-    UnifyLR(const lref<L>& l, const lref<R>& r, const Cmp& cmp) : Base(cmp), l(l), r(r), state(nochange)
+    UnifyLR(const lref<L>& l, const lref<R>& r, const Cmp& cmp) : Base(cmp), l(l), r(r)
     { }
 
-    bool apply (void) { // throws if  both l and r are not defined
+    bool operator() (void) { // throws if  both l and r are not defined
+        co_begin();
 		if(l.defined()) {
 			if(r.defined())
-                return Base::compare(*l,*r);
+                co_return( Base::compare(*l,*r) );
 			r=*l;
-			state=rchanged;
-			return true;
+			co_yield(true);
+            r.reset();
+            co_return(false);
 		}
         l=*r; // throws if r is not defined
-        state=lchanged;
-        return true;
-    }
-    
-    void revert(void) {
-        if(state==lchanged)
-            l.reset();
-        if(state==rchanged)
-            r.reset();
-		state=nochange;
-    }
+        co_yield(true);
+        l.reset();
+        co_end();
+    }    
 };
 
 template<typename L, typename R> inline
@@ -194,17 +184,17 @@ namespace detail {
             ++first1; ++first2;
         }while(true);
     }
-}
+} // namespace detail
 
 //----------------------------------------------------------------
 // eq_seq : Unify Collection with sequence
 //----------------------------------------------------------------
-template<typename Cmp, typename Collection, typename Iter, typename Derived>
-struct Eq_Seq_r : public OneSolutionRelation<Derived> {
+template<typename Cmp, typename Collection, typename Iter>
+struct EqSeq_Base {
 private:
     Cmp cmp;
 public:
-    Eq_Seq_r(const Cmp& cmp) : cmp(cmp)
+    EqSeq_Base(const Cmp& cmp) : cmp(cmp)
     { }
 
     bool compare(const lref<Collection>& coll, const Iter& beg, const Iter& end) {
@@ -212,13 +202,13 @@ public:
     }
 };
 
-template<typename Collection, typename Iter, typename Derived>
+template<typename Collection, typename Iter>
 #ifdef __BCPLUSPLUS__
-struct Eq_Seq_r<detail::None, Collection, Iter, Derived> : public OneSolutionRelation<Derived> {
+struct EqSeq_Base<detail::None, Collection, Iter>  {
 #else
-struct Eq_Seq_r< ::castor::detail::None, Collection, Iter, Derived> : public OneSolutionRelation<Derived> {
+struct EqSeq_Base< ::castor::detail::None, Collection, Iter>  {
 #endif
-    Eq_Seq_r(const ::castor::detail::None&)
+    EqSeq_Base(const ::castor::detail::None&)
     { }
 
     bool compare(const lref<Collection>& coll, const Iter& beg, const Iter& end) {
@@ -227,28 +217,25 @@ struct Eq_Seq_r< ::castor::detail::None, Collection, Iter, Derived> : public One
 };
 
 template<typename Collection, typename Iter, typename Cmp=::castor::detail::None>
-class EqSeq_r : public Eq_Seq_r<Cmp, Collection, Iter, EqSeq_r<Collection, Iter, Cmp> > {
+class EqSeq_r : public EqSeq_Base<Cmp, Collection, Iter> , public Coroutine {
     lref<Collection> c;
     Iter begin_, end_;
-    bool changed;
-    typedef Eq_Seq_r<Cmp, Collection, Iter, EqSeq_r<Collection, Iter, Cmp> > Base;
+    typedef EqSeq_Base<Cmp, Collection, Iter> Base;
 public:
     typedef Collection collection_type;
     typedef Iter iterator_type;
 
-    EqSeq_r(const lref<Collection>& c, const Iter& begin_, const Iter& end_, const Cmp& cmp) : Base(cmp) ,c(c), begin_(begin_), end_(end_), changed(false)
+    EqSeq_r(const lref<Collection>& c, const Iter& begin_, const Iter& end_, const Cmp& cmp) : Base(cmp) ,c(c), begin_(begin_), end_(end_)
     { }
 
-    bool apply (void) {
+    bool operator() (void) {
+        co_begin();
         if(c.defined())
-            return Base::compare(c, begin_, end_);
+            co_return( Base::compare(c, begin_, end_) );
         c=Collection(begin_, end_);
-        changed=true;
-        return true;
-    }
-
-    void revert(void) {
-        if(changed) c.reset();
+        co_yield(true);
+        c.reset();
+        co_end();
     }
 };
 
@@ -267,175 +254,148 @@ EqSeq_r<Cont, Iter, Cmp> eq_seq(const lref<Cont>& c, Iter begin, Iter end, Cmp c
 // eq_f : Unify with a value obtained by calling a function
 //----------------------------------------------------------------
 template<typename L, typename Func>
-class Eq_f_r : public OneSolutionRelation<Eq_f_r<L, Func> > {
+class Eq_f_r : public Coroutine {
     lref<L> l;
     Func func;
-    bool changed;
 public:
-    Eq_f_r (const lref<L>& l, const Func& func) : l(l), func(func), changed(false)
+    Eq_f_r (const lref<L>& l, const Func& func) : l(l), func(func)
     { }
 
-    bool apply (void) {
+    bool operator() (void) {
+        co_begin();
         if(l.defined())
-            return *l==func();
-        changed=true;
+            co_return( *l==func() );
         l=func();
-        return true;
-    }
-
-    void revert(void) {
-        if(changed)
-            l.reset();
-    }
+        co_yield(true);
+        l.reset();
+        co_end();
+	}
 };
 
 template<typename L, typename Func1, typename A1>
-class Eq_f_r1 : public OneSolutionRelation<Eq_f_r1<L, Func1, A1> > {
+class Eq_f_r1 : public Coroutine {
     lref<L> l;
     A1 arg1;
     Func1 func;
-    bool changed;
 public:
-    Eq_f_r1 (const lref<L>& l, const Func1& func, const A1& arg1) : l(l), func(func), arg1(arg1), changed(false)
+    Eq_f_r1 (const lref<L>& l, const Func1& func, const A1& arg1) : l(l), func(func), arg1(arg1)
     { }
 
-    bool apply (void) {
+    bool operator() (void) {
+        co_begin();
         if(l.defined())
-            return *l==func(effective_value(arg1));
-        changed=true;
+            co_return( *l==func(effective_value(arg1)) );
         l=func(effective_value(arg1));
-        return true;
-    }
-
-    void revert(void) {
-        if(changed)
-            l.reset();
-    }
+        co_yield(true);
+        l.reset();
+        co_end();
+	}
 };
 
 template<typename L, typename Func2, typename A1, typename A2>
-class Eq_f_r2 : public OneSolutionRelation<Eq_f_r2<L, Func2, A1, A2> > {
+class Eq_f_r2 : public Coroutine {
     lref<L> l;
     A1 arg1; A2 arg2; 
     Func2 func;
-    bool changed;
 public:
-    Eq_f_r2 (const lref<L>& l, const Func2& func, const A1& arg1, const A2& arg2) : l(l), func(func), arg1(arg1), arg2(arg2), changed(false)
+    Eq_f_r2 (const lref<L>& l, const Func2& func, const A1& arg1, const A2& arg2) : l(l), func(func), arg1(arg1), arg2(arg2)
     { }
 
-    bool apply (void) {
+    bool operator() (void) {
+        co_begin();
         if(l.defined())
-            return *l==func(effective_value(arg1), effective_value(arg2));
-        changed=true;
+            co_return( *l==func(effective_value(arg1), effective_value(arg2)) );
         l=func(effective_value(arg1), effective_value(arg2));
-        return true;
-    }
-
-    void revert(void) {
-        if(changed)
-            l.reset();
-    }
+        co_yield(true);
+        l.reset();
+        co_end();
+	}
 };
 
 
 template<typename L, typename Func3, typename A1, typename A2, typename A3>
-class Eq_f_r3 : public OneSolutionRelation<Eq_f_r3<L, Func3, A1, A2, A3> > {
+class Eq_f_r3 : public Coroutine {
     lref<L> l;
     A1 arg1; A2 arg2; A3 arg3;
     Func3 func;
-    bool changed;
 public:
-    Eq_f_r3 (const lref<L>& l, const Func3& func, const A1& arg1, const A2& arg2, const A3& arg3) : l(l), func(func), arg1(arg1), arg2(arg2), arg3(arg3), changed(false)
+    Eq_f_r3 (const lref<L>& l, const Func3& func, const A1& arg1, const A2& arg2, const A3& arg3) : l(l), func(func), arg1(arg1), arg2(arg2), arg3(arg3)
     { }
 
-    bool apply (void) {
+    bool operator() (void) {
+        co_begin();
         if(l.defined())
-            return *l==func(effective_value(arg1), effective_value(arg2), effective_value(arg3));
-        changed=true;
+            co_return( *l==func(effective_value(arg1), effective_value(arg2), effective_value(arg3)) );
         l=func(effective_value(arg1), effective_value(arg2), effective_value(arg3));
-        return true;
-    }
-
-    void revert(void) {
-        if(changed)
-            l.reset();
-    }
+        co_yield(true);
+        l.reset();
+        co_end();
+	}
 };
 
 template<typename L, typename Func4, typename A1, typename A2, typename A3, typename A4>
-class Eq_f_r4 : public OneSolutionRelation<Eq_f_r4<L, Func4, A1, A2, A3, A4> > {
+class Eq_f_r4 : public Coroutine {
     lref<L> l;
     A1 arg1; A2 arg2; A3 arg3; A4 arg4;
     Func4 func;
-    bool changed;
 public:
-    Eq_f_r4 (const lref<L>& l, const Func4& func, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4) : l(l), func(func), arg1(arg1), arg2(arg2), arg3(arg3), arg4(arg4), changed(false)
+    Eq_f_r4 (const lref<L>& l, const Func4& func, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4) : l(l), func(func), arg1(arg1), arg2(arg2), arg3(arg3), arg4(arg4)
     { }
 
-    bool apply (void) {
+    bool operator() (void) {
+        co_begin();
         if(l.defined())
-            return *l==func(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4));
-        changed=true;
+            co_return( *l==func(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4)) );
         l=func(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4));
-        return true;
-    }
-
-    void revert(void) {
-        if(changed)
-            l.reset();
-    }
+        co_yield(true);
+        l.reset();
+        co_end();
+	}
 };
 
 
 template<typename L, typename Func5, typename A1, typename A2, typename A3, typename A4, typename A5>
-class Eq_f_r5 : public OneSolutionRelation<Eq_f_r5<L, Func5, A1, A2, A3, A4, A5> > {
+class Eq_f_r5 : public Coroutine {
     lref<L> l;
     A1 arg1; A2 arg2; A3 arg3; A4 arg4; A5 arg5;
     Func5 func;
-    bool changed;
 public:
-    Eq_f_r5 (const lref<L>& l, const Func5& func, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, const A5& arg5) : l(l), func(func), arg1(arg1), arg2(arg2), arg3(arg3), arg4(arg4), arg5(arg5), changed(false)
+    Eq_f_r5 (const lref<L>& l, const Func5& func, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, const A5& arg5) : l(l), func(func), arg1(arg1), arg2(arg2), arg3(arg3), arg4(arg4), arg5(arg5)
     { }
 
-    bool apply (void) {
+    bool operator() (void) {
+        co_begin();
         if(l.defined())
-            return *l==func(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4), effective_value(arg5));
-        changed=true;
+            co_return( *l==func(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4), effective_value(arg5)) );
         l=func(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4), effective_value(arg5));
-        return true;
-    }
-
-    void revert(void) {
-        if(changed)
-            l.reset();
-    }
+        co_yield(true);
+        l.reset();
+        co_end();
+	}
 };
 
 template<typename L, typename Func6, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
-class Eq_f_r6 : public OneSolutionRelation<Eq_f_r6<L, Func6, A1, A2, A3, A4, A5, A6> > {
+class Eq_f_r6 : public Coroutine {
     lref<L> l;
     A1 arg1; A2 arg2; A3 arg3; A4 arg4; A5 arg5; A6 arg6;
     Func6 func;
-    bool changed;
 public:
-    Eq_f_r6 (const lref<L>& l, const Func6& func, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, const A5& arg5, const A6& arg6) : l(l), func(func), arg1(arg1), arg2(arg2), arg3(arg3), arg4(arg4), arg5(arg5), arg6(arg6), changed(false)
+    Eq_f_r6 (const lref<L>& l, const Func6& func, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, const A5& arg5, const A6& arg6) : l(l), func(func), arg1(arg1), arg2(arg2), arg3(arg3), arg4(arg4), arg5(arg5), arg6(arg6)
     { }
 
-    bool apply (void) {
+    bool operator() (void) {
+        co_begin();
         if(l.defined())
             return *l==func(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4), effective_value(arg5), effective_value(arg6));
-        changed=true;
         l=func(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4), effective_value(arg5), effective_value(arg6));
-        return true;
-    }
-
-    void revert(void) {
-        if(changed)
-            l.reset();
-    }
+        co_yield(true);
+        l.reset();
+        co_end();
+	}
 };
 
-// Func = function or function object of type T(void)
+
+// overloads for function objects
 template<typename T, typename Func> inline
 Eq_f_r<T, Func> eq_f(lref<T> l, Func f) {
     return Eq_f_r<T, Func>(l,f);
@@ -468,229 +428,327 @@ Eq_f_r5<T, Func5, A1, A2, A3, A4, A5> eq_f(lref<T> l, Func5 f, const A1& a1_, co
 
 template<typename T, typename Func6, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
 Eq_f_r6<T, Func6, A1, A2, A3, A4, A5, A6> eq_f(lref<T> l, Func6 f, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
-    return Eq_f_r6<T, Func6, A1, A2, A3, A4, A5, A6>(l,f, a1_, a2_, a3_, a4_, a5_, a6_);
+	return Eq_f_r6<T, Func6, A1, A2, A3, A4, A5, A6>(l,f, a1_, a2_, a3_, a4_, a5_, a6_);
 }
 
+
+// overloads for function pointers
+template<typename T, typename R> inline
+Eq_f_r<T,R(*)(void)>
+eq_f(lref<T> l, R(* f)(void)) {
+	return Eq_f_r<T,R(*)(void)>(l,f);
+}
+
+template<typename T, typename R, typename P1, typename A1> inline
+Eq_f_r1<T,R(*)(P1),A1>
+eq_f(lref<T> l, R(* f)(P1), const A1& a1_) {
+	return Eq_f_r1<T,R(*)(P1),A1>(l,f,a1_);
+}
+
+template<typename T, typename R, typename P1, typename P2, typename A1, typename A2> inline
+Eq_f_r2<T,R(*)(P1,P2),A1,A2>
+eq_f(lref<T> l, R(* f)(P1,P2), const A1& a1_, const A2& a2_) {
+	return Eq_f_r2<T,R(*)(P1,P2),A1,A2>(l,f,a1_,a2_);
+}
+
+template<typename T, typename R, typename P1, typename P2, typename P3, typename A1, typename A2, typename A3> inline
+Eq_f_r3<T,R(*)(P1,P2,P3),A1,A2,A3>
+eq_f(lref<T> l, R(* f)(P1,P2,P3), const A1& a1_, const A2& a2_, const A3& a3_) {
+	return Eq_f_r3<T,R(*)(P1,P2,P3),A1,A2,A3>(l,f,a1_,a2_,a3_);
+}
+
+template<typename T, typename R, typename P1, typename P2, typename P3, typename P4, typename A1, typename A2, typename A3, typename A4> inline
+Eq_f_r4<T,R(*)(P1,P2,P3,P4),A1,A2,A3,A4>
+eq_f(lref<T> l, R(* f)(P1,P2,P3,P4), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
+    return Eq_f_r4<T,R(*)(P1,P2,P3,P4),A1,A2,A3,A4>(l,f,a1_,a2_,a3_,a4_);
+}
+
+template<typename T, typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+Eq_f_r5<T,R(*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5>
+eq_f(lref<T> l, R(* f)(P1,P2,P3,P4,P5), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
+    return Eq_f_r5<T,R(*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5>(l,f,a1_,a2_,a3_,a4_,a5_);
+}
+
+template<typename T, typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+Eq_f_r6<T,R(*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6>
+eq_f(lref<T> l, R(* f)(P1,P2,P3,P4,P5,P6), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
+	return Eq_f_r6<T,R(*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6>(l,f,a1_,a2_,a3_,a4_,a5_,a6_);
+}
 
 //----------------------------------------------------------------
 // eq_mf : Unify with a value obtained by calling a member function
 //----------------------------------------------------------------
 
 template<typename L, typename Obj, typename MemFunT>
-class Eq_mf_r0 : public OneSolutionRelation<Eq_mf_r0<L,Obj,MemFunT> > {
+class Eq_mf_r0 : public Coroutine {
     lref<L> l;
 	lref<Obj> obj_;
     MemFunT mf;
-    bool changed;
 public:
-    Eq_mf_r0(const lref<L>& l, const lref<Obj>& obj_, MemFunT mf) : l(l), obj_(obj_), mf(mf), changed(false)
+    Eq_mf_r0(const lref<L>& l, lref<Obj> obj_, MemFunT mf) : l(l), obj_(obj_), mf(mf)
 	{ }
 
-    bool apply (void) {
+    bool operator() (void) {
+        co_begin();
         if(l.defined())
-            return *l==( ((*obj_).*mf)() );
-        changed=true;
+             co_return( *l==( ((*obj_).*mf)() ) );
         l=( ((*obj_).*mf)() );
-        return true;
+        co_yield(true);
+        l.reset();
+        co_end();
 	}
-
-    void revert(void) {
-        if(changed)
-            l.reset();
-    }
 };
 
 
 template<typename L, typename Obj, typename MemFunT, typename A1>
-class Eq_mf_r1 : public OneSolutionRelation<Eq_mf_r1<L,Obj,MemFunT,A1> > {
+class Eq_mf_r1 : public Coroutine {
     lref<L> l;
 	lref<Obj> obj_;
     MemFunT mf;
 	A1 a1_;
-    bool changed;
 public:
-    Eq_mf_r1(const lref<L>& l, const lref<Obj>& obj_, MemFunT mf, const A1& a1_) : l(l), obj_(obj_), mf(mf), a1_(a1_), changed(false)
+    Eq_mf_r1(const lref<L>& l, lref<Obj> obj_, MemFunT mf, const A1& a1_) : l(l), obj_(obj_), mf(mf), a1_(a1_)
 	{ }
 
-    bool apply (void) {
+    bool operator() (void) {
+        co_begin();
         if(l.defined())
-            return *l==( ((*obj_).*mf)(effective_value(a1_)) );
-        changed=true;
+             co_return( *l==( ((*obj_).*mf)(effective_value(a1_)) ) );
         l=( ((*obj_).*mf)(effective_value(a1_)) );
-        return true;
+        co_yield(true);
+        l.reset();
+        co_end();
 	}
-
-    void revert(void) {
-        if(changed)
-            l.reset();
-    }
 };
 
 
 template<typename L, typename Obj, typename MemFunT, typename A1, typename A2>
-class Eq_mf_r2 : public OneSolutionRelation<Eq_mf_r2<L,Obj,MemFunT,A1,A2> > {
+class Eq_mf_r2 : public Coroutine {
     lref<L> l;
 	lref<Obj> obj_;
     MemFunT mf;
 	A1 a1_; A2 a2_;
-    bool changed;
 public:
-    Eq_mf_r2(const lref<L>& l, const lref<Obj>& obj_, MemFunT mf, const A1& a1_, const A2& a2_) : l(l), obj_(obj_), mf(mf), a1_(a1_), a2_(a2_), changed(false)
+    Eq_mf_r2(const lref<L>& l, lref<Obj> obj_, MemFunT mf, const A1& a1_, const A2& a2_) : l(l), obj_(obj_), mf(mf), a1_(a1_), a2_(a2_)
 	{ }
 
-    bool apply (void) {
+    bool operator() (void) {
+        co_begin();
         if(l.defined())
-            return *l==( ((*obj_).*mf)(effective_value(a1_),effective_value(a2_)) );
-        changed=true;
+             co_return( *l==( ((*obj_).*mf)(effective_value(a1_),effective_value(a2_)) ) );
         l=( ((*obj_).*mf)(effective_value(a1_),effective_value(a2_)) );
-        return true;
+        co_yield(true);
+        l.reset();
+        co_end();
 	}
-
-    void revert(void) {
-        if(changed)
-            l.reset();
-    }
 };
 
 
 template<typename L, typename Obj, typename MemFunT, typename A1, typename A2, typename A3>
-class Eq_mf_r3 : public OneSolutionRelation<Eq_mf_r3<L,Obj,MemFunT,A1,A2,A3> > {
+class Eq_mf_r3 : public Coroutine {
     lref<L> l;
 	lref<Obj> obj_;
     MemFunT mf;
 	A1 a1_; A2 a2_; A3 a3_;
-    bool changed;
 public:
-    Eq_mf_r3(const lref<L>& l, const lref<Obj>& obj_, MemFunT mf, const A1& a1_, const A2& a2_, const A3& a3_) : l(l), obj_(obj_), mf(mf), a1_(a1_), a2_(a2_), a3_(a3_), changed(false)
+    Eq_mf_r3(const lref<L>& l, lref<Obj> obj_, MemFunT mf, const A1& a1_, const A2& a2_, const A3& a3_) : l(l), obj_(obj_), mf(mf), a1_(a1_), a2_(a2_), a3_(a3_)
 	{ }
 
-    bool apply (void) {
+    bool operator() (void) {
+        co_begin();
         if(l.defined())
-            return *l==( ((*obj_).*mf)(effective_value(a1_),effective_value(a2_),effective_value(a3_)) );
-        changed=true;
+             co_return( *l==( ((*obj_).*mf)(effective_value(a1_),effective_value(a2_),effective_value(a3_)) ) );
         l=( ((*obj_).*mf)(effective_value(a1_),effective_value(a2_),effective_value(a3_)) );
-        return true;
+        co_yield(true);
+        l.reset();
+        co_end();
 	}
-
-    void revert(void) {
-        if(changed)
-            l.reset();
-    }
 };
 
 
 template<typename L, typename Obj, typename MemFunT, typename A1, typename A2, typename A3, typename A4>
-class Eq_mf_r4 : public OneSolutionRelation<Eq_mf_r4<L,Obj,MemFunT,A1,A2,A3,A4> > {
+class Eq_mf_r4 : public Coroutine {
     lref<L> l;
 	lref<Obj> obj_;
     MemFunT mf;
 	A1 a1_; A2 a2_; A3 a3_; A4 a4_;
-    bool changed;
 public:
-    Eq_mf_r4(const lref<L>& l, const lref<Obj>& obj_, MemFunT mf, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) : l(l), obj_(obj_), mf(mf), a1_(a1_), a2_(a2_), a3_(a3_), a4_(a4_), changed(false)
+    Eq_mf_r4(const lref<L>& l, lref<Obj> obj_, MemFunT mf, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) : l(l), obj_(obj_), mf(mf), a1_(a1_), a2_(a2_), a3_(a3_), a4_(a4_)
 	{ }
 
-    bool apply (void) {
+    bool operator() (void) {
+        co_begin();
         if(l.defined())
-            return *l==( ((*obj_).*mf)(effective_value(a1_),effective_value(a2_),effective_value(a3_),effective_value(a4_)) );
-        changed=true;
+             co_return( *l==( ((*obj_).*mf)(effective_value(a1_),effective_value(a2_),effective_value(a3_),effective_value(a4_)) ) );
         l=( ((*obj_).*mf)(effective_value(a1_),effective_value(a2_),effective_value(a3_),effective_value(a4_)) );
-        return true;
+        co_yield(true);
+        l.reset();
+        co_end();
 	}
-
-    void revert(void) {
-        if(changed)
-            l.reset();
-    }
 };
 
 
 template<typename L, typename Obj, typename MemFunT, typename A1, typename A2, typename A3, typename A4, typename A5>
-class Eq_mf_r5 : public OneSolutionRelation<Eq_mf_r5<L,Obj,MemFunT,A1,A2,A3,A4,A5> > {
+class Eq_mf_r5 : public Coroutine {
     lref<L> l;
 	lref<Obj> obj_;
     MemFunT mf;
 	A1 a1_; A2 a2_; A3 a3_; A4 a4_; A5 a5_;
-    bool changed;
 public:
-    Eq_mf_r5(const lref<L>& l, const lref<Obj>& obj_, MemFunT mf, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) : l(l), obj_(obj_), mf(mf), a1_(a1_), a2_(a2_), a3_(a3_), a4_(a4_), a5_(a5_), changed(false)
+    Eq_mf_r5(const lref<L>& l, lref<Obj> obj_, MemFunT mf, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) : l(l), obj_(obj_), mf(mf), a1_(a1_), a2_(a2_), a3_(a3_), a4_(a4_), a5_(a5_)
 	{ }
 
-    bool apply (void) {
+    bool operator() (void) {
+        co_begin();
         if(l.defined())
             return *l==( ((*obj_).*mf)(effective_value(a1_),effective_value(a2_),effective_value(a3_),effective_value(a4_),effective_value(a5_)) );
-        changed=true;
         l=( ((*obj_).*mf)(effective_value(a1_),effective_value(a2_),effective_value(a3_),effective_value(a4_),effective_value(a5_)) );
-        return true;
+        co_yield(true);
+        l.reset();
+        co_end();
 	}
-
-    void revert(void) {
-        if(changed)
-            l.reset();
-    }
 };
 
 
 template<typename L, typename Obj, typename MemFunT, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
-class Eq_mf_r6 : public OneSolutionRelation<Eq_mf_r6<L,Obj,MemFunT,A1,A2,A3,A4,A5,A6> > {
+class Eq_mf_r6 : public Coroutine {
     lref<L> l;
 	lref<Obj> obj_;
     MemFunT mf;
 	A1 a1_; A2 a2_; A3 a3_; A4 a4_; A5 a5_; A6 a6_;
-    bool changed;
 public:
-    Eq_mf_r6(const lref<L>& l, const lref<Obj>& obj_, MemFunT mf, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) : l(l), obj_(obj_), mf(mf), a1_(a1_), a2_(a2_), a3_(a3_), a4_(a4_), a5_(a5_), a6_(a6_), changed(false)
+    Eq_mf_r6(const lref<L>& l, lref<Obj> obj_, MemFunT mf, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) : l(l), obj_(obj_), mf(mf), a1_(a1_), a2_(a2_), a3_(a3_), a4_(a4_), a5_(a5_), a6_(a6_)
 	{ }
 
-    bool apply (void) {
+    bool operator() (void) {
+        co_begin();
         if(l.defined())
-            return *l==( ((*obj_).*mf)(effective_value(a1_),effective_value(a2_),effective_value(a3_),effective_value(a4_),effective_value(a5_),effective_value(a6_)) );
-        changed=true;
+            co_return( *l==( ((*obj_).*mf)(effective_value(a1_),effective_value(a2_),effective_value(a3_),effective_value(a4_),effective_value(a5_),effective_value(a6_)) ) );
         l=( ((*obj_).*mf)(effective_value(a1_),effective_value(a2_),effective_value(a3_),effective_value(a4_),effective_value(a5_),effective_value(a6_)) );
-        return true;
+        co_yield(true);
+        l.reset();
+        co_end();
 	}
-
-    void revert(void) {
-        if(changed)
-            l.reset();
-    }
 };
 
 
-template<typename L, typename Obj, typename MemFunT> inline
-Eq_mf_r0<L, Obj, MemFunT> eq_mf(lref<L> l, lref<Obj>& obj_, MemFunT mf) {
-    return Eq_mf_r0<L, Obj, MemFunT>(l, obj_, mf);
+
+// overloads for non-const member functions
+template<typename L, typename R, typename Obj> inline
+Eq_mf_r0<L,Obj,R(Obj::*)(void)> 
+eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::*mf)(void) ) {
+    return Eq_mf_r0<L,Obj,R(Obj::*)(void)>(l,obj_,mf);
 }
 
-template<typename L, typename Obj, typename MemFunT, typename A1> inline
-Eq_mf_r1<L, Obj, MemFunT, A1> eq_mf(lref<L> l, lref<Obj>& obj_, MemFunT mf, const A1& a1_) {
-    return Eq_mf_r1<L, Obj, MemFunT, A1>(l, obj_, mf, a1_);
+template<typename L, typename R, typename P1, typename Obj, typename A1> inline
+Eq_mf_r1<L,Obj,R(Obj::*)(P1),A1> 
+eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1), const A1& a1_) {
+    return Eq_mf_r1<L,Obj,R(Obj::*)(P1),A1>(l,obj_,mf,a1_);
 }
 
-template<typename L, typename Obj, typename MemFunT, typename A1, typename A2> inline
-Eq_mf_r2<L, Obj, MemFunT, A1, A2> eq_mf(lref<L> l, lref<Obj>& obj_, MemFunT mf, const A1& a1_, const A2& a2_) {
-    return Eq_mf_r2<L, Obj, MemFunT, A1, A2>(l, obj_, mf, a1_, a2_);
+template<typename L, typename R, typename P1, typename P2, typename Obj, typename A1, typename A2> inline
+Eq_mf_r2<L,Obj,R(Obj::*)(P1,P2),A1,A2> 
+eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2), const A1& a1_, const A2& a2_) {
+    return Eq_mf_r2<L,Obj,R(Obj::*)(P1,P2),A1,A2>(l,obj_,mf,a1_,a2_);
 }
 
-template<typename L, typename Obj, typename MemFunT, typename A1, typename A2, typename A3> inline
-Eq_mf_r3<L, Obj, MemFunT, A1, A2, A3> eq_mf(lref<L> l, lref<Obj>& obj_, MemFunT mf, const A1& a1_, const A2& a2_, const A3& a3_) {
-    return Eq_mf_r3<L, Obj, MemFunT, A1, A2, A3>(l, obj_, mf, a1_, a2_, a3_);
+template<typename L, typename R, typename P1, typename P2, typename P3, typename Obj, typename A1, typename A2, typename A3> inline
+Eq_mf_r3<L,Obj,R(Obj::*)(P1,P2,P3),A1,A2,A3> 
+eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3), const A1& a1_, const A2& a2_, const A3& a3_) {
+    return Eq_mf_r3<L,Obj,R(Obj::*)(P1,P2,P3),A1,A2,A3>(l,obj_,mf,a1_,a2_,a3_);
 }
 
-template<typename L, typename Obj, typename MemFunT, typename A1, typename A2, typename A3, typename A4> inline
-Eq_mf_r4<L, Obj, MemFunT, A1, A2, A3, A4> eq_mf(lref<L> l, lref<Obj>& obj_, MemFunT mf, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
-    return Eq_mf_r4<L, Obj, MemFunT, A1, A2, A3, A4>(l, obj_, mf, a1_, a2_, a3_, a4_);
+template<typename L, typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename A1, typename A2, typename A3, typename A4> inline
+Eq_mf_r4<L,Obj,R(Obj::*)(P1,P2,P3,P4),A1,A2,A3,A4> 
+eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
+    return Eq_mf_r4<L,Obj,R(Obj::*)(P1,P2,P3,P4),A1,A2,A3,A4>(l,obj_,mf,a1_,a2_,a3_,a4_);
 }
 
-template<typename L, typename Obj, typename MemFunT, typename A1, typename A2, typename A3, typename A4, typename A5> inline
-Eq_mf_r5<L, Obj, MemFunT, A1, A2, A3, A4, A5> eq_mf(lref<L> l, lref<Obj>& obj_, MemFunT mf, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
-    return Eq_mf_r5<L, Obj, MemFunT, A1, A2, A3, A4, A5>(l, obj_, mf, a1_, a2_, a3_, a4_, a5_);
+template<typename L, typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+Eq_mf_r5<L,Obj,R(Obj::*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5> 
+eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
+    return Eq_mf_r5<L,Obj,R(Obj::*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5>(l,obj_,mf,a1_,a2_,a3_,a4_,a5_);
 }
 
-template<typename L, typename Obj, typename MemFunT, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
-Eq_mf_r6<L, Obj, MemFunT, A1, A2, A3, A4, A5, A6> eq_mf(lref<L> l, lref<Obj>& obj_, MemFunT mf, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
-    return Eq_mf_r6<L, Obj, MemFunT, A1, A2, A3, A4, A5, A6>(l, obj_, mf, a1_, a2_, a3_, a4_, a5_, a6_);
+template<typename L, typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+Eq_mf_r6<L,Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6> 
+eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
+    return Eq_mf_r6<L,Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6>(l,obj_,mf,a1_,a2_,a3_,a4_,a5_,a6_);
 }
+
+// overloads for const member functions
+template<typename L, typename R, typename Obj> inline
+Eq_mf_r0<L,Obj,R(Obj::*)(void) const> 
+eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::*mf)(void) const) {
+    return Eq_mf_r0<L,Obj,R(Obj::*)(void) const>(l,obj_,mf);
+}
+
+template<typename L, typename R, typename P1, typename Obj, typename A1> inline
+Eq_mf_r1<L,Obj,R(Obj::*)(P1) const,A1> 
+eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1) const, const A1& a1_) {
+    return Eq_mf_r1<L,Obj,R(Obj::*)(P1) const,A1>(l,obj_,mf,a1_);
+}
+
+template<typename L, typename R, typename P1, typename P2, typename Obj, typename A1, typename A2> inline
+Eq_mf_r2<L,Obj,R(Obj::*)(P1,P2) const,A1,A2> 
+eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2) const, const A1& a1_, const A2& a2_) {
+    return Eq_mf_r2<L,Obj,R(Obj::*)(P1,P2) const,A1,A2>(l,obj_,mf,a1_,a2_);
+}
+
+template<typename L, typename R, typename P1, typename P2, typename P3, typename Obj, typename A1, typename A2, typename A3> inline
+Eq_mf_r3<L,Obj,R(Obj::*)(P1,P2,P3) const,A1,A2,A3> 
+eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3) const, const A1& a1_, const A2& a2_, const A3& a3_) {
+    return Eq_mf_r3<L,Obj,R(Obj::*)(P1,P2,P3) const,A1,A2,A3>(l,obj_,mf,a1_,a2_,a3_);
+}
+
+template<typename L, typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename A1, typename A2, typename A3, typename A4> inline
+Eq_mf_r4<L,Obj,R(Obj::*)(P1,P2,P3,P4) const,A1,A2,A3,A4> 
+eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
+    return Eq_mf_r4<L,Obj,R(Obj::*)(P1,P2,P3,P4) const,A1,A2,A3,A4>(l,obj_,mf,a1_,a2_,a3_,a4_);
+}
+
+template<typename L, typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+Eq_mf_r5<L,Obj,R(Obj::*)(P1,P2,P3,P4,P5) const,A1,A2,A3,A4,A5> 
+eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
+    return Eq_mf_r5<L,Obj,R(Obj::*)(P1,P2,P3,P4,P5) const,A1,A2,A3,A4,A5>(l,obj_,mf,a1_,a2_,a3_,a4_,a5_);
+}
+
+template<typename L, typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+Eq_mf_r6<L,Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,A1,A2,A3,A4,A5,A6> 
+eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
+    return Eq_mf_r6<L,Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,A1,A2,A3,A4,A5,A6>(l,obj_,mf,a1_,a2_,a3_,a4_,a5_,a6_);
+}
+
+//----------------------------------------------------------------
+// eq_mem : Unify with a member variable
+//----------------------------------------------------------------
+
+template<typename L, typename Obj, typename MemberT>
+class Eq_mem_r : public Coroutine {
+    lref<L> l;
+	lref<Obj> obj_;
+	MemberT Obj::*  mem;
+public:
+    Eq_mem_r(const lref<L>& l, const lref<Obj>& obj_, MemberT Obj::* mem) : l(l), obj_(obj_), mem(mem)
+	{ }
+
+    bool operator() (void) {
+		co_begin();
+        if(l.defined())
+			co_return( *l== (*obj_).*mem );
+        l= (*obj_).*mem;
+		co_yield(true);
+		l.reset();
+		co_end();
+	}
+};
+
+
+template<typename L, typename Obj, typename MemberT> inline
+Eq_mem_r<L, Obj, MemberT> eq_mem(lref<L> l, lref<Obj>& obj_, MemberT Obj::* mem) {
+    return Eq_mem_r<L, Obj, MemberT>(l, obj_, mem);
+}
+
 
 } // namespace castor
 
