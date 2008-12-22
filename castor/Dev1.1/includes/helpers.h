@@ -85,5 +85,51 @@ struct NonRefType <T&> {
     typedef T result_type;
 };
 
+
+
+//-------- compute return type of functions or function object ----------------
+
+template<typename FuncT>
+struct return_type {
+	typedef typename FuncT::result_type result_type;
+};
+
+
+template<typename T>
+struct return_type<T(*)(void)> {
+    typedef T result_type;
+};
+
+template<typename T, typename A1>
+struct return_type<T(*)(A1)> {
+    typedef T result_type;
+};
+
+template<typename T, typename A1, typename A2>
+struct return_type<T(*)(A1,A2)> {
+    typedef T result_type;
+};
+
+template<typename T, typename A1, typename A2, typename A3>
+struct return_type<T(*)(A1,A2,A3)> {
+    typedef T result_type;
+};
+
+template<typename T, typename A1, typename A2, typename A3, typename A4>
+struct return_type<T(*)(A1,A2,A3,A4)> {
+    typedef T result_type;
+};
+
+template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5>
+struct return_type<T(*)(A1,A2,A3,A4,A5)> {
+    typedef T result_type;
+};
+
+template<typename T, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
+struct return_type<T(*)(A1,A2,A3,A4,A5,A6)> {
+    typedef T result_type;
+};
+
+
 } } // namespace castor::detail
 #endif
