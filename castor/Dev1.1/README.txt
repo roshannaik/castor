@@ -67,7 +67,7 @@ Microsoft C++ (on Windows)
   To Run    :   test_castor.exe
 
 
-Borland C++ (on Windows)
+CodeGear C++ Builder (on Windows)
 --------------------------------------
   To compile:   bcc32 -I..\ test_castor.cpp
   To Run    :   test_castor.exe
