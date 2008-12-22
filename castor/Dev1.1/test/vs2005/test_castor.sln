@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_castor", "test_castor.vcproj", "{AAFDF993-F692-4765-B673-02F4753A25C1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "trialPrj", "..\..\..\..\..\..\Desktop\UPDATED\castor vs2005\trialPrj\trialPrj.vcproj", "{5B1C6871-DAD1-4E18-A2F4-F4451E791797}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AAFDF993-F692-4765-B673-02F4753A25C1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AAFDF993-F692-4765-B673-02F4753A25C1}.Debug|Win32.Build.0 = Debug|Win32
+		{AAFDF993-F692-4765-B673-02F4753A25C1}.Release|Win32.ActiveCfg = Release|Win32
+		{AAFDF993-F692-4765-B673-02F4753A25C1}.Release|Win32.Build.0 = Release|Win32
+		{5B1C6871-DAD1-4E18-A2F4-F4451E791797}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5B1C6871-DAD1-4E18-A2F4-F4451E791797}.Debug|Win32.Build.0 = Debug|Win32
+		{5B1C6871-DAD1-4E18-A2F4-F4451E791797}.Release|Win32.ActiveCfg = Release|Win32
+		{5B1C6871-DAD1-4E18-A2F4-F4451E791797}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
