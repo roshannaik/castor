@@ -88,6 +88,7 @@ public:
     }
 };
 
+#ifdef CASTOR_ENABLE_DEPRECATED
 //---------------------------------------------------------------
 //    ** DEPRECATED ** 
 // OneSolutionRelation : Helper for creating custom relations that
@@ -118,7 +119,7 @@ public:
         }
     }
 };
-
+#endif
 
 //---------------------------------------------------------------
 //    False Relation : Always generates 'false'
@@ -139,7 +140,7 @@ struct False {
 struct True : public Coroutine {
     bool operator ()(void) {
         co_begin();
-        co_return(true);
+        co_yield(true);
         co_end();
     }
 };
