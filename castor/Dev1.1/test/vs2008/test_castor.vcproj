@@ -316,7 +316,20 @@
 		</Filter>
 		<Filter
 			Name="Docs"
+			ParseFiles="false"
 			>
+			<File
+				RelativePath="..\..\docs\CastorDesign.doc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\docs\CastorReference.doc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\docs\CastorTutorial.doc"
+				>
+			</File>
 			<File
 				RelativePath="..\..\LICENSE.txt"
 				>
