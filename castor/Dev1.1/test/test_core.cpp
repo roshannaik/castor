@@ -9,17 +9,86 @@ using namespace castor;
 //--------------------------------------------------------
 //  Tests  : basic lref test for compilation errors
 //--------------------------------------------------------
+struct Base{
+	//virtual void p() { cout << "Base\n"; }
+	virtual ~Base() { }
+};
+struct Derived : public Base {
+	//virtual void p() { cout << "Derived\n"; }
+	virtual ~Derived() { }
+};
+
+struct A {
+	static int i;
+	A(){ ++i; }
+	A(const A&) { ++i; }
+	~A(){ --i; }
+};
+
+int A::i=0;
 
 void test_lref() {
-    lref<string> r2 = "123";
+	{
+	lref<string> r2 = "123";
     // these only check for compiler errors
-   lref<string> rs; lref<const char*> rc = "world";
-   rs = "hello";
-   if(*rs!="hello")
-       throw "failed test_lref 1";
-   rs = rc;
-   if(*rs!="world")
-       throw "failed test_lref 1";
+	lref<string> rs; lref<const char*> rc = "world";
+	rs = "hello";
+	if(*rs!="hello")
+		throw "failed test_lref 1";
+	rs = rc;
+	if(*rs!="world")
+		throw "failed test_lref 1";
+	}
+	{ // Derived type assignment -- compiler error check
+		lref<Base> b(new Base(), true); 
+		b.set_ptr( new Base(), true);
+	}
+
+	//  -- pointer stuff --
+	{  // basic initialization
+		{
+		A::i=0;
+		lref<A> r(new A(),true);
+		if(A::i!=1)
+			throw "failed test_lref 2";
+		}
+		if(A::i!=0)
+			throw "failed test_lref 2";
+		
+		A* pa = new A();
+		{
+		lref<A> r(pa,false);
+		if(A::i!=1)
+			throw "failed test_lref 2";
+		}
+		if(A::i!=1)
+			throw "failed test_lref 2";
+		delete pa;
+	}
+	{  // basic assignment
+		A::i=0;
+		{
+		lref<A> r; r.set_ptr(new A(),true);
+		if(A::i!=1)
+			throw "failed test_lref 3";
+		}
+		if(A::i!=0)
+			throw "failed test_lref 3";
+		{
+		lref<A> r; r.set_ptr(new A(),false);
+		if(A::i!=1)
+			throw "failed test_lref 3";
+		}
+		if(A::i!=1)
+			throw "failed test_lref 3";
+	}
+	{  // init and assignment
+	A::i=0;
+	lref<A> r(new A(),true);
+	r.set_ptr(new A(), true);
+	if(A::i!=1)
+		throw "failed test_lref 4";
+	}
 }
 
 

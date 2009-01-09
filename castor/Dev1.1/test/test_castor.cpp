@@ -26,13 +26,11 @@
 using namespace std;
 using namespace castor;
 
+
 void runtests();
 
-
-int main()
+int main() 
 {
-   
-  //bar();
   clock_t start = clock();
   runtests();
   cout << "\nTime taken " << (clock() - start) << "\n\n Testing Complete! ";
@@ -567,7 +565,7 @@ void runtests() {
      run_test( test_merge );
      // run_test( test_merge_withcuts );
 
-    // next
+    // prev & next
     run_test( test_next );
     run_test( test_prev );
 
@@ -578,11 +576,13 @@ void runtests() {
     run_test( test_tail_list );
     run_test( test_head_tail );
     run_test( test_head_n_tail );
-
-    run_test( test_insert );
-    
+	
+	// inc/dec
     run_test( test_inc_dec );
-    run_test( test_insert_seq );
+
+	// insert
+    run_test( test_insert );
+    run_test( test_insert_seq );    
 
     //sequence()
     run_test( test_sequence );

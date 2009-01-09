@@ -4,6 +4,8 @@ Whats new in Castor 1.1
 - Class Coroutine and macros co_begin, co_end, co_return & co_yield that support coroutine style programming
 - I/O relations writeAll and writeAllTo to write collections and iterators bound sequences to console or ostreams.
     : Must ensure the stream exists when evaluation occurs.
+- lref now can made to reference existing objects via pointers. A new constructor lref(T*,bool) and a 
+     method set_ptr(T*,bool) added to support this. bool parameter specifies if object's lifetime should be managed.
 
 
 Bug fixes:
@@ -16,7 +18,7 @@ Bug fixes:
 
 todo
 ------------
-tabling support
+Tabling support
 CutAnd needs to support for readonly relations
-look into perfect forwardign issues with create
+Look into perfect forwarding issues with create
 ? readAll and readAllFrom

@@ -15,7 +15,7 @@ namespace castor {
 
 // Note:  lref::operator=(), lref.reset() will more or less always be called on lref objects whose reference count>=2. 
 // So calling release() in reset will rarely ever invoke 'delete refPtr'. So inefficiency of disposing
-// and creating a new RefCountedPtr between repeated invovations of reset() and set() is not a significant issue is most cases.
+// and creating a new RefCountedPtr between repeated invocations of reset() and set() is not a significant issue is most cases.
 // At the same time for safety reasons we do check lref counts and delete refPtr if needed, for those rare
 // cases where user just tries to call set() and reset() on a lref object having reference count=1
 
@@ -23,21 +23,30 @@ namespace castor {
 template <typename T>
 class lref {
     ::castor::detail::RefCountedPtr<T>* const refPtr;
+	
 public:
   typedef T result_type;
 
+  //------ Constructors and Destructor
   lref() : refPtr(new ::castor::detail::RefCountedPtr<T>)
   { }
 
   lref(const T& value) : refPtr(new ::castor::detail::RefCountedPtr<T>(value))  
   { }
 
-  lref(const lref<T>& rhs) : refPtr( incrementedRef(rhs.refPtr) )
-  { }
-
   // concept : T provides T::T(const T2&)
   template<typename T2>
   lref(const T2& value) : refPtr(new ::castor::detail::RefCountedPtr<T>(value))
+  { }
+
+  lref(const lref<T>& rhs) : refPtr( incrementedRef(rhs.refPtr) )
+  { }
+
+private:
+	template<typename T2> lref(const lref<T2>& rhs);
+
+public:
+  lref(T* ptr, bool manage) : refPtr(new ::castor::detail::RefCountedPtr<T>(ptr,manage)) 
   { }
 
   ~lref() {
@@ -66,6 +75,11 @@ public:
   lref& operator=(const lref<T2>& rhs) {
       refPtr->set(*rhs);
       return *this;
+  }
+
+  template<typename T2>
+  void set_ptr(T2* ptr, bool manage) {
+	  refPtr->set_ptr(ptr, manage);	
   }
 
   //------ Checked access
