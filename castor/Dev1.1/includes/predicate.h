@@ -15,107 +15,92 @@ namespace castor {
 // predicate : Adaptor relation for treating predicate functions as relations
 //----------------------------------------------------------------------------
 template<typename Pred>
-struct Predicate0_r : public Coroutine {
+struct Predicate0_r : public TestOnlyRelation<Predicate0_r<Pred> > {
 	Pred pred;
 
 	Predicate0_r (const Pred& pred) : pred(pred)
 	{ }
 
-	bool operator()(void) {
-        co_begin();
-		co_return(pred());
-        co_end();
+	bool apply() {
+		return pred();
 	}
 };
 
 template<typename Pred, typename A1>
-struct Predicate1_r : public Coroutine {
+struct Predicate1_r : public TestOnlyRelation<Predicate1_r<Pred,A1> > {
 	Pred pred;
 	A1 a1;
-
 	Predicate1_r (const Pred& pred, const A1& a1) : pred(pred), a1(a1)
 	{ }
 
-	bool operator()(void) {
-        co_begin();
-	    co_return( pred(effective_value(a1)) );
-        co_end();
-	}
+	bool apply() {
+	    return pred(effective_value(a1));
+	}	
 };
 
 template<typename Pred, typename A1, typename A2>
-struct Predicate2_r : public Coroutine {
+struct Predicate2_r : public TestOnlyRelation<Predicate2_r<Pred,A1,A2> > {
 	Pred pred;
 	A1 a1;	A2 a2;
 
 	Predicate2_r (const Pred& pred, const A1& a1, const A2& a2) : pred(pred), a1(a1), a2(a2)
 	{ }
 
-	bool operator()(void) {
-        co_begin();
-	    co_return( pred(effective_value(a1),effective_value(a2)) );
-        co_end();
+	bool apply() {
+	    return pred(effective_value(a1),effective_value(a2));
 	}
 };
 
 template<typename Pred, typename A1, typename A2, typename A3>
-struct Predicate3_r : public Coroutine {
+struct Predicate3_r : public TestOnlyRelation<Predicate3_r<Pred,A1,A2,A3> > {
 	Pred pred;
 	A1 a1;	A2 a2;	A3 a3;
 
 	Predicate3_r (const Pred& pred, const A1& a1, const A2& a2, const A3& a3) : pred(pred), a1(a1), a2(a2), a3(a3)
 	{ }
 
-	bool operator()(void) {
-        co_begin();
-	    co_return( pred(effective_value(a1),effective_value(a2),effective_value(a3)) );
-        co_end();
+	bool apply() {
+	    return pred(effective_value(a1),effective_value(a2),effective_value(a3));
 	}
 };
 
 
 template<typename Pred, typename A1, typename A2, typename A3, typename A4>
-struct Predicate4_r : public Coroutine {
+struct Predicate4_r : public TestOnlyRelation<Predicate4_r<Pred,A1,A2,A3,A4> > {
 	Pred pred;
 	A1 a1;	A2 a2;	A3 a3;	A4 a4;
 
 	Predicate4_r (const Pred& pred, const A1& a1, const A2& a2, const A3& a3, const A4& a4) : pred(pred), a1(a1), a2(a2), a3(a3), a4(a4)
 	{ }
 
-	bool operator()(void) {
-        co_begin();
-	    co_return( pred(effective_value(a1),effective_value(a2),effective_value(a3),effective_value(a4)) );
-        co_end();
+	bool apply() {
+	    return pred(effective_value(a1),effective_value(a2),effective_value(a3),effective_value(a4));
 	}
 };
 
 template<typename Pred, typename A1, typename A2, typename A3, typename A4, typename A5>
-struct Predicate5_r : public Coroutine {
+struct Predicate5_r : public TestOnlyRelation<Predicate5_r<Pred,A1,A2,A3,A4,A5> > {
 	Pred pred;
 	A1 a1;	A2 a2;	A3 a3;	A4 a4;	A5 a5;
 
 	Predicate5_r (const Pred& pred, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5) : pred(pred), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5)
 	{ }
 
-	bool operator()(void) {
-        co_begin();
-	    co_return( pred(effective_value(a1),effective_value(a2),effective_value(a3),effective_value(a4),effective_value(a5)) );
-        co_end();
+	bool apply() {
+	    return pred(effective_value(a1),effective_value(a2),effective_value(a3),effective_value(a4),effective_value(a5));
 	}
 };
 
 template<typename Pred, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
-struct Predicate6_r : public Coroutine {
+struct Predicate6_r : public TestOnlyRelation<Predicate6_r<Pred,A1,A2,A3,A4,A5,A6> > {
 	Pred pred;
 	A1 a1;	A2 a2;	A3 a3;	A4 a4;	A5 a5;  A6 a6;
 
 	Predicate6_r (const Pred& pred, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6) : pred(pred), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5), a6(6)
 	{ }
 
-	bool operator()(void) {
-        co_begin();
-	    co_return( pred(effective_value(a1),effective_value(a2),effective_value(a3),effective_value(a4),effective_value(a5),effective_value(a6)) );
-        co_end();
+	bool apply() {
+	    return pred(effective_value(a1),effective_value(a2),effective_value(a3),effective_value(a4),effective_value(a5),effective_value(a6));
 	}
 };
 
@@ -204,22 +189,20 @@ predicate(R(* pred)(P1,P2,P3,P4,P5,P6), const A1& a1_, const A2& a2_, const A3& 
 // predicate_mf : Adaptor relation for treating predicate methods as relations
 //----------------------------------------------------------------------------
 template<typename Obj, typename MemPred>
-class MemPredicate0_r : public Coroutine {
+class MemPredicate0_r : public TestOnlyRelation<MemPredicate0_r<Obj,MemPred> > {
     lref<Obj> obj_;
 	MemPred pred;
 public:
 	MemPredicate0_r (lref<Obj> obj_, MemPred pred) : obj_(obj_), pred(pred)
 	{ }
 
-	bool operator()(void) {
-        co_begin();
-		co_return( ((*obj_).*pred)() );
-        co_end();
+	bool apply() {
+		return ((*obj_).*pred)();
 	}
 };
 
 template<typename Obj, typename MemPred, typename A1>
-class MemPredicate1_r : public Coroutine {
+class MemPredicate1_r : public TestOnlyRelation<MemPredicate1_r<Obj,MemPred,A1> > {
     lref<Obj> obj_;
 	MemPred pred;
 	A1 arg1;
@@ -227,15 +210,13 @@ public:
 	MemPredicate1_r (lref<Obj> obj_, MemPred pred, const A1& arg1) : obj_(obj_), pred(pred), arg1(arg1)
 	{ }
 
-	bool operator()(void) {
-        co_begin();
-		co_return( ((*obj_).*pred)(effective_value(arg1)) );
-        co_end();
+	bool apply() {
+		return ((*obj_).*pred)(effective_value(arg1));
 	}
 };
 
 template<typename Obj, typename MemPred, typename A1, typename A2>
-class MemPredicate2_r : public Coroutine {
+class MemPredicate2_r : public TestOnlyRelation<MemPredicate2_r<Obj,MemPred,A1,A2> > {
     lref<Obj> obj_;
 	MemPred pred;
 	A1 arg1; A2 arg2;
@@ -243,15 +224,13 @@ public:
 	MemPredicate2_r (lref<Obj> obj_, MemPred pred, const A1& arg1, const A2& arg2) : obj_(obj_), pred(pred), arg1(arg1), arg2(arg2)
 	{ }
 
-	bool operator()(void) {
-        co_begin();
-		co_return( ((*obj_).*pred)( effective_value(arg1), effective_value(arg2) ) );
-        co_end();
+	bool apply() {
+		return  ((*obj_).*pred)( effective_value(arg1), effective_value(arg2) );
 	}
 };
 
 template<typename Obj, typename MemPred, typename A1, typename A2, typename A3>
-class MemPredicate3_r : public Coroutine {
+class MemPredicate3_r : public TestOnlyRelation<MemPredicate3_r<Obj,MemPred,A1,A2,A3> > {
     lref<Obj> obj_;
 	MemPred pred;
 	A1 arg1; A2 arg2; A3 arg3;
@@ -259,15 +238,13 @@ public:
 	MemPredicate3_r (lref<Obj> obj_, MemPred pred, const A1& arg1, const A2& arg2, const A2& arg3) : obj_(obj_), pred(pred), arg1(arg1), arg2(arg2), arg3(arg3)
 	{ }
 
-	bool operator()(void) {
-        co_begin();
-		co_return( ((*obj_).*pred)(effective_value(arg1), effective_value(arg2), effective_value(arg3)) );
-        co_end();
+	bool apply() {
+		return  ((*obj_).*pred)(effective_value(arg1), effective_value(arg2), effective_value(arg3));
 	}
 };
 
 template<typename Obj, typename MemPred, typename A1, typename A2, typename A3, typename A4>
-class MemPredicate4_r : public Coroutine {
+class MemPredicate4_r : public TestOnlyRelation<MemPredicate4_r<Obj,MemPred,A1,A2,A3,A4> > {
 	lref<Obj> obj_;
 	MemPred pred;
 	A1 arg1; A2 arg2; A3 arg3; A4 arg4;
@@ -275,15 +252,13 @@ public:
 	MemPredicate4_r (lref<Obj> obj_, MemPred pred, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4) :obj_(obj_), pred(pred), arg1(arg1), arg2(arg2), arg3(arg3), arg4(arg4)
 	{ }
 
-	bool operator()(void) {
-        co_begin();
-		co_return( ((*obj_).*pred)(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4) ) );
-        co_end();
+	bool apply() {
+		return  ((*obj_).*pred)(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4) );
 	}
 };
 
 template<typename Obj, typename MemPred, typename A1, typename A2, typename A3, typename A4, typename A5>
-class MemPredicate5_r : public Coroutine {
+class MemPredicate5_r : public TestOnlyRelation<MemPredicate5_r<Obj,MemPred,A1,A2,A3,A4,A5> > {
     lref<Obj> obj_;
 	MemPred pred;
 	A1 arg1; A2 arg2; A3 arg3; A4 arg4; A5 arg5;
@@ -291,15 +266,13 @@ public:
 	MemPredicate5_r (lref<Obj> obj_, MemPred pred, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, const A5& arg5) : obj_(obj_), pred(pred), arg1(arg1), arg2(arg2), arg3(arg3), arg4(arg4), arg5(arg5)
 	{ }
 
-	bool operator()(void) {
-        co_begin();
-		co_return( ((*obj_).*pred)(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4), effective_value(arg5) ) );
-        co_end();
+	bool apply() {
+		return ((*obj_).*pred)(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4), effective_value(arg5) );
 	}
 };
 
 template<typename Obj, typename MemPred, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
-class MemPredicate6_r : public Coroutine {
+class MemPredicate6_r : public TestOnlyRelation<MemPredicate6_r<Obj,MemPred,A1,A2,A3,A4,A5,A6> > {
     lref<Obj> obj_;
 	MemPred pred;
 	A1 arg1; A2 arg2; A3 arg3; A4 arg4; A5 arg5; A6 arg6;
@@ -307,10 +280,8 @@ public:
 	MemPredicate6_r (const lref<Obj>& obj_, MemPred pred, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, const A5& arg5, const A6& arg6) : obj_(obj_), pred(pred), arg1(arg1), arg2(arg2), arg3(arg3), arg4(arg4), arg5(arg5), arg6(arg6)
 	{ }
 
-	bool operator()(void) {
-        co_begin();
-		co_return( ((*obj_).*pred)(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4), effective_value(arg5), effective_value(arg6)) );
-        co_end();
+	bool apply() {
+		return  ((*obj_).*pred)(effective_value(arg1), effective_value(arg2), effective_value(arg3), effective_value(arg4), effective_value(arg5), effective_value(arg6));
 	}
 };
 
@@ -413,17 +384,15 @@ predicate_mf(lref<Obj>& obj_, R(Obj::* mempred)(P1,P2,P3,P4,P5,P6) const, const 
 //----------------------------------------------------------------
 
 template<typename Obj, typename MemberT>
-class Predicate_mem_r : public Coroutine {
+class Predicate_mem_r : public TestOnlyRelation<Predicate_mem_r<Obj,MemberT> > {
 	lref<Obj> obj_;
 	MemberT Obj::*  mem;
 public:
 	Predicate_mem_r(const lref<Obj>& obj_, MemberT Obj::* mem) : obj_(obj_), mem(mem)
 	{ }
 
-	bool operator() (void) {
-		co_begin();
-		co_yield((*obj_).*mem);
-		co_end();
+	bool apply() {
+		return (*obj_).*mem;
 	}
 };
 
