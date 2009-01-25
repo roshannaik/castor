@@ -1,24 +1,31 @@
-Whats new in Castor 1.1
+Whats new in Castor 1.1 
 
 - OneSolution relation is now deprecated. use Coroutine
 - Class Coroutine and macros co_begin, co_end, co_return & co_yield that support coroutine style programming
 - I/O relations writeAll and writeAllTo to write collections and iterators bound sequences to console or ostreams.
     : Must ensure the stream exists when evaluation occurs.
-- lref now can made to reference existing objects via pointers. A new constructor lref(T*,bool) and a 
+- Now lref can be made to reference existing objects via pointers. A new constructor lref(T*,bool) and a 
      method set_ptr(T*,bool) added to support this. bool parameter specifies if object's lifetime should be managed.
+- Fast && operator : Added overload for && which significantly improves performance when working with certain kind of relations.
+- Relations supporting Fast && : False, Boolean, predicate, predicate_mf, predicate_mem, defined, undefined,  negate
 
 
 Bug fixes:
 - head_n and tail_n now fails instead of throwing exception if n>seq_.size()
 - UnifyL  ... had a const member relation preventing copy construction
 - Data member Read_r<T>::in is now a pointer instead of a reference to allow assignment of Read_r.
-- Added #include of cstring.h in eq.h  (Thanks to David Côme)
+- Added #include<cstring.h> in eq.h  (Thanks to David Côme)
+- Added #include<algorithm> in refcountedptr.h
 
 
 
 todo
 ------------
-Tabling support
-CutAnd needs to support for readonly relations
-Look into perfect forwarding issues with create
-? readAll and readAllFrom
+- Consider removing member typedef UseFastAnd and just rely on method reset()
+?- Considering adding fast && support to relation empty  - (but one of its overloads may not qualify)
+- Specialization for Error relation for char*
+
+- Tabling support
+- CutAnd needs support for fast && 
+- Look into perfect forwarding issues with create
+?- relations readAll and readAllFrom
