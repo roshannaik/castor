@@ -1,5 +1,5 @@
 // Castor : Logic Programming Library for C++
-// Copyright © 2007 Roshan Naik (naikrosh@gmail.com)
+// Copyright ï¿½ 2007 Roshan Naik (naikrosh@gmail.com)
 
 #if !defined CASTOR_IO_H
 #define CASTOR_IO_H 1
@@ -51,7 +51,7 @@ public:
     { }
     
     bool apply(void) {
-      effective_type<Itr>::result_type f = effective_value(beg_), e = effective_value(end_), i;
+      typename effective_type<Itr>::result_type f = effective_value(beg_), e = effective_value(end_), i;
       for( i=f; i!=e; ++i ) {
         if( i!=f )
             *out << sep;
