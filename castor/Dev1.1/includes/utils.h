@@ -1,5 +1,5 @@
 // Castor : Logic Programming Library for C++
-// Copyright © 2007 Roshan Naik (naikrosh@gmail.com)
+// Copyright ï¿½ 2007 Roshan Naik (naikrosh@gmail.com)
 
 #if !defined CASTOR_UTILS_H
 #define CASTOR_UTILS_H 1
@@ -258,12 +258,12 @@ class UniqueMem_r : public Coroutine {
 	MemberT Obj::* mem;
     lref<std::set<MemberT> > items;
 public:
-	UniqueMem_r(const lref<Obj>& obj_, MemberT Obj::* mem) : obj_(obj_), mem(mem), items(std::set<item_type>())
+	UniqueMem_r(const lref<Obj>& obj_, MemberT Obj::* mem) : obj_(obj_), mem(mem), items(std::set<MemberT>())
 	{ }
 
     bool operator() (void) {
 		co_begin();
-        co_yield( items->insert(func()).second );		
+        co_yield( items->insert((*obj_).*mem).second );
 		co_end();
 	}
 };
@@ -274,12 +274,13 @@ UniqueMem_r<Obj, MemberT> unique_mem(lref<Obj>& obj_, MemberT Obj::* mem) {
 }
 
 
-template<typename Obj, typename MemFunc>
+template<typename R, typename Obj>
 class UniqueMf_r : Coroutine {
     lref<Obj> obj_;
-	MemFunc mf;
+    R(Obj::* mf) (void);
+    lref<std::set<R> > items;
 public:
-    UniqueMf_r(lref<Obj> obj_, MemFunc mf) :obj_(obj_), mf(mf)
+    UniqueMf_r(lref<Obj> obj_, R(Obj::* mf) (void)) :obj_(obj_), mf(mf)
     { }
 
     bool operator()(void) {
@@ -291,9 +292,9 @@ public:
 
 // Overloads for non-const member functions
 template<typename R, typename Obj> inline
-UniqueMf_r<Obj,R(Obj::*)(void)> 
+UniqueMf_r<R,Obj>
 unique_mf(lref<Obj>& obj_, R(Obj::*mf)(void) ) {
-    return UniqueMf_r<Obj,R(Obj::*)(void)>(obj_,mf);
+    return UniqueMf_r<R,Obj>(obj_,mf);
 }
 
 //-------------------------------------------------------------------------
