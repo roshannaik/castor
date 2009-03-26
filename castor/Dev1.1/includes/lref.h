@@ -67,13 +67,19 @@ public:
 
   // copies the value contained in rhs
   lref& operator=(const lref& rhs) {
-      refPtr->set(*rhs);
+	  if(rhs.defined())
+		  refPtr->set(*rhs);
+	  else
+		  reset();
       return *this;
   }
 
   template<typename T2>
   lref& operator=(const lref<T2>& rhs) {
-      refPtr->set(*rhs);
+	  if(rhs.defined())
+		  refPtr->set(*rhs);
+	  else
+		  reset();
       return *this;
   }
 
