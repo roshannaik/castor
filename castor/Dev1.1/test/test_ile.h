@@ -11,5 +11,6 @@ void test_Create_with();
 void test_create();
 void test_get();
 void test_call();
+void test_mcall();
 
 #endif

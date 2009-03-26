@@ -250,7 +250,7 @@ void test_get() {
         throw "failed test_get 1";
     }
 }
-
+namespace {
 void blah(void)                     { }
 int foo(void)                       { return 0; }
 int foo(int)                        { return 1; }
@@ -260,6 +260,18 @@ int foo(int,int,int,int)            { return 4; }
 int foo(int,int,int,int,int)        { return 5; }
 int foo(int,int,int,int,int,int)    { return 6; }
 int foo(string)                     { return -1; }
+
+struct Func {
+	typedef int result_type ;
+	int operator()(int i) const {
+		return i;
+	}
+	int operator()(int i) {
+		return i+1;
+	}
+};
+
+}
 
 
 void test_call() {
@@ -311,4 +323,62 @@ void test_call() {
     if( ! eq(6,call(My(),1,2,3,4,5,6)())() )
         throw "failed test_call 2";
     }
+	{
+	const Func cf;
+	if(call(cf,4)() != 4)
+        throw "failed test_call 3";
+	Func f;
+	if(call(f,4)() != 5)
+        throw "failed test_call 3";
+	}
 }
+
+namespace {
+struct Obj {
+    typedef int result_type;
+    int method0 (void)                    { return  0; }
+    int method1 (int)                     { return  1; }
+    int method (string)                   { return -1; }
+    int method (int,int)                  { return  2; }
+    int method (int,int,int)              { return  3; }
+    int method (int,int,int)    const     { return -3; }
+    int method (int,int,int,int)          { return  4; }
+    int method (int,int,int,int,int)      { return  5; }
+    int method (int,int,int,int,int,int)  { return  6; }
+	int mmethod (lref<int> i)             { i=9; return  2; }
+};
+}
+
+int foo(lref<int> i) {
+	i=4;
+	return 2;
+}
+void test_mcall() {
+	{
+		lref<Obj> m = Obj();
+		if( !(mcall<int>(m,&Obj::method0) + mcall<int>(m,&Obj::method0)==0)() )
+			throw "failed test_mcall 0";
+		if( !(mcall<int,string>(m,&Obj::method,string("castor"))()==-1) )
+			throw "failed test_mcall 0";
+		if( mcall(m,&Obj::method,1,1)()!=2 )
+			throw "failed test_mcall 0";
+		if( mcall(m,&Obj::method,1,1,1)()!=3 )
+			throw "failed test_mcall 0";
+		if( mcall(m,&Obj::method,1,1,1,1)()!=4 )
+			throw "failed test_mcall 0";
+		if( mcall(m,&Obj::method,1,1,1,1,1)()!=5 )
+			throw "failed test_mcall 0";
+		if( mcall(m,&Obj::method,1,1,1,1,1,1)()!=6 )
+			throw "failed test_mcall 0";
+		// invoke const member function
+		typedef int (Obj::* CMF)(int,int,int)    const;
+		CMF cmf = &Obj::method;
+		lref<const Obj> cm = Obj();
+		if( mcall(cm,cmf,1,1,1)()!=-3 )
+			throw "failed test_mcall 0";
+		lref<int> i=0;
+		if( call(foo,i)()!=2 )
+			throw "what ?";
+	}
+}
+

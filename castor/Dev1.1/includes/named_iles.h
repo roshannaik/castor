@@ -378,37 +378,37 @@ public:
 
 // For Nullary through sestiary(6-ary) functions
 template<typename FuncT> inline
-Ile<Call_0<FuncT> > call(FuncT f) {
+Ile<Call_0<FuncT> > call(FuncT& f) {
 	return Call_0<FuncT>(f);
 }
 
 template<typename FuncT, typename A1> inline
-Ile<Call_1<FuncT,A1> > call(FuncT f, const A1& a1) {
+Ile<Call_1<FuncT,A1> > call(FuncT& f, const A1& a1) {
 	return Call_1<FuncT,A1>(f, a1);
 }
 
 template<typename FuncT, typename A1, typename A2> inline
-Ile<Call_2<FuncT,A1,A2> > call(FuncT f, const A1& a1, const A2& a2) {
+Ile<Call_2<FuncT,A1,A2> > call(FuncT& f, const A1& a1, const A2& a2) {
 	return Call_2<FuncT,A1,A2>(f,a1,a2);
 }
 
 template<typename FuncT, typename A1, typename A2, typename A3> inline
-Ile<Call_3<FuncT,A1,A2,A3> > call(FuncT f, const A1& a1, const A2& a2, const A3& a3) {
+Ile<Call_3<FuncT,A1,A2,A3> > call(FuncT& f, const A1& a1, const A2& a2, const A3& a3) {
 	return Call_3<FuncT,A1,A2,A3>(f,a1,a2,a3);
 }
 
 template<typename FuncT, typename A1, typename A2, typename A3, typename A4> inline
-Ile<Call_4<FuncT,A1,A2,A3,A4> > call(FuncT f, const A1& a1, const A2& a2, const A3& a3, const A4& a4) {
+Ile<Call_4<FuncT,A1,A2,A3,A4> > call(FuncT& f, const A1& a1, const A2& a2, const A3& a3, const A4& a4) {
 	return Call_4<FuncT,A1,A2,A3,A4>(f,a1,a2,a3,a4);
 }
 
 template<typename FuncT, typename A1, typename A2, typename A3, typename A4, typename A5> inline
-Ile<Call_5<FuncT,A1,A2,A3,A4,A5> > call(FuncT f, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5) {
+Ile<Call_5<FuncT,A1,A2,A3,A4,A5> > call(FuncT& f, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5) {
 	return Call_5<FuncT,A1,A2,A3,A4,A5>(f,a1,a2,a3,a4,a5);
 }
 
 template<typename FuncT, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
-Ile<Call_6<FuncT,A1,A2,A3,A4,A5,A6> > call(FuncT f, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6) {
+Ile<Call_6<FuncT,A1,A2,A3,A4,A5,A6> > call(FuncT& f, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6) {
 	return Call_6<FuncT,A1,A2,A3,A4,A5,A6>(f,a1,a2,a3,a4,a5,a6);
 }
 
@@ -424,30 +424,257 @@ Ile<Call_1<Ret(*)(P1),A1> > call(Ret(* f)(P1), const A1& a1) {
 	return Call_1<Ret(*)(P1),A1>(f,a1);
 }
 
-template<typename Ret, typename A1, typename A2, typename P1, typename P2> inline
+template<typename Ret, typename P1, typename P2, typename A1, typename A2> inline
 Ile<Call_2<Ret(*)(P1,P2),A1,A2> > call(Ret(* f)(P1,P2), const A1& a1, const A2& a2) {
 	return Call_2<Ret(*)(P1,P2),A1,A2>(f,a1,a2);
 }
 
-template<typename Ret, typename A1, typename A2, typename A3, typename P1, typename P2, typename P3> inline
+template<typename Ret, typename P1, typename P2, typename P3, typename A1, typename A2, typename A3> inline
 Ile<Call_3<Ret(*)(P1,P2,P3),A1,A2,A3> > call(Ret(* f)(P1,P2,P3), const A1& a1, const A2& a2, const A3& a3) {
 	return Call_3<Ret(*)(P1,P2,P3),A1,A2,A3>(f,a1,a2,a3);
 }
 
-template<typename Ret, typename A1, typename A2, typename A3, typename A4, typename P1, typename P2, typename P3, typename P4> inline
+template<typename Ret, typename P1, typename P2, typename P3, typename P4, typename A1, typename A2, typename A3, typename A4> inline
 Ile<Call_4<Ret(*)(P1,P2,P3,P4),A1,A2,A3,A4> > call(Ret(* f)(P1,P2,P3,P4), const A1& a1, const A2& a2, const A3& a3, const A4& a4) {
 	return Call_4<Ret(*)(P1,P2,P3,P4),A1,A2,A3,A4>(f,a1,a2,a3,a4);
 }
 
-template<typename Ret, typename A1, typename A2, typename A3, typename A4, typename A5, typename P1, typename P2, typename P3, typename P4, typename P5> inline
+template<typename Ret, typename P1, typename P2, typename P3, typename P4, typename P5, typename A1, typename A2, typename A3, typename A4, typename A5> inline
 Ile<Call_5<Ret(*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5> > call(Ret(* f)(P1,P2,P3,P4,P5), const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5) {
 	return Call_5<Ret(*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5>(f,a1,a2,a3,a4,a5);
 }
 
-template<typename Ret, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6> inline
+template<typename Ret, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
 Ile<Call_6<Ret(*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6> > call(Ret(* f)(P1,P2,P3,P4,P5,P6), const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6) {
 	return Call_6<Ret(*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6>(f,a1,a2,a3,a4,a5,a6);
 }
+
+
+
+
+//-------------------------------------------------
+// mcall() - invoke a method
+//-------------------------------------------------
+template<typename Obj, typename MemFunc, typename R>
+class MCall_r0 {
+    lref<Obj> obj_;
+	MemFunc mf;
+public:
+	typedef R result_type;
+    MCall_r0(lref<Obj>& obj_, MemFunc mf) :obj_(obj_), mf(mf)
+    { }
+
+    R operator()(void) {
+        return ((*obj_).*mf)();
+    }
+    R operator()(void) const {
+        return ((*obj_).*mf)();
+    }
+};
+
+template<typename Obj, typename MemFunc, typename R, typename A1>
+class MCall_r1 {
+    lref<Obj> obj_;
+	MemFunc mf;
+    A1 a1;
+public:
+	typedef R result_type;
+	MCall_r1(lref<Obj>& obj_, MemFunc mf, const A1& a1) :obj_(obj_), mf(mf), a1(a1)
+    { }
+
+    R operator()(void)  {
+        return ((*obj_).*mf)( effective_value(a1) );
+    }
+
+    R operator()(void)  const {
+        return ((*obj_).*mf)( effective_value(a1) );
+    }
+};
+
+template<typename Obj, typename MemFunc, typename R, typename A1, typename A2>
+class MCall_r2  {
+    lref<Obj> obj_;
+	MemFunc mf;
+    A1 a1; A2 a2;
+public:
+	typedef R result_type;
+    MCall_r2(lref<Obj>& obj_, MemFunc mf, const A1& a1, const A2& a2) :obj_(obj_), mf(mf), a1(a1), a2(a2)
+    { }
+
+    R operator()(void)  {
+        return ((*obj_).*mf)( effective_value(a1),effective_value(a2) );
+    }
+
+    R operator()(void)  const {
+        return ((*obj_).*mf)( effective_value(a1),effective_value(a2) );
+    }
+};
+
+template<typename Obj, typename MemFunc, typename R, typename A1, typename A2, typename A3>
+class MCall_r3  {
+    lref<Obj> obj_;
+	MemFunc mf;
+    A1 a1; A2 a2; A3 a3;
+public:
+	typedef R result_type;
+    MCall_r3(lref<Obj>& obj_, MemFunc mf, const A1& a1, const A2& a2, const A3& a3) :obj_(obj_), mf(mf), a1(a1), a2(a2), a3(a3)
+    { }
+
+    R operator()(void)  {
+        return ((*obj_).*mf)( effective_value(a1),effective_value(a2),effective_value(a3) );
+    }
+
+    R operator()(void)  const {
+        return ((*obj_).*mf)( effective_value(a1),effective_value(a2),effective_value(a3) );
+    }
+};
+
+template<typename Obj, typename MemFunc, typename R, typename A1, typename A2, typename A3, typename A4>
+class MCall_r4  {
+    lref<Obj> obj_;
+	MemFunc mf;
+    A1 a1; A2 a2; A3 a3; A4 a4;
+public:
+	typedef R result_type;
+    MCall_r4(lref<Obj>& obj_, MemFunc mf, const A1& a1, const A2& a2, const A3& a3, const A4& a4) :obj_(obj_), mf(mf), a1(a1), a2(a2), a3(a3), a4(a4)
+    { }
+
+    R operator()(void)  {
+        return ((*obj_).*mf)( effective_value(a1),effective_value(a2),effective_value(a3),effective_value(a4) );
+    }
+
+    R operator()(void)  const {
+        return ((*obj_).*mf)( effective_value(a1),effective_value(a2),effective_value(a3),effective_value(a4) );
+    }
+};
+
+template<typename Obj, typename MemFunc, typename R, typename A1, typename A2, typename A3, typename A4, typename A5>
+class MCall_r5  {
+    lref<Obj> obj_;
+	MemFunc mf;
+    A1 a1; A2 a2; A3 a3; A4 a4; A5 a5;
+public:
+	typedef R result_type;
+    MCall_r5(lref<Obj>& obj_, MemFunc mf, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5) :obj_(obj_), mf(mf), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5)
+    { }
+
+    R operator()(void)  {
+        return ((*obj_).*mf)( effective_value(a1),effective_value(a2),effective_value(a3),effective_value(a4),effective_value(a5) );
+    }
+
+    R operator()(void)  const {
+        return ((*obj_).*mf)( effective_value(a1),effective_value(a2),effective_value(a3),effective_value(a4),effective_value(a5) );
+    }
+};
+
+template<typename Obj, typename MemFunc, typename R, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
+class MCall_r6  {
+    lref<Obj> obj_;
+	MemFunc mf;
+    A1 a1; A2 a2; A3 a3; A4 a4; A5 a5; A6 a6;
+public:
+	typedef R result_type;
+    MCall_r6(lref<Obj> obj_, MemFunc mf, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6) :obj_(obj_), mf(mf), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5), a6(a6)
+    { }
+
+    R operator()(void)  {
+        return ((*obj_).*mf)( effective_value(a1),effective_value(a2),effective_value(a3),effective_value(a4),effective_value(a5),effective_value(a6) );
+    }
+
+    R operator()(void)  const {
+        return ((*obj_).*mf)( effective_value(a1),effective_value(a2),effective_value(a3),effective_value(a4),effective_value(a5),effective_value(a6) );
+    }
+};
+
+
+// For Nullary through sestiary(6-ary) member functions
+// Overloads for non-const member functions
+template<typename R, typename Obj> inline
+Ile<MCall_r0<Obj,R(Obj::*)(void),R> >
+mcall(lref<Obj>& obj_, R(Obj::*mf)(void) ) {
+    return MCall_r0<Obj,R(Obj::*)(void),R>(obj_,mf);
+}
+
+template<typename R, typename P1, typename Obj, typename A1> inline
+Ile<MCall_r1<Obj,R(Obj::*)(P1),R,A1> >
+mcall(lref<Obj>& obj_, R(Obj::* mf)(P1), const A1& a1_) {
+    return MCall_r1<Obj,R(Obj::*)(P1),R,A1>(obj_,mf,a1_);
+}
+
+template<typename R, typename P1, typename P2, typename Obj, typename A1, typename A2> inline
+Ile<MCall_r2<Obj,R(Obj::*)(P1,P2),R,A1,A2> >
+mcall(lref<Obj>& obj_, R(Obj::* mf)(P1,P2), const A1& a1_, const A2& a2_) {
+    return MCall_r2<Obj,R(Obj::*)(P1,P2),R,A1,A2>(obj_,mf,a1_,a2_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename Obj, typename A1, typename A2, typename A3>  inline
+Ile<MCall_r3<Obj,R(Obj::*)(P1,P2,P3),R,A1,A2,A3> >
+mcall(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3), const A1& a1_, const A2& a2_, const A3& a3_) {
+    return MCall_r3<Obj,R(Obj::*)(P1,P2,P3),R,A1,A2,A3>(obj_,mf,a1_,a2_,a3_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename A1, typename A2, typename A3, typename A4> inline
+Ile<MCall_r4<Obj,R(Obj::*)(P1,P2,P3,P4),R,A1,A2,A3,A4> >
+mcall(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
+    return MCall_r4<Obj,R(Obj::*)(P1,P2,P3,P4),R,A1,A2,A3,A4>(obj_,mf,a1_,a2_,a3_,a4_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5>  inline
+Ile<MCall_r5<Obj,R(Obj::*)(P1,P2,P3,P4,P5),R,A1,A2,A3,A4,A5> >
+mcall(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
+    return MCall_r5<Obj,R(Obj::*)(P1,P2,P3,P4,P5),R,A1,A2,A3,A4,A5>(obj_,mf,a1_,a2_,a3_,a4_,a5_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+Ile<MCall_r6<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6),R,A1,A2,A3,A4,A5,A6> >
+mcall(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
+    return MCall_r6<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6),R,A1,A2,A3,A4,A5,A6>(obj_,mf,a1_,a2_,a3_,a4_,a5_,a6_);
+}
+
+// Overloads for const member functions
+template<typename R, typename Obj> inline
+Ile<MCall_r0<Obj,R(Obj::*)(void) const,R> >
+mcall(lref<Obj>& obj_, R(Obj::*mf)(void) const) {
+    return MCall_r0<Obj,R(Obj::*)(void) const,R>(obj_,mf);
+}
+
+template<typename R, typename P1, typename Obj, typename A1> inline
+Ile<MCall_r1<Obj,R(Obj::*)(P1) const,R,A1> >
+mcall(lref<Obj>& obj_, R(Obj::* mf)(P1) const, const A1& a1_) {
+    return MCall_r1<Obj,R(Obj::*)(P1) const,R,A1>(obj_,mf,a1_);
+}
+
+template<typename R, typename P1, typename P2, typename Obj, typename A1, typename A2> inline
+Ile<MCall_r2<Obj,R(Obj::*)(P1,P2) const,R,A1,A2> >
+mcall(lref<Obj>& obj_, R(Obj::* mf)(P1,P2) const, const A1& a1_, const A2& a2_) {
+    return MCall_r2<Obj,R(Obj::*)(P1,P2) const,R,A1,A2>(obj_,mf,a1_,a2_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename Obj, typename A1, typename A2, typename A3> inline
+Ile<MCall_r3<const Obj,R(Obj::*)(P1,P2,P3) const,R,A1,A2,A3> >
+mcall(lref<const Obj>& obj_, R(Obj::* mf)(P1,P2,P3) const, const A1& a1_, const A2& a2_, const A3& a3_) {
+    return MCall_r3<const Obj,R(Obj::*)(P1,P2,P3) const,R,A1,A2,A3>(obj_,mf,a1_,a2_,a3_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename A1, typename A2, typename A3, typename A4> inline
+Ile<MCall_r4<Obj,R(Obj::*)(P1,P2,P3,P4) const,R,A1,A2,A3,A4> >
+mcall(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
+    return MCall_r4<Obj,R(Obj::*)(P1,P2,P3,P4) const,R,A1,A2,A3,A4>(obj_,mf,a1_,a2_,a3_,a4_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+Ile<MCall_r5<Obj,R(Obj::*)(P1,P2,P3,P4,P5) const,R,A1,A2,A3,A4,A5> > 
+mcall(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
+    return MCall_r5<Obj,R(Obj::*)(P1,P2,P3,P4,P5) const,R,A1,A2,A3,A4,A5>(obj_,mf,a1_,a2_,a3_,a4_,a5_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+Ile<MCall_r6<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,R,A1,A2,A3,A4,A5,A6> >
+mcall(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
+    return MCall_r6<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,R,A1,A2,A3,A4,A5,A6>(obj_,mf,a1_,a2_,a3_,a4_,a5_,a6_);
+}
+
+
 
 } // namespace castor
 #endif
