@@ -26,9 +26,13 @@ void test_defined();
 void test_undefined();
 void test_unique();
 void test_unique_f();
+void test_unique_mf();
+void test_unique_mem();
 void test_empty();
 void test_not_emtpy();
 void test_dereference();
 void test_error();
+void test_repeat();
+void test_both();
 
 #endif
