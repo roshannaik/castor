@@ -229,18 +229,18 @@ Unique_r<T> unique(lref<T> item_) {
 
 
 // FuncObj = Nullary function object that has member typedef result_type
-template<typename FuncObj>
+template<typename Func>
 class Unique_f_r : public Coroutine {
-    typedef typename FuncObj::result_type item_type;
-    lref<std::set<typename FuncObj::result_type> > items;
-    FuncObj func; bool b;
+    //typedef typename detail::return_type<Func>::result_type item_type;
+    typedef typename Func::result_type item_type;
+    lref<std::set<typename Func::result_type> > items;
+    Func func;
 public:
-    Unique_f_r (const FuncObj& func) : items(std::set<item_type>()), func(func), b(false)
+    Unique_f_r (const Func& func) : items(std::set<item_type>()), func(func)
     { }
 
     bool operator() (void) {
         co_begin();
-        //b = items->insert(func()).second;
         co_yield( items->insert(func()).second );
         co_end();
     }
@@ -251,6 +251,7 @@ template<typename FuncObj> inline
 Unique_f_r<FuncObj> unique_f(FuncObj f) {
     return Unique_f_r<FuncObj>(f);
 }
+
 
 template<typename Obj, typename MemberT>
 class UniqueMem_r : public Coroutine {
@@ -274,13 +275,13 @@ UniqueMem_r<Obj, MemberT> unique_mem(lref<Obj>& obj_, MemberT Obj::* mem) {
 }
 
 
-template<typename R, typename Obj>
+template<typename R, typename MFunc, typename Obj>
 class UniqueMf_r : Coroutine {
     lref<Obj> obj_;
-    R(Obj::* mf) (void);
+    MFunc mf;
     lref<std::set<R> > items;
 public:
-    UniqueMf_r(lref<Obj> obj_, R(Obj::* mf) (void)) :obj_(obj_), mf(mf)
+    UniqueMf_r(lref<Obj>& obj_, MFunc mf) :obj_(obj_), mf(mf), items(std::set<R>())
     { }
 
     bool operator()(void) {
@@ -292,9 +293,15 @@ public:
 
 // Overloads for non-const member functions
 template<typename R, typename Obj> inline
-UniqueMf_r<R,Obj>
+UniqueMf_r<R,R(Obj::*)(void), Obj>
 unique_mf(lref<Obj>& obj_, R(Obj::*mf)(void) ) {
-    return UniqueMf_r<R,Obj>(obj_,mf);
+    return UniqueMf_r<R,R(Obj::*)(void), Obj>(obj_,mf);
+}
+
+template<typename R, typename Obj> inline
+UniqueMf_r<R,R(Obj::*)(void) const, Obj>
+unique_mf(lref<Obj>& obj_, R(Obj::*mf)(void) const) {
+    return UniqueMf_r<R,R(Obj::*)(void) const, Obj>(obj_,mf);
 }
 
 //-------------------------------------------------------------------------
@@ -878,11 +885,10 @@ public:
     }
 };
 
-// 1st argument disallows a raw vector to be passed as argument. This ensures
-// Itr is not an iterator to a copy of the argument... since passing a raw
-// vector to a lref causes the lref to make a copy of the vector.
+// 1st argument disallows a raw vector to be passed as argument... since passing 
+// a raw vector to a lref causes the lref to make a copy of the vector.
 template<typename Cont> inline
-Begin_r<Cont> begin(lref<Cont>& cont_, lref<typename Cont::iterator> iter) {
+Begin_r<Cont> begin(lref<Cont>& cont_, const lref<typename Cont::iterator>& iter) {
     return Begin_r<Cont>(cont_, iter);
 }
 
@@ -897,7 +903,7 @@ class End_r : public Coroutine {
 public:
     End_r(const lref<Cont>& cont_, const lref<IterT>& iter) : cont_(cont_), iter(iter)
     { }
-    
+
     bool operator()(void) {
       co_begin();
       if(iter.defined())
@@ -910,7 +916,7 @@ public:
 };
 
 template<typename Cont> inline
-End_r<Cont> end(lref<Cont>& cont_, lref<typename Cont::iterator> iter) {
+End_r<Cont> end(lref<Cont>& cont_, const lref<typename Cont::iterator>& iter) {
     return End_r<Cont>(cont_, iter);
 }
 
@@ -962,7 +968,7 @@ Negate_r<Rel> negate(const Rel& rel) {
 
 
 //-------------------------------------------------
-// eval() - Invoke the function/function object: Always succeeds once only
+// eval() - Invoke the function/function object: Succeeds only once
 //-------------------------------------------------
 template<typename Func>
 class Eval_r0 : Coroutine {
@@ -1364,6 +1370,79 @@ template<typename R, typename P1, typename P2, typename P3, typename P4, typenam
 Eval_mf_r6<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,A1,A2,A3,A4,A5,A6> 
 eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
     return Eval_mf_r6<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,A1,A2,A3,A4,A5,A6>(obj_,mf,a1_,a2_,a3_,a4_,a5_,a6_);
+}
+
+
+//-------------------------------------------------
+// repeat(val_i,count_i,r) - repeat val_i, count_i times, into r
+//-------------------------------------------------
+
+template<typename T>
+struct Repeat_r : public Coroutine {
+	lref<T> val_i, r;
+	lref<unsigned int> count_i;
+	unsigned int i;
+	Repeat_r(const lref<T>& val_i, const lref<unsigned int>& count_i, const lref<T>& r) : val_i(val_i), count_i(count_i), r(r)
+	{ }	
+
+	bool operator()(void) {
+		co_begin();
+		if(r.defined()) {
+			if(*r!=*val_i)
+				co_return(false);
+			for(i=*count_i; i!=0; --i)
+				co_yield(true);
+		}
+		r=val_i;
+		for(i=*count_i; i!=0; --i)
+			co_yield(true);
+		r.reset();
+		co_end();
+	}
+};
+
+template<typename T>
+Repeat_r<T> repeat(const lref<T>& val_i, const lref<unsigned int>& count_i, lref<T>& r) {
+	return Repeat_r<T>(val_i, count_i, r);
+}
+
+template<typename T>
+Repeat_r<T> repeat(T val_i, unsigned int count_i, lref<T>& r) {
+	return Repeat_r<T>(lref<T>(val_i), lref<unsigned int>(count_i), r);
+}
+
+
+//-------------------------------------------------
+// both(l,r) - succeeds each time l() and r() succeed
+//-------------------------------------------------
+
+template<typename L, typename R>
+class Both_r : public Coroutine {
+	L l;
+	R r;
+public:
+	Both_r (const L& l, const R& r) : l(l), r(r) 
+	{ }
+
+	bool operator()(void) {
+		co_begin();
+		while(true) {
+			if(!l()) 
+				co_return(false);
+			if(r()) {
+				co_yield(true);
+			}
+			else { 
+				co_return(false);
+			}
+		}
+		co_end();
+	}
+};
+
+template<typename L, typename R>
+Both_r<L,R> both(const L& l, const R& r) {
+	return Both_r<L,R>(l,r);
 }
 
 } // namespace castor

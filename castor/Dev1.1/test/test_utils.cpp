@@ -1258,6 +1258,20 @@ void test_item() {
     if(obj.defined())
         throw "failed test_item 8";
     }
+    {
+    // 9- iterate using
+
+    int ai[] = {1,2,3,4,5};
+    lref<vector<int> > vi = vector<int>(ai+0, ai+5);
+    lref<int> obj;
+    relation r = item(obj, vi);
+    int j=1;
+    while(r())
+        if(*obj!= j++)
+            throw "failed test_item 5";
+    if(obj.defined())
+        throw "failed test_item 5";
+    }
 }
 
 void test_getValueCont() {
@@ -1333,6 +1347,7 @@ void test_unique() {
 }
 
 void test_unique_f() {
+	{
     // if i is an item in arr1 and j is an item in j
     // print all pairs of i and j such that i*j is unique
     int arr1[] = {0, 1, 2};
@@ -1366,8 +1381,38 @@ void test_unique_f() {
         throw "failed test_unique_f 1";
     if(r())
         throw "failed test_unique_f 1";
+	}
 }
 
+void test_unique_mf() {
+	{
+    string words[] = {"mary", "had", "a", "little", "lamb"};
+    lref<string> w;
+	relation r = (item(w,words,words+5) && unique_mf(w,&string::length)) >> count<int>(4);
+	if(!r())
+		throw "failed test_unique_mf 1";
+	}
+}
+
+struct person {
+	string firstName, lastName;
+	person (string firstName, string lastName) : firstName(firstName), lastName(lastName)
+	{ }
+	bool operator==(const person& rhs) const {
+		return (firstName==rhs.firstName) && (lastName==rhs.lastName);
+	}
+};
+
+void test_unique_mem() {
+	{
+    person people[] = { person("roshan","naik"), person("runa","naik"), person("harry","potter") };
+    lref<person> p;
+	lref<int> i=2;
+	relation r = (item(p, people, people+3) && unique_mem(p, &person::lastName)) >> count<int>(2);
+	if(!r())
+		throw "failed test_unique_mem 1";
+	}
+}
 
 //--------------------------------------------------------
 // Test : empty, not_empty
@@ -1463,3 +1508,58 @@ void test_error() {
     { }
     }
 }
+
+void test_repeat() {
+		{ // 1 - test mode success
+		lref<int> j;
+		int s=0, times=3;
+		vector<int> v(times,1);
+		relation r = both( item(j ,v.begin(),v.end()), repeat(1,times,j) );
+		while(r())
+			++s;
+		if(s!=times)
+			throw "failed test_repeat 1";
+		}
+		{ // 2 - test mode failure
+		lref<int> j;
+		int s=0, times=3;
+		vector<int> v(times,2);
+		relation r = both( item(j,v.begin(),v.end()), repeat(1,times,j) );
+		while(r())
+			++s;
+		if(s!=0)
+			throw "failed test_repeat 2";
+		}
+		{// 3 - generate mode - success
+		lref<int> j;
+		int s=0, times=3;
+		relation r = repeat(1,times,j);
+		while(r() && *j==1)
+			++s;
+		if(s!=times)
+			throw "failed test_repeat 3";
+		}
+		{// 4 - generate mode - failure
+		lref<int> j;
+		int s=0, times=3;
+		relation r = repeat(1,times,j);
+		while(r() && *j==2)
+			++s;
+		if(s!=0)
+			throw "failed test_repeat 4";
+		}
+}
+
+void test_both() {
+		{
+		lref<int> j;
+		int s=0, times=3;
+		vector<int> v(times,1);
+		relation r = both( item(j ,v.begin(),v.end()), repeat(2,times,j) );
+		while(r())
+			++s;
+		if(s!=0)
+			throw "failed test_both 1";
+		}
+}
+
