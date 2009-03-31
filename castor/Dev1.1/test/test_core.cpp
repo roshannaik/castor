@@ -491,3 +491,24 @@ void test_op_exor() {
     }
         
 }
+
+void test_True() {
+	{
+	  lref<int> c;
+	  relation r = True(20) >> count(c);
+	  if(!r())
+		  throw "failed test_times 1";
+	  if(*c!=20)
+		  throw "failed test_times 1";
+	  if(r() || c.defined() )
+		  throw "failed test_times 1";
+	}
+	{
+	  lref<int> c;
+	  relation r = True() >> count(c);
+	  if(!r())
+		  throw "failed test_times 2";
+	  if(*c!=1)
+		  throw "failed test_times 2";
+	}
+}

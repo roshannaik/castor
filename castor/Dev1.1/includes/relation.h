@@ -62,7 +62,7 @@ public:
         return *this;
     }
 
-    bool operator()(void) const {
+    bool operator()(void) /*const*/ {
       return (*this->pimpl.get())(); // we use get() instead of * in pimpl since constructors guarantee pimpl will be initialized
 	}
 };
@@ -128,7 +128,7 @@ public:
 struct False {
     typedef int UseFastAnd;
     void reset() {}
-    bool operator() (void) const {
+    bool operator() (void) {
         return false;
     }
 };
@@ -137,26 +137,36 @@ struct False {
 //---------------------------------------------------------------
 //    True Relation : Generates 'true' once
 //---------------------------------------------------------------
-struct True : public Coroutine {
-    bool operator ()(void) {
+class True : public Coroutine {
+	unsigned long n;
+public:
+	True() : n(1)
+	{ }
+
+	explicit True(unsigned long n) : n(n)
+	{ }
+
+	bool operator ()(void) {
         co_begin();
-        co_yield(true);
+		for(; n>0; --n)
+			co_yield(true);
         co_end();
     }
 };
 
 //---------------------------------------------------------------
-//    Boolean Relation : Produces the boolean value with which it was initialized
+//    Boolean Relation : Succeeds once if value is true
 //---------------------------------------------------------------
-struct Boolean : public TestOnlyRelation<Boolean> {
-private : 
+class Boolean : public Coroutine {
     bool result;
 public  :
-    Boolean(bool value) : result(value)
+    explicit Boolean(bool value) : result(value)
     { }
 
-    bool apply (void) const {
-        return result;
+    bool operator ()(void) {
+		co_begin();
+        co_return(result);
+		co_end();
     }
 };
 

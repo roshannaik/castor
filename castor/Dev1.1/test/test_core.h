@@ -10,5 +10,6 @@ void test_Conjunctions();
 void test_cut();
 void test_op_and_fast();
 void test_op_exor();
+void test_True();
 
 #endif
