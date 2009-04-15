@@ -249,6 +249,11 @@ void test_get() {
     if(get(lm,&My::i)()!=1)
         throw "failed test_get 1";
     }
+    {
+    lref<My> lm = My(1);
+	if( (get(lm,&My::i)+get(lm,&My::i))()!=2)
+        throw "failed test_get 2";
+    }
 }
 namespace {
 void blah(void)                     { }
@@ -347,12 +352,15 @@ struct Obj {
     int method (int,int,int,int,int,int)  { return  6; }
 	int mmethod (lref<int> i)             { i=9; return  2; }
 };
+
 }
 
 int foo(lref<int> i) {
 	i=4;
 	return 2;
 }
+
+
 void test_mcall() {
 	{
 		lref<Obj> m = Obj();
@@ -379,6 +387,17 @@ void test_mcall() {
 		lref<int> i=0;
 		if( call(foo,i)()!=2 )
 			throw "what ?";
+	}
+	{
+		// count empty strings
+		string values[] = {"four","","one", "","two","three"};
+		lref<string> s;
+		int count=0;
+		for( relation r = item(s,values,values+6) && predicate(mcall(s,&string::length)==0); r(); ++count )
+			if(s->length()!=0)
+				throw "failed test_mcall 1";
+		if( count!=2)
+			throw "failed test_mcall 1";
 	}
 }
 

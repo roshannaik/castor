@@ -1,5 +1,5 @@
 // Castor : Logic Programming Library for C++
-// Copyright � 2007 Roshan Naik (naikrosh@gmail.com)
+// Copyright � 2007 Roshan Naik (roshan@mpprogramming.com)
 
 #if !defined CASTOR_UTILS_H
 #define CASTOR_UTILS_H 1
@@ -1379,24 +1379,19 @@ eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6) const, const A1& a1_, c
 
 template<typename T>
 struct Repeat_r : public Coroutine {
-	lref<T> val_i, r;
+	lref<T> val, val_i, r;
 	lref<unsigned int> count_i;
 	unsigned int i;
-	Repeat_r(const lref<T>& val_i, const lref<unsigned int>& count_i, const lref<T>& r) : val_i(val_i), count_i(count_i), r(r)
-	{ }	
+	Repeat_r(const lref<T>& val_i, const lref<unsigned int>& count_i, const lref<T>& r) : val(), val_i(val_i), count_i(count_i), r(r) { 
+	}
 
 	bool operator()(void) {
 		co_begin();
-		if(r.defined()) {
-			if(*r!=*val_i)
-				co_return(false);
-			for(i=*count_i; i!=0; --i)
-				co_yield(true);
-		}
-		r=val_i;
+		val = r;  // save
+		r = val_i;
 		for(i=*count_i; i!=0; --i)
 			co_yield(true);
-		r.reset();
+		r = val;  // restore
 		co_end();
 	}
 };
@@ -1411,39 +1406,6 @@ Repeat_r<T> repeat(T val_i, unsigned int count_i, lref<T>& r) {
 	return Repeat_r<T>(lref<T>(val_i), lref<unsigned int>(count_i), r);
 }
 
-
-//-------------------------------------------------
-// both(l,r) - succeeds each time l() and r() succeed
-//-------------------------------------------------
-
-template<typename L, typename R>
-class Both_r : public Coroutine {
-	L l;
-	R r;
-public:
-	Both_r (const L& l, const R& r) : l(l), r(r) 
-	{ }
-
-	bool operator()(void) {
-		co_begin();
-		while(true) {
-			if(!l()) 
-				co_return(false);
-			if(r()) {
-				co_yield(true);
-			}
-			else { 
-				co_return(false);
-			}
-		}
-		co_end();
-	}
-};
-
-template<typename L, typename R>
-Both_r<L,R> both(const L& l, const R& r) {
-	return Both_r<L,R>(l,r);
-}
 
 } // namespace castor
 #endif
