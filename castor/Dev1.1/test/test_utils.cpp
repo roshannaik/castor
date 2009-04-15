@@ -1510,56 +1510,30 @@ void test_error() {
 }
 
 void test_repeat() {
-		{ // 1 - test mode success
-		lref<int> j;
-		int s=0, times=3;
-		vector<int> v(times,1);
-		relation r = both( item(j ,v.begin(),v.end()), repeat(1,times,j) );
-		while(r())
-			++s;
-		if(s!=times)
-			throw "failed test_repeat 1";
-		}
-		{ // 2 - test mode failure
-		lref<int> j;
-		int s=0, times=3;
-		vector<int> v(times,2);
-		relation r = both( item(j,v.begin(),v.end()), repeat(1,times,j) );
-		while(r())
-			++s;
-		if(s!=0)
-			throw "failed test_repeat 2";
-		}
-		{// 3 - generate mode - success
+		{// 1 - generate mode - success
 		lref<int> j;
 		int s=0, times=3;
 		relation r = repeat(1,times,j);
 		while(r() && *j==1)
 			++s;
 		if(s!=times)
+			throw "failed test_repeat 1";
+		}
+		{// 2 - generate mode - failure
+		lref<int> j;
+		int s=0, times=3;
+		for(relation r = repeat(1,times,j); r() && *j==2; ++s)
+			;
+		if(s!=0)
+			throw "failed test_repeat 2";
+		}
+		{// 3 - generate mode (lref) - success
+		lref<int> j, val= 1;
+		int s=0, times=3;
+		for(relation r = repeat(val,times,j); r() && *j==2; ++s)
+			;
+		if(s!=0)
 			throw "failed test_repeat 3";
-		}
-		{// 4 - generate mode - failure
-		lref<int> j;
-		int s=0, times=3;
-		relation r = repeat(1,times,j);
-		while(r() && *j==2)
-			++s;
-		if(s!=0)
-			throw "failed test_repeat 4";
-		}
-}
+		}}
 
-void test_both() {
-		{
-		lref<int> j;
-		int s=0, times=3;
-		vector<int> v(times,1);
-		relation r = both( item(j ,v.begin(),v.end()), repeat(2,times,j) );
-		while(r())
-			++s;
-		if(s!=0)
-			throw "failed test_both 1";
-		}
-}
 
