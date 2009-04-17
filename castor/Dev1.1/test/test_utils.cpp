@@ -1510,7 +1510,7 @@ void test_error() {
 }
 
 void test_repeat() {
-		{// 1 - generate mode - success
+		{// 1 - success
 		lref<int> j;
 		int s=0, times=3;
 		relation r = repeat(1,times,j);
@@ -1519,7 +1519,7 @@ void test_repeat() {
 		if(s!=times)
 			throw "failed test_repeat 1";
 		}
-		{// 2 - generate mode - failure
+		{// 2 - failure
 		lref<int> j;
 		int s=0, times=3;
 		for(relation r = repeat(1,times,j); r() && *j==2; ++s)
@@ -1527,7 +1527,7 @@ void test_repeat() {
 		if(s!=0)
 			throw "failed test_repeat 2";
 		}
-		{// 3 - generate mode (lref) - success
+		{// 3 - (lref) - success
 		lref<int> j, val= 1;
 		int s=0, times=3;
 		for(relation r = repeat(val,times,j); r() && *j==2; ++s)
