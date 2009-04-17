@@ -1,31 +1,57 @@
 Whats new in Castor 1.1 
 
-- OneSolution relation is now deprecated. use Coroutine
+- OneSolution relation is now deprecated. Use class Coroutine instead.
 - Class Coroutine and macros co_begin, co_end, co_return & co_yield that support coroutine style programming
-- I/O relations writeAll and writeAllTo to write collections and iterators bound sequences to console or ostreams.
-    : Must ensure the stream exists when evaluation occurs.
-- Now lref can be made to reference existing objects via pointers. A new constructor lref(T*,bool) and a 
+- Now lrefs can reference existing objects via pointers. A new constructor lref(T*,bool) and a 
      method set_ptr(T*,bool) added to support this. bool parameter specifies if object's lifetime should be managed.
+- lref::operator=(rhs) will reset the lref if rhs is not initialized
 - Fast && operator : Added overload for && which significantly improves performance when working with certain kind of relations.
-- Relations supporting Fast && : False, Boolean, predicate, predicate_mf, predicate_mem, defined, undefined,  negate
-
+- Relations supporting Fast && : False, Boolean, predicate, predicate_mf, predicate_mem, defined, undefined, negate
+- Named ILEs : create, get, ref, call, mcall
+- Aggregates : sort, isort, sort_by_mf, isort_by_mf, count, reverse, 
+- New relations: unique_mf, unique_mem
+- I/O relations writeAll and writeAllTo to write collections and iterators-bound sequences to console or ostreams.
+    : Must ensure the stream exists when evaluation occurs.
+- Enhanced relations: Relation True now has additional constructor takes an integral argument denoting how many times to succeed.
 
 Bug fixes:
 - head_n and tail_n now fails instead of throwing exception if n>seq_.size()
 - UnifyL  ... had a const member relation preventing copy construction
-- Data member Read_r<T>::in is now a pointer instead of a reference to allow assignment of Read_r.
+- Data member Read_r<T>::in is now a pointer instead of a roeference to allow assignment of Read_r.
 - Added #include<cstring.h> in eq.h  (Thanks to David Côme)
 - Added #include<algorithm> in refcountedptr.h
 
-
+Deprecated:
+- Named ILE Create::With is now deprecated. Instead, prefer using the named ILE create.
 
 todo
 ------------
+- check if call works with const function objects
+- assignment support for ILEs
+- sort_by, isort_by 
 - Consider removing member typedef UseFastAnd and just rely on method reset()
+- Add fast&& support for && if both args support fast&&
 ?- Considering adding fast && support to relation empty  - (but one of its overloads may not qualify)
-- Specialization for Error relation for char*
+- Specialization for error(char*)
 
 - Tabling support
 - CutAnd needs support for fast && 
 - Look into perfect forwarding issues with create
 ?- relations readAll and readAllFrom
+
+Document:
+	- Coroutines should not have const and reference data members
+	- 2 co_yield on same line wont work, local variables wont work either exta {} around :
+			if(..)
+				co_yield(..)
+			else
+				co_yield(..)
+
+GroupBy example:
+		lref<string> w;
+		lref<char> k;
+		lref<vector<string>> g;
+		string words[] = { "blueberry", "chimpanzee", "abacus", "banana", "apple", "cheese" };
+        relation wordGroups = item(w,words,words+6) >> group(w, ItemAt(0), k, g);
+		while(wordGroups())
+			cout << *k << " " << *g << "\n";

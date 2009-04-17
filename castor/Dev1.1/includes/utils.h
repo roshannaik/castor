@@ -1397,7 +1397,7 @@ struct Repeat_r : public Coroutine {
 };
 
 template<typename T>
-Repeat_r<T> repeat(const lref<T>& val_i, const lref<unsigned int>& count_i, lref<T>& r) {
+Repeat_r<T> repeat(lref<T>& val_i, lref<unsigned int>& count_i, lref<T>& r) {
 	return Repeat_r<T>(val_i, count_i, r);
 }
 
