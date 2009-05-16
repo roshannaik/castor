@@ -7,11 +7,12 @@
 
 #include <algorithm>
 
-namespace castor { namespace detail {
+namespace castor {	
+	struct InvalidDeref{}; 
+	struct Underflow{};
+}
 
-struct InvalidDeref{};
-struct Underflow{};
-
+namespace castor {	namespace detail {
 
 template <typename T>
 struct RemoveConst {
