@@ -33,5 +33,6 @@ void test_not_emtpy();
 void test_dereference();
 void test_error();
 void test_repeat();
+void test_pause();
 
 #endif
