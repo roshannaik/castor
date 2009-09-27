@@ -1507,6 +1507,14 @@ void test_error() {
     } catch (const string&)
     { }
     }
+    { // 3
+    relation r =  error("unexpected error");
+    try { 
+        r();
+        throw "failed test_error 3";
+    } catch (const char*)
+    { }
+    }
 }
 
 void test_repeat() {
@@ -1528,12 +1536,21 @@ void test_repeat() {
 			throw "failed test_repeat 2";
 		}
 		{// 3 - (lref) - success
-		lref<int> j, val= 1;
+		lref<int> j , one=1;
 		int s=0, times=3;
-		for(relation r = repeat(val,times,j); r() && *j==2; ++s)
+		for(relation r = repeat(one,times,j); r() && *j==2; ++s)
 			;
 		if(s!=0)
 			throw "failed test_repeat 3";
-		}}
+		}
+}
 
-
+void test_pause() {
+	{// compilation checks only
+		pause("hello");
+		string s("hi");
+		pause(s);
+		lref<string> ls="blah";
+		pause(ls);
+	}
+}

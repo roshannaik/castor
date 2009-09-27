@@ -1,17 +1,30 @@
 Whats new in Castor 1.1 
 
-- OneSolution relation is now deprecated. Use class Coroutine instead.
 - Class Coroutine and macros co_begin, co_end, co_return & co_yield that support coroutine style programming
 - Now lrefs can reference existing objects via pointers. A new constructor lref(T*,bool) and a 
      method set_ptr(T*,bool) added to support this. bool parameter specifies if object's lifetime should be managed.
 - lref::operator=(rhs) will reset the lref if rhs is not initialized
 - Fast && operator : Added overload for && which significantly improves performance when working with certain kind of relations.
 - Relations supporting Fast && : False, Boolean, predicate, predicate_mf, predicate_mem, defined, undefined, negate
-- Named ILEs : create, get, ref, call, mcall
+- Named ILEs : create, get, ref, call, mcall, get and ref.
 - Aggregates : sort, isort, sort_by_mf, isort_by_mf, count, reverse, 
-- New relations: unique_mf, unique_mem
-- I/O relations writeAll and writeAllTo to write collections and iterators-bound sequences to console or ostreams.
-    : Must ensure the stream exists when evaluation occurs.
+
+- New relations: 
+	+ Relation eq_mem - for unifying with non static data members.
+	+ Relations writeAll and writeAllTo to print write all elements in a sequence to cout or to a stream.
+	+ Relations write_mem and writeTo_mem to print value of a data member to cout or a stream.
+	+ Relations eval and eval_mf.
+	+ Relations unique_mf and unique_mem
+	+ Relation pause() to manually step through execution. Helpful as a debuggin aid.
+	+ Relation error() to throw an exception
+	+ I/O relations writeAll and writeAllTo to write collections and iterators-bound sequences to console or ostreams.
+
+- Enhanced overloads for relations that take functions or member functions as argument. This
+  allows passing the name of an *overloaded* function (or method) to these relations without 
+  explicit disambiguation. Also arguments to be forwarded can be POTs or lrefs :
+  + Additional overloads for eq_f, eq_mf, predicate_f, predicate_mf, writeAll_f and writeAll_mf.
+  + Signatures for eq_f, predicate_f and writeAll_f modified (new signatures continue to be backward compatible).
+
 - Enhanced relations: Relation True now has additional constructor takes an integral argument denoting how many times to succeed.
 
 Bug fixes:
@@ -20,18 +33,29 @@ Bug fixes:
 - Data member Read_r<T>::in is now a pointer instead of a roeference to allow assignment of Read_r.
 - Added #include<cstring.h> in eq.h  (Thanks to David Côme)
 - Added #include<algorithm> in refcountedptr.h
+- Exception types InvalidDeref and Underflow moved to namespace castor.
 
 Deprecated:
-- Named ILE Create::With is now deprecated. Instead, prefer using the named ILE create.
+In order to use the following deprecated facilites a #define CASTOR_ENABLE_DEPRECATED is required.
+- The Named ILE Create::With() is now deprecated. Prefer using the named ILE create().
+- OneSolution relation is now deprecated. Use class Coroutine instead.
+
+
 
 todo
 ------------
+
+- Fast Coroutines
+  + Add fast&& support for && if both args support fast&&
+ ?+ Consider adding fast && support to relation empty  - (but one of its overloads may not qualify)
+- Consider supporting binding instead of assignment in eq() to make it more Prolog compatible
+- left recursion / memoization support
+- Wrap up aggregates (consider naming them .."eager" ?)
+
 - check if call works with const function objects
-- assignment support for ILEs
+- assignment operator support for ILEs
 - sort_by, isort_by 
 - Consider removing member typedef UseFastAnd and just rely on method reset()
-- Add fast&& support for && if both args support fast&&
-?- Considering adding fast && support to relation empty  - (but one of its overloads may not qualify)
 - Specialization for error(char*)
 
 - Tabling support
@@ -39,9 +63,15 @@ todo
 - Look into perfect forwarding issues with create
 ?- relations readAll and readAllFrom
 
+- Update example in eq_mem ref manual to use sum()
+- Aggregates (count, sum, sort)
+- Implement head_n, head_tail etc. in terms of views instead of lists.
+- See if there are any perfect forwarding issues with create
+- test ILEs with const objects
+
 Document:
 	- Coroutines should not have const and reference data members
-	- 2 co_yield on same line wont work, local variables wont work either exta {} around :
+	- 2 co_yield on same line wont work, local variables wont work without exta {} for if/else blocks:
 			if(..)
 				co_yield(..)
 			else

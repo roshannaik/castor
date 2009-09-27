@@ -15,6 +15,7 @@
 #include <set>
 #include <iterator>
 #include <istream>
+#include <iostream>
 #include <algorithm>
 #include <string>
 #include <utility>
@@ -23,6 +24,56 @@
 namespace castor {
 
 struct IndexOutOfBounds {};
+
+//-------------------------------------------------------------------------
+//   Relation pause() - // TODO: document
+//-------------------------------------------------------------------------
+
+template<typename T>
+struct Pause_r : Coroutine {
+	lref<T> s;
+	Pause_r(const lref<T> &s) : s(s)
+	{ }
+	bool operator()(void) {
+		co_begin();
+		if(s.defined())
+			std::cout << *s;
+		else
+			std::cout << "undefined";
+		std::cin.ignore();
+		co_yield(true);
+		co_end();
+	}
+};
+
+template<>
+struct Pause_r<const char*> : Coroutine {
+	const std::string s;
+	Pause_r(std::string s) : s(s)
+	{ }
+	bool operator()(void) {
+		co_begin();
+		std::cout << s;
+		std::cin.ignore();
+		co_yield(true);
+		co_end();
+	}
+};
+
+template<typename T> inline
+Pause_r<T> pause(lref<T>& s) {
+	return Pause_r<T>(s);
+}
+
+template<typename T> inline
+Pause_r<T> pause(const T& s) {
+	return Pause_r<T>(lref<T>(s) );
+}
+
+template<typename T> inline
+Pause_r<const T*> pause(const T* s) {
+	return Pause_r<const T*>(s);
+}
 
 
 //-------------------------------------------------------------------------
@@ -935,15 +986,27 @@ struct Error : TestOnlyRelation<Error<ExceptionType> > {
     }
 };
 
+template<>
+struct Error<const char*> : TestOnlyRelation<Error<const char*> > {
+    const char* e;
+    Error(const char* e) :e(e)
+    { }
 
-template<typename ExceptionType>
+    bool apply(void) const {
+        throw e;
+    }
+};
+
+
+template<typename ExceptionType> inline
 Error<ExceptionType> error( const ExceptionType& err ) {
     return Error<ExceptionType>(err);
 }
 
-//Error<const char*> error( const char* err ) {
-//    return Error<const char*>(err);
-//}
+template<typename ExceptionType> inline
+Error<const ExceptionType*> error( const ExceptionType* err ) {
+    return Error<const ExceptionType*>(err);
+}
 
 //--------------------------------------------------------
 //  negate relation : invert true/false result from another relation
@@ -1380,30 +1443,31 @@ eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6) const, const A1& a1_, c
 template<typename T>
 struct Repeat_r : public Coroutine {
 	lref<T> val, val_i, r;
-	lref<unsigned int> count_i;
+	unsigned int count_i;
 	unsigned int i;
-	Repeat_r(const lref<T>& val_i, const lref<unsigned int>& count_i, const lref<T>& r) : val(), val_i(val_i), count_i(count_i), r(r) { 
+	Repeat_r(const lref<T>& val_i, const unsigned int count_i, const lref<T>& r) : val(), val_i(val_i), count_i(count_i), r(r) { 
 	}
 
 	bool operator()(void) {
 		co_begin();
 		val = r;  // save
 		r = val_i;
-		for(i=*count_i; i!=0; --i)
+		for(i=count_i; i!=0; --i)
 			co_yield(true);
 		r = val;  // restore
 		co_end();
 	}
 };
 
+
 template<typename T>
-Repeat_r<T> repeat(lref<T>& val_i, lref<unsigned int>& count_i, lref<T>& r) {
+Repeat_r<T> repeat(lref<T>& val_i,unsigned int count_i, lref<T>& r) {
 	return Repeat_r<T>(val_i, count_i, r);
 }
 
 template<typename T>
 Repeat_r<T> repeat(T val_i, unsigned int count_i, lref<T>& r) {
-	return Repeat_r<T>(lref<T>(val_i), lref<unsigned int>(count_i), r);
+	return Repeat_r<T>(lref<T>(val_i), count_i, r);
 }
 
 
