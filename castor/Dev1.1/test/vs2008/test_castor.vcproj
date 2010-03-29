@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;..\..\&quot;"
+				AdditionalIncludeDirectories="C:\boost_1_37_0\;..\..\"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -115,7 +115,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;..\..\&quot;"
+				AdditionalIncludeDirectories="C:\boost_1_37_0\boost;..\..\"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -141,6 +141,7 @@
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="1"
+				Profile="true"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -174,7 +175,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\test_aggregates.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\test_castor.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\test_collection.cpp"
 				>
 			</File>
 			<File
@@ -183,6 +192,10 @@
 			</File>
 			<File
 				RelativePath="..\test_eq.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\test_higher_order.cpp"
 				>
 			</File>
 			<File
@@ -208,11 +221,23 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\test_aggregates.h"
+				>
+			</File>
+			<File
+				RelativePath="..\test_collection.h"
+				>
+			</File>
+			<File
 				RelativePath="..\test_core.h"
 				>
 			</File>
 			<File
 				RelativePath="..\test_eq.h"
+				>
+			</File>
+			<File
+				RelativePath="..\test_higher_order.h"
 				>
 			</File>
 			<File
@@ -235,7 +260,15 @@
 				Name="Castor"
 				>
 				<File
+					RelativePath="..\..\includes\aggregates.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\castor.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\includes\collection.h"
 					>
 				</File>
 				<File
@@ -260,6 +293,10 @@
 				</File>
 				<File
 					RelativePath="..\..\includes\helpers.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\includes\higher_order.h"
 					>
 				</File>
 				<File
@@ -323,7 +360,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\docs\CastorReference.doc"
+				RelativePath="..\..\docs\CastorReference.docx"
 				>
 			</File>
 			<File
