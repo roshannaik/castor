@@ -18,6 +18,8 @@
 #include "includes/ile.h"
 #include "includes/named_iles.h"
 #include "includes/io.h"
-
+#include "includes/collection.h"
+#include "includes/aggregates.h"
+#include "includes/higher_order.h"
 
 #endif
