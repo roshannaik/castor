@@ -1,3 +1,6 @@
+// Castor : Logic Programming Library
+// Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
+// This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 #include <castor.h>
 #include <string>
 #include <utility>
@@ -401,3 +404,19 @@ void test_mcall() {
 	}
 }
 
+void test_at() {
+	lref<vector<int> > lv = vector<int>();
+	lv->push_back(10);
+	lv->push_back(20);
+	lv->push_back(30);
+    {
+		lref<int> i=0;
+		if(at(lv,i)()!=10)
+			throw "failed test_at 1";
+    }
+    {
+		lref<int> i=0;
+		if( (at(lv,i)+at(lv,1)!=at(lv,2))() )
+			throw "failed test_at 2";
+    }
+}

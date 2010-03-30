@@ -1,3 +1,6 @@
+// Castor : Logic Programming Library
+// Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
+// This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 #include <castor.h>
 #include <iostream>
 #include <vector>
@@ -226,7 +229,7 @@ void test_reduce() {
 	}
 	{ // no inputs
 		lref<int> j;
-		relation r = range(j,2,1) >> sum(j);
+		relation r = range(j,2,1) >> reduce(j, std::plus<int>());
 		if(r() || j.defined())
 			throw "failed test_reduce 3";
 	}
@@ -414,7 +417,7 @@ void test_group_by() {
 			if((g1->key)!=keys1[k1++])
 				throw "failed test_group_by 6";
 			relation inner = item(g2,g1);
-			while(inner()) { 
+			while(inner()) {
 				if(g2->key!=keys2[k2++])
 					throw "failed test_group_by 6";
 				relation values = item(s,g2);
