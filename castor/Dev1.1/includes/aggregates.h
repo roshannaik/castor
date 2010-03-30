@@ -1,6 +1,6 @@
 // Castor : Logic Programming Library
-// Copyright © 2009 Roshan Naik (roshan@mpprogramming.com).
-// This software is goverened by the MIT license (http://www.opensource.org/licenses/mit-license.php).
+// Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
+// This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
 #if !defined CASTOR_AGGREGATES_H
 #define CASTOR_AGGREGATES_H 1
@@ -519,7 +519,7 @@ public:
 		return tmp-=amt;
 	}
 
-	const T& operator[](difference_type offset) const {
+	const value_type& operator[](difference_type offset) const {
 		return getV(curr+offset);
 	}
 
@@ -585,14 +585,13 @@ public:
 		return key==rhs.key && first==first && last==last;
 	}
 
-	iterator begin() {
+	iterator begin() const {
 		return iterator(getV,first);
 	}
 
-	iterator end() {
+	iterator end() const {
 		return iterator(getV,last);
 	}
-
 
 	template<int N, class ElementT>
 	static group get_group(lref<std::vector<ElementT> >& v, size_t first, size_t last) {
@@ -631,7 +630,7 @@ private:
 	template<class, class, class , class , class> friend class GroupBy2;
 	template<class, class> friend struct group;
 public:
-	group(const K& key, lref<std::vector<value_type> >& subgroups, size_t first, size_t last/*, detail::Func1<value_type&,size_t> getV*/) : key(key), subgroups(subgroups), first(first), last(last)//, getV(getV)
+	group(const K& key, lref<std::vector<value_type> >& subgroups, size_t first, size_t last/*, detail::Func1<value_type&,size_t> getV*/) : key(key), subgroups(subgroups), first(first), last(last)
 	{ }
 
 	size_t size() const {
@@ -646,11 +645,11 @@ public:
 		return key==rhs.key && first==first && last==last && *subgroups==*rhs.subgroups;
 	}
 
-	iterator begin() {
+	iterator begin() const {
 		return subgroups->begin();
 	}
 
-	iterator end() {
+	iterator end() const {
 		return subgroups->end();
 	}
 
@@ -669,7 +668,7 @@ public:
 		for(size_t first2=first; first2<end1; first2=subgroups->rbegin()->last )
 			subgroups->push_back( value_type::get_group<N+1,T>(v, first2, end1) );
 
-		return group( nth<N>::key<K>(rvec[first]), subgroups, first, end1/*, nthElem<T>(v)*/);
+		return group( nth<N>::key<K>(rvec[first]), subgroups, first, end1);
 	}
 };
 
