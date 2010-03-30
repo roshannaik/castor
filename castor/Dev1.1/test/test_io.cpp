@@ -1,3 +1,6 @@
+// Castor : Logic Programming Library
+// Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
+// This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 #include "test_io.h"
 
 #include <castor.h>
@@ -25,8 +28,8 @@ void test_writeTo() {
 void test_writeAllTo() {
   string as[] = {"1","2","3","4"};
   { // write to stream using pointers
-	  stringstream sstrm;
-	  if(!writeAllTo(sstrm,as,as+4, " ")())
+	stringstream sstrm;
+	if(!writeAllTo(sstrm,as,as+4, " ")())
         throw "failed test_writeAllTo 1"; 
     string s; int i=0;
     while(sstrm >> s) {
@@ -35,24 +38,24 @@ void test_writeAllTo() {
     }
   }
   { // write to stream using iterators
-	  stringstream sstrm;
+	stringstream sstrm;
     vector<string> vs (as,as+4);
-    if(!writeAllTo(sstrm,vs.begin(),vs.end())())
+    if(!writeAllTo(sstrm,vs.begin(),vs.end(),"")())
         throw "failed test_writeAllTo 2"; 
     string s; int i=0;
     while(sstrm >> s) {
-      if(s!=as[i++])
+      if(s!="1234")
           throw "failed test_writeAllTo 2"; 
     }
   }	
   { // write container to stream
-	  stringstream sstrm;
+	stringstream sstrm;
     lref<vector<string> > vls = vector<string>(as,as+4);
-    if(!writeAllTo(sstrm,vls)())
+    if(!writeAllTo(sstrm,vls,"")())
         throw "failed test_writeAllTo 3"; 
     string s; int i=0;
     while(sstrm >> s) {
-      if(s!=as[i++])
+      if(s!="1234")
           throw "failed test_writeAllTo 3"; 
     }
   }
@@ -61,11 +64,11 @@ void test_writeAllTo() {
     stringstream sstrm;
     lref<vector<string> > lvs = vector<string>(as,as+4);
     lref<vector<string>::iterator> b,e;
-    relation r = begin(lvs,b) && end(lvs,e) && writeAllTo(sstrm,b,e);
+    relation r = begin(lvs,b) && end(lvs,e) && writeAllTo(sstrm,b,e,"");
     while(r());
     string s; int i=0;
     while(sstrm >> s) {
-      if(s!=as[i++])
+      if(s!="1234")
           throw "failed test_writeAllTo 4"; 
     }
   }

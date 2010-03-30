@@ -1,87 +1,85 @@
-Whats new in Castor 1.1 
+================================
+   Whats new in Castor 1.1 
+================================
 
-- Class Coroutine and macros co_begin, co_end, co_return & co_yield that support coroutine style programming
+Enhancements to lref:
+---------------------
 - Now lrefs can reference existing objects via pointers. A new constructor lref(T*,bool) and a 
-     method set_ptr(T*,bool) added to support this. bool parameter specifies if object's lifetime should be managed.
+  method set_ptr(T*,bool) added to support this. bool parameter specifies if object's lifetime should be managed.
+     + item() relation now uses set_ptr instead of performing an element wise copy into the lref.
 - lref::operator=(rhs) will reset the lref if rhs is not initialized
-- Fast && operator : Added overload for && which significantly improves performance when working with certain kind of relations.
+- lref::bound(lref& rhs) will check if this lref and rhs are bound/joined together
+
 - Relations supporting Fast && : False, Boolean, predicate, predicate_mf, predicate_mem, defined, undefined, negate
-- Named ILEs : create, get, ref, call, mcall, get and ref.
-- Aggregates : sort, isort, sort_by_mf, isort_by_mf, count, reverse, 
+- Class Coroutine and macros co_begin, co_end, co_return & co_yield that support coroutine style programming
 
-- New relations: 
-	+ Relation eq_mem - for unifying with non static data members.
-	+ Relations writeAll and writeAllTo to print write all elements in a sequence to cout or to a stream.
-	+ Relations write_mem and writeTo_mem to print value of a data member to cout or a stream.
-	+ Relations eval and eval_mf.
-	+ Relations unique_mf and unique_mem
-	+ Relation pause() to manually step through execution. Helpful as a debuggin aid.
-	+ Relation error() to throw an exception
-	+ I/O relations writeAll and writeAllTo to write collections and iterators-bound sequences to console or ostreams.
 
-- Enhanced overloads for relations that take functions or member functions as argument. This
-  allows passing the name of an *overloaded* function (or method) to these relations without 
-  explicit disambiguation. Also arguments to be forwarded can be POTs or lrefs :
+Enhancements to ILE (closure/lambda facility):
+----------------------------------------------
+- New named ILEs have been provided:
+	+ at - Allows indexed access. Equivalent to the operator [] 
+	+ create - To create an new object. Equivlent to the operator new. Supercedes Create::with().
+	+ get - To access a data member of an object
+	+ mcall - To invoke a member function with upto 6 arguments
+	+ call - To invoke a function  with upto 6 arguments
+	+ ref - Takes a reference to an obect, and returns the same on evaluation
+
+
+
+New relations: 
+--------------
+- Relation eq_mem - for unifying with (non static) data members.
+- Relations writeAll and writeAllTo to print write all elements in a sequence to cout or to a stream.
+- Relations write_mem and writeTo_mem to print value of a data member to cout or a stream.
+- Relations eval and eval_mf.
+- Relations unique_mf and unique_mem
+- Relation pause() pauses execution and waits for a key press by calling cin.ignore(). Helpful as a debugging aid.
+- Relation error() to throw an exception
+- Collection: shuffle, permute
+- Special Relations to be used with operator >> : 
+   count - For counting the number of items in a sequence. e.g. range(i,1,10) >> count(n)
+   group_by - For grouping objects based on some criteria. Allows nested grouping. e.g
+		lref<group<char,group<size_t,string> > > g;
+        item(s,names) >> group_by(s, &firstChar, g).then(&str_length);
+   order - For producing a sorted sequence of objects.
+   order_mem - For producing a sorted sequence of objects. Sort objects on a data member. (e.g. pair<,>.first )
+   order_mf - For producing a sorted sequence of objects. Sort based on value method call (e.g. string::length() )
+   reverse - For reversing a sequence of objects. e.g. range(i,1,10) >> reverse(i)
+   reduce - For reducing a sequence to a value by applying a operator(similar to accumulate). e.g.
+         range(j,1,10) >> reduce(j, std::multiplies<int>()); // product of first 10 numbers
+   sum - For summing the values in a sequence. e.g. range(i,1,10) >> sum(i)
+
+
+Enhancements:
+-------------
+- New overloads for the following relations that take function pointer or member function pointer as
+  argument. These overloads allow passing an *overloaded* function (or method) to these
+  relations without requiring explicit overload disambiguation. Also arguments to be forwarded can be 
+  POTs or lrefs :
   + Additional overloads for eq_f, eq_mf, predicate_f, predicate_mf, writeAll_f and writeAll_mf.
   + Signatures for eq_f, predicate_f and writeAll_f modified (new signatures continue to be backward compatible).
 
-- Enhanced relations: Relation True now has additional constructor takes an integral argument denoting how many times to succeed.
+- Enhanced relations: Additional constructor for relation True that takes an integral argument denoting how many times to succeed.
 
-Bug fixes:
-- head_n and tail_n now fails instead of throwing exception if n>seq_.size()
-- UnifyL  ... had a const member relation preventing copy construction
-- Data member Read_r<T>::in is now a pointer instead of a roeference to allow assignment of Read_r.
-- Added #include<cstring.h> in eq.h  (Thanks to David Côme)
-- Added #include<algorithm> in refcountedptr.h
-- Exception types InvalidDeref and Underflow moved to namespace castor.
 
 Deprecated:
+-----------
 In order to use the following deprecated facilites a #define CASTOR_ENABLE_DEPRECATED is required.
 - The Named ILE Create::With() is now deprecated. Prefer using the named ILE create().
 - OneSolution relation is now deprecated. Use class Coroutine instead.
 
 
+Potential Incompatibilites:
+---------------------------
+- item() relation now yields an lref<> that references the actual element in the container/sequence 
+  instead of a copy.
 
-todo
-------------
 
-- Fast Coroutines
-  + Add fast&& support for && if both args support fast&&
- ?+ Consider adding fast && support to relation empty  - (but one of its overloads may not qualify)
-- Consider supporting binding instead of assignment in eq() to make it more Prolog compatible
-- left recursion / memoization support
-- Wrap up aggregates (consider naming them .."eager" ?)
-
-- check if call works with const function objects
-- assignment operator support for ILEs
-- sort_by, isort_by 
-- Consider removing member typedef UseFastAnd and just rely on method reset()
-- Specialization for error(char*)
-
-- Tabling support
-- CutAnd needs support for fast && 
-- Look into perfect forwarding issues with create
-?- relations readAll and readAllFrom
-
-- Update example in eq_mem ref manual to use sum()
-- Aggregates (count, sum, sort)
-- Implement head_n, head_tail etc. in terms of views instead of lists.
-- See if there are any perfect forwarding issues with create
-- test ILEs with const objects
-
-Document:
-	- Coroutines should not have const and reference data members
-	- 2 co_yield on same line wont work, local variables wont work without exta {} for if/else blocks:
-			if(..)
-				co_yield(..)
-			else
-				co_yield(..)
-
-GroupBy example:
-		lref<string> w;
-		lref<char> k;
-		lref<vector<string>> g;
-		string words[] = { "blueberry", "chimpanzee", "abacus", "banana", "apple", "cheese" };
-        relation wordGroups = item(w,words,words+6) >> group(w, ItemAt(0), k, g);
-		while(wordGroups())
-			cout << *k << " " << *g << "\n";
+Bug fixes:
+----------
+- head_n and tail_n now fails instead of throwing exception if n>seq_.size()
+- UnifyL  ... had a const member relation preventing copy construction
+- Data member Read_r<T>::in is now a pointer instead of a reference to allow assignment of Read_r.
+- Added #include<cstring.h> in eq.h  (Thanks to David Côme)
+- Added #include<algorithm> in refcountedptr.h
+- Exception types InvalidDeref and Underflow moved to namespace castor.

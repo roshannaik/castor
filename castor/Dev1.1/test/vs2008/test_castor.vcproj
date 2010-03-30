@@ -376,6 +376,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\todo.txt"
+				>
+			</File>
+			<File
 				RelativePath="..\..\whats new.txt"
 				>
 			</File>

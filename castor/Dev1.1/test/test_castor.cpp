@@ -1,6 +1,6 @@
 // Castor : Logic Programming Library
-// Copyright © 2008 Roshan Naik (roshan@mpprogramming.com).
-// This software is goverened by the MIT license (http://www.opensource.org/licenses/mit-license.php).
+// Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
+// This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
 #include <string>
 #include <iostream>
@@ -567,6 +567,7 @@ void runtests() {
     run_test( test_get );
     run_test( test_call );
 	run_test( test_mcall );
+	run_test( test_at );
 
     // merge
      run_test( test_merge );
