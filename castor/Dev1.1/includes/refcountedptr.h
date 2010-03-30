@@ -1,11 +1,12 @@
 // Castor : Logic Programming Library
 // Copyright © 2008 Roshan Naik (roshan@mpprogramming.com).
-// This software is goverened by the MIT license (http://www.opensource.org/licenses/mit-license.php).
+// This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
 #ifndef CASTOR_REFCOUNTEDPTR_H
 #define CASTOR_REFCOUNTEDPTR_H 1
 
 #include <algorithm>
+#include "helpers.h"
 
 namespace castor {	
 	struct InvalidDeref{}; 
@@ -14,29 +15,6 @@ namespace castor {
 
 namespace castor {	namespace detail {
 
-template <typename T>
-struct RemoveConst {
-    typedef T result_type;
-};
-
-template <typename T>
-struct RemoveConst<const T> {
-    typedef T result_type;
-};
-
-#ifdef __BCPLUSPLUS__
-template <typename T1, typename T2>
-struct SameType { bool static const result = false; };
-
-template <typename T>
-struct SameType<T,T> { bool static const result = false; };
-#else
-template <typename T1, typename T2>
-struct SameType { enum { result = false }; };
-
-template <typename T>
-struct SameType<T,T> { enum { result = true }; };
-#endif
 // IsConvertibleStrict<T1,T2>::result==true  if T1 is convertible to T2, and T1!=T2
 #ifdef __BCPLUSPLUS__
 namespace ICS_detail {
