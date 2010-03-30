@@ -1,5 +1,6 @@
 // Castor : Logic Programming Library for C++
-// Copyright � 2007 Roshan Naik (roshan@mpprogramming.com)
+// Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
+// This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
 #if !defined CASTOR_UTILS_H
 #define CASTOR_UTILS_H 1
@@ -234,8 +235,8 @@ public:
         co_return ( std::count( effective_value(itr), effective_value(end_), *obj)!=0 );
 
       for ( ; effective_value(itr)!=effective_value(end_); ++effective_value(itr) ) {
-        obj=*effective_value(itr);
-        co_yield(true)
+        obj.set_ptr<pointee_type>(&*effective_value(itr),false);
+        co_yield(true);
       }
       obj.reset();
       co_end();
@@ -253,6 +254,11 @@ relation item(lref<typename Cont::value_type> obj, lref<Cont>& cont_) {
     return begin(cont_,b) && end(cont_, e) && item(obj, b, e);
 }
 
+template<typename Cont>
+relation ritem(lref<typename Cont::value_type> obj, lref<Cont>& cont_) {
+    lref<typename Cont::reverse_iterator> b, e;
+    return rbegin(cont_,b) && rend(cont_, e) && item<lref<Cont::reverse_iterator>>(obj, b, e);
+}
 
 //-------------------------------------------------------------------------
 // Relations unique, unique_f, unique_mem, unique_mf
@@ -971,6 +977,64 @@ End_r<Cont> end(lref<Cont>& cont_, const lref<typename Cont::iterator>& iter) {
     return End_r<Cont>(cont_, iter);
 }
 
+
+//--------------------------------------------------------
+//  begin relation : For working with reverse iterators
+//--------------------------------------------------------
+template<typename Cont>
+class RBegin_r : public Coroutine {
+    typedef typename Cont::reverse_iterator Iter;
+    lref<Cont> cont_;
+    lref<Iter> iter;
+public:
+    RBegin_r(const lref<Cont>& cont_, const lref<Iter>& iter) : cont_(cont_), iter(iter)
+    { }
+
+    bool operator()(void) {
+      co_begin();
+      if(iter.defined())
+        co_return( *iter==cont_->rbegin() );
+      iter=cont_->rbegin();
+      co_yield(true);
+      iter.reset();
+      co_end();
+    }
+};
+
+// 1st argument disallows a raw vector to be passed as argument... since passing 
+// a raw vector to a lref causes the lref to make a copy of the vector.
+template<typename Cont> inline
+RBegin_r<Cont> rbegin(lref<Cont>& cont_, const lref<typename Cont::reverse_iterator>& iter) {
+    return RBegin_r<Cont>(cont_, iter);
+}
+
+//--------------------------------------------------------
+//  rend relation : For working with reverse iterators 
+//--------------------------------------------------------
+template<typename Cont>
+class REnd_r : public Coroutine {
+    typedef typename Cont::reverse_iterator IterT;
+    lref<Cont> cont_;
+    lref<IterT> iter;
+public:
+    REnd_r(const lref<Cont>& cont_, const lref<IterT>& iter) : cont_(cont_), iter(iter)
+    { }
+
+    bool operator()(void) {
+      co_begin();
+      if(iter.defined())
+        co_return( *iter==cont_->rend() );
+      iter=cont_->rend();
+      co_yield(true);
+      iter.reset();
+      co_end();
+    }
+};
+
+template<typename Cont> inline
+REnd_r<Cont> rend(lref<Cont>& cont_, const lref<typename Cont::reverse_iterator>& iter) {
+    return REnd_r<Cont>(cont_, iter);
+}
 
 //---------------------------------------------------------------
 //    Error Relation : Always throws an exception
