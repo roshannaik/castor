@@ -1,6 +1,6 @@
 // Castor : Logic Programming Library
-// Copyright © 2008 Roshan Naik (roshan@mpprogramming.com).
-// This software is goverened by the MIT license (http://www.opensource.org/licenses/mit-license.php).
+// Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
+// This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
 #if !defined CASTOR_RELATION_H
 #define CASTOR_RELATION_H 1
@@ -28,7 +28,9 @@ class relation {
     };
 
     template<class F>
-    struct wrapper : public impl {
+    class wrapper : public impl {
+		F f;
+	public:
         explicit wrapper(const F& f_) : f(f_)
         { }
         virtual impl* clone() const {
@@ -37,8 +39,6 @@ class relation {
         virtual bool operator()(void) {
             return this->f();
         }
-    private:
-        F f;
     };
 
     std::auto_ptr<impl> pimpl;
@@ -51,7 +51,7 @@ public:
     // Concept : F supports method... bool F::operator()(void)
     template<class F> 
     relation(F f) : pimpl(new wrapper<F>(f)) { 
-        typedef bool (F::* boolMethod)(void);  // Compiler Error : f must support method bool F::operator()(void)
+        typedef bool (F::* boolMethod)(void);  // Static Assertion : f must support method bool F::operator()(void)
     }
 
     relation(const relation& rhs) : pimpl(rhs.pimpl->clone())
