@@ -235,7 +235,7 @@ public:
         co_return ( std::count( effective_value(itr), effective_value(end_), *obj)!=0 );
 
       for ( ; effective_value(itr)!=effective_value(end_); ++effective_value(itr) ) {
-        obj.set_ptr<pointee_type>(&*effective_value(itr),false);
+        obj.set_ptr(&*effective_value(itr),false);
         co_yield(true);
       }
       obj.reset();
@@ -257,7 +257,7 @@ relation item(lref<typename Cont::value_type> obj, lref<Cont>& cont_) {
 template<typename Cont>
 relation ritem(lref<typename Cont::value_type> obj, lref<Cont>& cont_) {
     lref<typename Cont::reverse_iterator> b, e;
-    return rbegin(cont_,b) && rend(cont_, e) && item<lref<Cont::reverse_iterator>>(obj, b, e);
+    return rbegin(cont_,b) && rend(cont_, e) && item<lref<typename Cont::reverse_iterator> >(obj, b, e);
 }
 
 //-------------------------------------------------------------------------
