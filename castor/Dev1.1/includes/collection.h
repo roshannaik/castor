@@ -13,6 +13,60 @@
 
 namespace castor {
 
+namespace detail {
+template<typename InItr>
+bool equal_heap(InItr first_b, InItr first_e, InItr second_b, InItr second_e) {
+	if( std::distance(first_b, first_e) != std::distance(second_b, second_e) )
+		return false;
+	while(first_b!=first_e) {
+		if(*first_b!=*second_b)
+			return false;
+		std::pop_heap(first_b,first_e);
+		std::pop_heap(second_b,second_e);
+		--first_e; 
+		--second_e;
+	}
+	return true;
+}
+
+template<typename InItr, typename Pred>
+bool equal_heap(InItr first_b, InItr first_e, InItr second_b, InItr second_e, Pred cmp) {
+	if( std::distance(first_b, first_e) != std::distance(second_b, second_e) )
+		return false;
+	while(first_b!=first_e) {
+		if(!cmp(*first_b,*second_b))
+			return false;
+		std::pop_heap(first_b,first_e,cmp);
+		std::pop_heap(second_b,second_e,cmp);
+		--first_e; 
+		--second_e;
+	}
+	return true;
+}
+
+template<typename InItr> 
+bool equal_bags(InItr first_b, InItr first_e, InItr second_b, InItr second_e) {
+	typedef typename std::iterator_traits<typename effective_type<InItr>::result_type>::value_type value_type;
+	std::vector<value_type>  tmp1(first_b, first_e), tmp2(second_b, second_e);
+	if(tmp1.size()!=tmp2.size())
+		return false;
+	std::make_heap(tmp1.begin(),tmp1.end());
+	std::make_heap(tmp2.begin(),tmp2.end());
+	return equal_heap(tmp1.begin(),tmp1.end(),tmp2.begin(),tmp2.end());
+}
+
+template<typename InItr, typename Pred>
+bool equal_bags(InItr first_b, InItr first_e, InItr second_b, InItr second_e, Pred cmp) {
+	typedef typename std::iterator_traits<typename effective_type<InItr>::result_type>::value_type value_type;
+	std::vector<value_type>  tmp1(first_b, first_e), tmp2(second_b, second_e);
+	if(tmp1.size()!=tmp2.size())
+		return false;
+	std::make_heap(tmp1.begin(),tmp1.end(), cmp);
+	std::make_heap(tmp2.begin(),tmp2.end(), cmp);
+	return equal_heap(tmp1.begin(),tmp1.end(),tmp2.begin(),tmp2.end(), cmp);
+}
+
+} // namespace detail
 
 //-------------------------------------------------
 // shuffle(seq_i,shuf) - shuffling (randomize) sequence seq_i, yields shuf
