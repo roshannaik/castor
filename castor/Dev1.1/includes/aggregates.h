@@ -407,16 +407,16 @@ Count_ar<T> count(const lref<T>& obj) {
 
 namespace detail {
 
-template<int N>
+template<int N, class R>
 struct nth {
-	template<class R, class T1, class T2>
+	template<class T1, class T2>
 	static R& key(std::pair<T1,T2>& p) {
-		return nth<N-1>::key<R>(p.second);
+		return nth<N-1,R>::key(p.second);
 	}
 };
 
-template<>
-struct nth<0> {
+template<class R>
+struct nth<0,R> {
 	template<class T>
 	static T& key(T & p) {
 		return p;
@@ -599,11 +599,11 @@ public:
 		size_t end1=0;
 		std::vector<ElementT>& rvec = v.get();
 		for(end1=first+1; end1<last; ++end1) {
-			if( nth<N>::key<K>(rvec[end1]) != nth<N>::key<K>(rvec[first]) ) {
+			if( nth<N,K>::key(rvec[end1]) != nth<N,K>::key(rvec[first]) ) {
 				break;
 			}
 		}
-		return group( nth<N>::key<K>((*v)[first]), first, end1, nthValue<ElementT>(v) );
+		return group( nth<N,K>::key((*v)[first]), first, end1, nthValue<ElementT>(v) );
 	}
 };
 
@@ -658,14 +658,14 @@ public:
 		std::vector<T>& rvec = v.get();
 		size_t end1=0, first2=first;
 		for(end1=first+1; end1!=last; ++end1) {
-			if( nth<N>::key<K>(rvec[end1]) != nth<N>::key<K>(rvec[first]) )
+			if( nth<N,K>::key(rvec[end1]) != nth<N,K>::key(rvec[first]) )
 				break;
 		}
 		lref<std::vector<value_type> > subgroups(new std::vector<value_type>(), true);
 		for(size_t first2=first; first2<end1; first2=subgroups->rbegin()->last )
 			subgroups->push_back( value_type::get_group<N+1,T>(v, first2, end1) );
 
-		return group( nth<N>::key<K>(rvec[first]), subgroups, first, end1);
+		return group( nth<N,K>::key(rvec[first]), subgroups, first, end1);
 	}
 };
 
