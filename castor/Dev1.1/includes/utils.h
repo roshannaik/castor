@@ -154,7 +154,7 @@ template<typename T>
 class Range_r : public Coroutine {
     lref<T> val, min_, max_;
 public:
-    Range_r(const lref<T>& val, const lref<T>& min_, const lref<T>& max_) : min_(min_), max_(max_), val(val)
+    Range_r(const lref<T>& val, const lref<T>& min_, const lref<T>& max_) : val(val), min_(min_), max_(max_)
     { }
 
     bool operator() () {
