@@ -10,6 +10,7 @@
 #include "lref.h"
 #include "utils.h"
 #include <algorithm>
+#include <vector>
 
 namespace castor {
 
