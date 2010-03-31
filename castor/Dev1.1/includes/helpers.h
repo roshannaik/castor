@@ -101,7 +101,7 @@ template<> struct Assertion_ERROR<true>
 { };
 
 #define ASSERT_SAME_TYPE(T1, T2, ERROR_MSG) \
-::castor::detail::Assertion_ERROR<::castor::detail::SameType<T1,T2>::result >();
+castor::detail::Assertion_ERROR<castor::detail::SameType<T1,T2>::result >();
 
 
 //-------- compute return type of functions, function objects or  member functions ----------------
@@ -252,8 +252,7 @@ class is_function_obj  {
     class  twoBytes { char c[2]; }; 
 
    struct BaseMixin  { 
-     bool operator()(void)
-	 {} 
+     bool operator()(void);
    }; 
 
    struct Base : public SelectIf<is_class<Type>::result,Type,None>::type, public BaseMixin 
