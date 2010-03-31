@@ -209,7 +209,8 @@ struct OrderByBase : public Coroutine {
 
 template<typename T, typename MemFunc, typename Pred>
 struct OrderMf_ar : public OrderByBase<T, detail::MfPred<T,MemFunc,Pred> > {
-	OrderMf_ar(const lref<T>& obj, MemFunc mf, Pred p) : OrderByBase(obj, detail::MfPred<T,MemFunc,Pred>(mf,p))
+	typedef OrderByBase<T, detail::MfPred<T,MemFunc,Pred> > BaseClass;
+	OrderMf_ar(const lref<T>& obj, MemFunc mf, Pred p) : BaseClass(obj, detail::MfPred<T,MemFunc,Pred>(mf,p))
 	{}
 };
 
@@ -244,14 +245,15 @@ struct CompareMember {
 		return p( l.*mem, r.*mem );
 	}
 	bool operator()(const T& l, const T& r)  const {
-		return p( l.*mf, r.*mem );
+		return p( l.*mem, r.*mem );
 	}
 };
 } // namespace detail
 
 template<typename T, typename Mem, typename Pred>
 struct OrderMem_ar : public OrderByBase<T,detail::CompareMember<T,Mem,Pred> > {
-	OrderMem_ar(const lref<T>& obj, Mem T::* mem, Pred p) : OrderByBase(obj, detail::CompareMember<T,Mem,Pred>(mem,p))
+	typedef OrderByBase<T,detail::CompareMember<T,Mem,Pred> > BaseClass;
+	OrderMem_ar(const lref<T>& obj, Mem T::* mem, Pred p) : BaseClass(obj, detail::CompareMember<T,Mem,Pred>(mem,p))
 	{}
 };
 
@@ -423,11 +425,6 @@ struct nth<0> {
 	static T1& key(std::pair<T1,T2>& p) {
 		return p.first;
 	}
-
-	template<class T1, class T2>
-	static T1& value(std::pair<T1,T2>& p) {
-		return p.second;
-	}
 };
 
 // Functor returns the v[index].first, where v is a vector<pair> v
@@ -454,8 +451,8 @@ public:
 	typedef T value_type;
 	typedef T* pointer;
 	typedef T& reference;
-	typedef typename size_t difference_type;
-	typedef typename size_t distance_type;
+	typedef size_t difference_type;
+	typedef size_t distance_type;
 
 	group_iterator(const Func1<T&,size_t>& getV, size_t curr) : getV(getV), curr(curr)
 	{ }
