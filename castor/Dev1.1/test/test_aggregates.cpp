@@ -248,7 +248,7 @@ bool palind(string& s) {
 }
 
 
-bool myCmp(pair<string,pair<char,int>>& lhs, pair<string,pair<char,int>>& rhs) {
+bool myCmp(pair<string,pair<char,int> >& lhs, pair<string,pair<char,int> >& rhs) {
 	if(lhs.second.first < rhs.second.first)
 		return true;
 	if(lhs.second.first == rhs.second.first)
@@ -269,7 +269,7 @@ void test_group_by() {
 		lref<string> num;
 		string results[] = { "Four", "Five", "One", "Six", "Two", "Three", "madam", "million" };
 		char keys1[] = { 'F', 'O', 'S', 'T', 'm' };
-		int  keys2[] = { 4, 3, 3, 3, 5, 5, 7 };
+		size_t  keys2[] = { 4, 3, 3, 3, 5, 5, 7 };
 		bool keys3[] = { false, false, false, false, false, true, false };
 		int  v=0, k1=0, k2=0, k3=0;
 
@@ -308,14 +308,13 @@ void test_group_by() {
 		lref<string> num;
 		string results[] = { "Four", "Five", "One", "Six", "Two", "Three", "madam", "million" };
 		char keys1[] = { 'F', 'O', 'S', 'T', 'm' };
-		int keys2[] = { 4, 3, 3, 3, 5, 5, 7 };
+		size_t keys2[] = { 4, 3, 3, 3, 5, 5, 7 };
 		int v=0, k1=0, k2=0;
 
 		lref<group<char,group<size_t,string> > > g1;
 		lref<group<size_t,string> > g2;
 		relation outer = item(num,lnums) >> group_by(num, &firstChar, g1).then(slength);
 		lref<string> s;
-		int i=0;
 		while(outer()) {
 			if((g1->key)!=keys1[k1++])
 				throw "failed test_group_by 2";
@@ -376,14 +375,13 @@ void test_group_by() {
 		lref<string> num;
 		string results[] = { "million", "madam", "Three", "Two", "Six", "One", "Four", "Five"};
 		char keys1[] = { 'm', 'T', 'S', 'O', 'F' };
-		int keys2[] = { 7,5,5,3,3,3,4 };
+		size_t keys2[] = { 7,5,5,3,3,3,4 };
 		int v=0, k1=0, k2=0;
 
 		lref<group<char,group<size_t,string> > > g1;
 		lref<group<size_t,string> > g2;
 		relation outer = item(num,lnums) >> group_by(num, &firstChar, g1, std::greater<char>()).then(slength, std::greater<int>());
 		lref<string> s;
-		int i=0;
 		while(outer()) {
 			if((g1->key)!=keys1[k1++])
 				throw "failed test_group_by 5";
@@ -405,14 +403,13 @@ void test_group_by() {
 		lref<string> num;
 		string results[] = { "million", "madam", "Three", "Two", "Six", "One", "Five", "Four" };
 		char keys1[] = { 'm', 'T', 'S', 'O', 'F' };
-		int keys2[] = { 7,5,5,3,3,3,4 };
+		size_t keys2[] = { 7,5,5,3,3,3,4 };
 		int v=0, k1=0, k2=0;
 
 		lref<group<char,group<size_t,string> > > g1;
 		lref<group<size_t,string> > g2;
 		relation outer = item(num,lnums) >> group_by(num, &firstChar, g1, std::greater<char>()).then(slength, std::greater<int>()).values_by(std::less<string>());
 		lref<string> s;
-		int i=0;
 		while(outer()) {
 			if((g1->key)!=keys1[k1++])
 				throw "failed test_group_by 6";

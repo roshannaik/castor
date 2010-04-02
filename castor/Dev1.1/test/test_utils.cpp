@@ -1388,7 +1388,7 @@ void test_unique_mf() {
 	{
     string words[] = {"mary", "had", "a", "little", "lamb"};
     lref<string> w;
-	relation r = (item(w,words,words+5) && unique_mf(w,&string::length)) >> count<int>(4);
+	relation r = (item(w,words,words+5) && unique_mf(w,&string::length)) >> castor::count<int>(4);
 	if(!r())
 		throw "failed test_unique_mf 1";
 	}
@@ -1408,7 +1408,7 @@ void test_unique_mem() {
     person people[] = { person("roshan","naik"), person("runa","naik"), person("harry","potter") };
     lref<person> p;
 	lref<int> i=2;
-	relation r = (item(p, people, people+3) && unique_mem(p, &person::lastName)) >> count<int>(2);
+	relation r = (item(p, people, people+3) && unique_mem(p, &person::lastName)) >> castor::count<int>(2);
 	if(!r())
 		throw "failed test_unique_mem 1";
 	}
