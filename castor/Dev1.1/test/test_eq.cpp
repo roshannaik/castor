@@ -437,10 +437,12 @@ void test_eq_mf() {
     if(!eq_mf<int,int,int,int,Functor6>(i,f,&Functor6::cmethod,1,1)() || *i!=2 )
         throw "failed test_eq_mf 3";
     // const Obj, const method
+#ifndef __GNUG__
     lref<const Functor6> fc= Functor6();
     if(!eq_mf<int,int,int,int,const Functor6>(i,fc,&Functor6::cmethod,1,1)() || *i!=2 )
         throw "failed test_eq_mf 3";
-    // const lref, const method -- turn the const lref into plain lref and then use it
+#endif
+	// const lref, const method -- turn the const lref into plain lref and then use it
     const lref<Functor6> cf= Functor6();
     f = cf;
     if(!eq_mf<int,int,int,int,Functor6>(i,f,&Functor6::cmethod,1,1)() || *i!=2 )
