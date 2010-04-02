@@ -279,7 +279,12 @@ struct Func {
 	}
 };
 
+int bar(lref<int> i) {
+	i=4;
+	return 2;
 }
+
+}// namespace
 
 
 void test_call() {
@@ -332,13 +337,19 @@ void test_call() {
         throw "failed test_call 2";
     }
 	{
-	const Func cf;
+	const Func cf=Func();
 	if(call(cf,4)() != 4)
         throw "failed test_call 3";
 	Func f;
 	if(call(f,4)() != 5)
         throw "failed test_call 3";
 	}
+	{
+	lref<int> i=0;
+	if( call(bar,i)()!=2 )
+		throw "what ?";
+	}
+
 }
 
 namespace {
@@ -357,12 +368,6 @@ struct Obj {
 };
 
 }
-
-int foo(lref<int> i) {
-	i=4;
-	return 2;
-}
-
 
 void test_mcall() {
 	{
@@ -387,9 +392,6 @@ void test_mcall() {
 		lref<const Obj> cm = Obj();
 		if( mcall(cm,cmf,1,1,1)()!=-3 )
 			throw "failed test_mcall 0";
-		lref<int> i=0;
-		if( call(foo,i)()!=2 )
-			throw "what ?";
 	}
 	{
 		// count empty strings

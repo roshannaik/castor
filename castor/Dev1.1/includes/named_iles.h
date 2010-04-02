@@ -269,7 +269,7 @@ class Call_0 {
 public:
     typedef typename detail::return_type<FuncT>::result_type result_type;
 
-	Call_0(FuncT f) : f(f)
+	Call_0(const FuncT& f) : f(f)
 	{ }
 
     result_type operator()(void) {
@@ -289,7 +289,7 @@ class Call_1 {
 public:
 	typedef typename detail::return_type<FuncT>::result_type result_type;
 
-	Call_1(FuncT f, const A1& a1) : f(f), a1(a1)
+	Call_1(const FuncT& f, const A1& a1) : f(f), a1(a1)
 	{ }
 
     result_type operator()(void)  {
@@ -309,7 +309,7 @@ class Call_2 {
 public:
 	typedef typename detail::return_type<FuncT>::result_type result_type;
 
-	Call_2(FuncT f, const A1& a1, const A2& a2) : f(f), a1(a1), a2(a2)
+	Call_2(const FuncT& f, const A1& a1, const A2& a2) : f(f), a1(a1), a2(a2)
 	{ }
 
     result_type operator()(void) {
@@ -328,7 +328,7 @@ class Call_3 {
 public:
 	typedef typename detail::return_type<FuncT>::result_type result_type;
 
-	Call_3(FuncT f, const A1& a1, const A2& a2, const A3& a3) : f(f), a1(a1), a2(a2), a3(a3)
+	Call_3(const FuncT& f, const A1& a1, const A2& a2, const A3& a3) : f(f), a1(a1), a2(a2), a3(a3)
 	{ }
 
     result_type operator()(void)  {
@@ -348,7 +348,7 @@ class Call_4 {
 public:
 	typedef typename detail::return_type<FuncT>::result_type result_type;
 
-	Call_4(FuncT f, const A1& a1, const A2& a2, const A3& a3, const A4& a4) : f(f), a1(a1), a2(a2), a3(a3), a4(a4)
+	Call_4(const FuncT& f, const A1& a1, const A2& a2, const A3& a3, const A4& a4) : f(f), a1(a1), a2(a2), a3(a3), a4(a4)
 	{ }
 
     result_type operator()(void)  {
@@ -368,7 +368,7 @@ class Call_5 {
 public:
 	typedef typename detail::return_type<FuncT>::result_type result_type;
 
-	Call_5(FuncT f, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5) : f(f), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5)
+	Call_5(const FuncT& f, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5) : f(f), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5)
 	{ }
 
     result_type operator()(void)  {
@@ -387,7 +387,7 @@ class Call_6 {
 public:
 	typedef typename detail::return_type<FuncT>::result_type result_type;
 
-	Call_6(FuncT f, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6) : f(f), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5), a6(a6)
+	Call_6(const FuncT& f, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6) : f(f), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5), a6(a6)
 	{ }
 
     result_type operator()(void)  {
@@ -402,37 +402,37 @@ public:
 
 // For Nullary through sestiary(6-ary) functions
 template<typename FuncT> inline
-Ile<Call_0<FuncT> > call(FuncT& f) {
+Ile<Call_0<FuncT> > call(const FuncT& f) {
 	return Call_0<FuncT>(f);
 }
 
 template<typename FuncT, typename A1> inline
-Ile<Call_1<FuncT,A1> > call(FuncT& f, const A1& a1) {
+Ile<Call_1<FuncT,A1> > call(const FuncT& f, const A1& a1) {
 	return Call_1<FuncT,A1>(f, a1);
 }
 
 template<typename FuncT, typename A1, typename A2> inline
-Ile<Call_2<FuncT,A1,A2> > call(FuncT& f, const A1& a1, const A2& a2) {
+Ile<Call_2<FuncT,A1,A2> > call(const FuncT& f, const A1& a1, const A2& a2) {
 	return Call_2<FuncT,A1,A2>(f,a1,a2);
 }
 
 template<typename FuncT, typename A1, typename A2, typename A3> inline
-Ile<Call_3<FuncT,A1,A2,A3> > call(FuncT& f, const A1& a1, const A2& a2, const A3& a3) {
+Ile<Call_3<FuncT,A1,A2,A3> > call(const FuncT& f, const A1& a1, const A2& a2, const A3& a3) {
 	return Call_3<FuncT,A1,A2,A3>(f,a1,a2,a3);
 }
 
 template<typename FuncT, typename A1, typename A2, typename A3, typename A4> inline
-Ile<Call_4<FuncT,A1,A2,A3,A4> > call(FuncT& f, const A1& a1, const A2& a2, const A3& a3, const A4& a4) {
+Ile<Call_4<FuncT,A1,A2,A3,A4> > call(const FuncT& f, const A1& a1, const A2& a2, const A3& a3, const A4& a4) {
 	return Call_4<FuncT,A1,A2,A3,A4>(f,a1,a2,a3,a4);
 }
 
 template<typename FuncT, typename A1, typename A2, typename A3, typename A4, typename A5> inline
-Ile<Call_5<FuncT,A1,A2,A3,A4,A5> > call(FuncT& f, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5) {
+Ile<Call_5<FuncT,A1,A2,A3,A4,A5> > call(const FuncT& f, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5) {
 	return Call_5<FuncT,A1,A2,A3,A4,A5>(f,a1,a2,a3,a4,a5);
 }
 
 template<typename FuncT, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
-Ile<Call_6<FuncT,A1,A2,A3,A4,A5,A6> > call(FuncT& f, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6) {
+Ile<Call_6<FuncT,A1,A2,A3,A4,A5,A6> > call(const FuncT& f, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6) {
 	return Call_6<FuncT,A1,A2,A3,A4,A5,A6>(f,a1,a2,a3,a4,a5,a6);
 }
 

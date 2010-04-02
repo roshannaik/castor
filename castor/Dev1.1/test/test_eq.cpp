@@ -335,7 +335,7 @@ void test_eq_f() {
         throw "failed test_eq_f 6";
     if(!eq_f<int>(4,Functor6(),1,1,1,1)())
         throw "failed test_eq_f 6";
-    const Functor6 cf; lref<int> i=1; lref<const int> ci=1;
+    const Functor6 cf=Functor6(); lref<int> i=1; lref<const int> ci=1;
     if(!eq_f<int>(5,cf,1,1,1,1,ci)())
         throw "failed test_eq_f 6";
     if(!eq_f<int>(6,Functor6(),1,1,1,i,1,1)())
@@ -361,7 +361,7 @@ void test_eq_f() {
     if(!eq_f(ci,Functor6(),1,1,1,1)()  ||  *ci!=4 )
         throw "failed test_eq_f 7";
     i.reset();
-    const Functor6 cf; lref<int> i2=1; const lref<const int> ci2=1;
+    const Functor6 cf=Functor6(); lref<int> i2=1; const lref<const int> ci2=1;
     if(!eq_f(i,cf,1,1,1,1,ci2)() || *i!=5 )
         throw "failed test_eq_f 7";
     i.reset();

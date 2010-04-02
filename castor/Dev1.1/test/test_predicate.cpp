@@ -180,7 +180,7 @@ void test_predicate_mf() {
 	}
 #endif
 
-#ifdef __BCPLUSPLUS__
+#if defined(__BCPLUSPLUS__) || defined(__GNUG__)
 #else
 	{// const obj, const member predicate
 	lref<const Functor> f = Functor();
@@ -196,7 +196,7 @@ void test_predicate_mf() {
 	}
 #endif
 
-#ifdef __BCPLUSPLUS__
+#if defined(__BCPLUSPLUS__) || defined(__GNUG__)
 #else
 	{// const object, const member predicate
 	lref<const Functor> f = Functor();

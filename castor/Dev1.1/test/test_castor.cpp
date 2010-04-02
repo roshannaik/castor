@@ -674,288 +674,288 @@ void runtests() {
 	cout << "\nFailed: " << failCount << "\nPassed: " << passCount  << "\nTotal: " << testCount;
 }
 
-struct triplet {
-	lref<int> p1,p2,p3;
-	triplet(lref<int> p1, lref<int> p2, lref<int> p3) : p1(p1), p2(p2), p3(p3)
-	{ }
-	bool operator==(const triplet& rhs) {
-		return *p1==*rhs.p1 && *p2==*rhs.p2 && *p3==*rhs.p3;
-	}
-};
-
-template<typename A1,  typename A2>
-struct Recall_2 : public TestOnlyRelation<Recall_2<A1,A2> > {
-	lref<set<pair<A1,A2> > > s;
-	lref<A1> a1; lref<A2> a2;
-	pair<A1,A2> p;
-	Recall_2 (lref<set<pair<A1,A2> > > s, const lref<A1>& a1, const lref<A2>& a2) : s(s), a1(a1), a2(a2)
-	{ }
-
-	bool operator()(void) {
-		co_begin();
-		while( true ) {
-			if(!a1.defined() || !a2.defined()) {
-				co_yield(true)
-				continue;
-			}
-			p = make_pair(*a1,*a2);
-			if( s->find(p)==s->end() ) {
-				s->insert(p);
-				co_yield( true );
-			}
-			else 
-				co_yield(false);
-		}
-		co_end();
-	}
-};
-
-template<typename A1,  typename A2>
-struct Recall /*: public TestOnlyRelation<Recall<A1,A2> >*/ {
-	lref<set<pair<A1,A2> > > s;
-	lref<A1> a1; lref<A2> a2;
-	pair<A1,A2> p;
-	Recall (lref<set<pair<A1,A2> > > s, const lref<A1>& a1, const lref<A2>& a2) : s(s), a1(a1), a2(a2)
-	{ }
-
-	bool operator()(void) {
-		if(!a1.defined()) {
-			if(!a2.defined())
-				p = make_pair(-1,-1);
-			else
-				p = make_pair(-1,*a2);
-		} else if (!a2.defined()) {
-			p = make_pair(*a1,-1);
-		}
-		else 
-			p = make_pair(*a1,*a2);
-		if( s->find(p)==s->end() ) {
-			s->insert(p);
-			return true ;
-		}
-		return false;
-	}
-};
-
-
-typedef pair<int,int> pr;
-
-template<typename A1, typename A2> inline
-Recall<A1,A2> recall(lref<set<pr> > s, lref<A1>& a1, lref<A2>& a2) {
-	return Recall<A1,A2>(s,a1,a2);
-}
-
-relation redge(lref<int> n1, lref<int> n2) {
-    return eq(n1,1) && eq(n2,2)
-        || eq(n1,2) && eq(n2,3)
-        || eq(n1,3) && eq(n2,1)
-        || eq(n1,3) && eq(n2,4)
-        || eq(n1,4) && eq(n2,5) ;
-}
-
-relation rpath_body(lref<set<pr> > s, lref<int> n1, lref<int> n2) {
-    lref<int> X;
-    return  recall(s,n1,n2) && (   redge(n1, n2)
-                                || redge(n1, X) && recurse(rpath_body, s, X, n2) );
-}
-
-relation rpath(lref<int> n1, lref<int> n2) {
-    lref<set<pr> > s = set<pr>();
-    return rpath_body(s, n1, n2) ;
-}
-
-template<typename Rel>
-struct Memo_r : public Coroutine {
-	relation rel;
-	lref<unsigned long> p1, p2; 
-	lref<map<unsigned long,unsigned long> > m;
-	pr p;
-	bool b, p2WasDefined;
-
-	Memo_r(Rel r, lref<unsigned long> p1, lref<unsigned long> p2, lref<map<unsigned long,unsigned long> > m) : rel(recurse(r,p1,p2,m)), p1(p1), p2(p2), m(m), b(false), p2WasDefined(false)
-	{ }
-	
-	bool operator() (void) {
-		map<unsigned long,unsigned long>::iterator tmp;
-		co_begin();
-		p2WasDefined=p2.defined();
-		if( p1.defined() ) {
-			tmp = m->find(*p1);
-			if( tmp==m->end() ) { // not computed previously
-				if(rel()) {
-					m->insert(make_pair(*p1,*p2));
-					co_yield(true);
-				}
-				else
-					co_return(false);
-			}
-			else { // computed previously
-				if(p2.defined()) {
-					co_yield(*p2==tmp->second);
-				}
-				else {
-					p2=tmp->second;
-					co_yield(true);
-					p2.reset();
-					co_return(false)
-				}
-			}
-		} // if( p1.defined() )
-		else { 
-			// .. todo: check if p2 is defined
-			if(rel()) {
-				m->insert(make_pair(*p1,*p2));
-				co_return(true);
-			} 
-			else
-				co_return(false);
-		}
-		co_end();
-	}
-	void reset() {
-		if(!p2WasDefined && p2.defined())
-			throw "Reset may have to do some resetting";
-	}
-	typedef int UseFastAnd;
-};
-
-template<typename Rel>
-Memo_r<Rel> memo(Rel r, lref<unsigned long> p1, lref<unsigned long> p2, lref<map<unsigned long,unsigned long> > m) {
-	return Memo_r<Rel>(r,p1,p2,m);
-}
-
-
-relation fib_(lref<unsigned long> n, lref<unsigned long> f, lref<map<unsigned long,unsigned long> > m) {
-	lref<unsigned long> n1,n2, f1,f2;
-	return     eq(n,0) && eq(f,0)
-			|| eq(n,1) && eq(f,1) 
-			|| eq_f(n1,n-1) && eq_f(n2,n-2) && memo(fib_,n1,f1,m) && memo(fib_,n2,f2,m) && eq_f(f,f1+f2);
-}
-
-relation fib(lref<unsigned long> n, lref<unsigned long> f) {
-	lref<map<unsigned long,unsigned long> > m(new map<unsigned long,unsigned long>(), true);
-	return memo(fib_,n,f,m);
-}
-
-
-
-relation fib2(lref<int> n, lref<int> f) {
-	lref<int> n1, n2, f1, f2;
-	return     eq(n,0) && eq(f,0)
-			|| eq(n,1) && eq(f,1) 
-			|| prev(n,n1) && prev(n1,n2) && recurse(fib2,n1,f1) && recurse(fib2,n2,f2) && eq_f(f,f1+f2);
-}
-
-map<unsigned long,unsigned long> answers;
-
-unsigned long
-fibo(unsigned long n) {
-	unsigned long fn1=0,fn2=0;
-	if(n==0) {
-		answers[n]=0;
-		return 0;
-	}
-	if(n==1) {
-		answers[n]=1;
-		return 1;
-	}
-	map<unsigned long,unsigned long>::iterator n1 = answers.find(n-1), n2;
-	if(n1!=answers.end())
-		fn1 = n1->second;
-	else
-		fn1 = fibo(n-1);
-
-	n2 = answers.find(n-2);
-	if(n2!=answers.end())
-		fn2 = n2->second;
-	else
-		fn2 = fibo(n-2);
-	
-	unsigned long result = fn1 + fn2;
-	answers[n]=result;
-	return result;
-}
-
-
-const bool has    = true;
-const bool hasnot = false;
-
-struct state {
-    lref<string> _monkeyHoriz;
-    lref<string> _monkeyVert;
-    lref<string> _boxPos;
-    lref<bool>   _hasBanana;
-
-	state(lref<string> h, lref<string> v, lref<string> p, lref<bool> s)
-       : _monkeyHoriz(h), _monkeyVert(v), _boxPos(p), _hasBanana(s) 
-	{}
-	
-	bool alldefined() const {
-		return _monkeyHoriz.defined() &&  _monkeyVert.defined() &&  _boxPos.defined() && _hasBanana.defined();
-
-	}
-	bool operator ==(const state& rhs) const {
-		if(alldefined() && rhs.alldefined())  
-			return *_monkeyHoriz==*(rhs._monkeyHoriz)  && *_monkeyVert==*(rhs._monkeyVert) && *_boxPos==*(rhs._boxPos) && *_hasBanana==*(rhs._hasBanana);
-		else 
-			return false;
-   }
-};
-
-
-// Data member level unification support for state
-template<class T>
-struct Eq_m  : Coroutine {   // definition of class Coroutine and macros co_* are given at the bottom. 
-  lref<state> s;
-  lref<T> state::* mem;   // pointer to a lref data member of state
-  lref<T> rhs;
-
-  Eq_m (lref<state> s, lref<T> state::* mem, const lref<T>& rhs) : s(s), mem(mem), rhs(rhs)
-  { }
- 
-  // Compare the two
-  bool operator() (void)  {
-       co_begin();  // default first line .. beginning of coroutine
-
-	   if( rhs.defined() ) {
-		   if( ((*s).*mem).defined() ) {
-				co_return( *((*s).*mem) == *rhs  ); // returns result of comparison to caller. All future invocations of operator() will return false
-		   }
-		   else {
-			   (*s).*mem = rhs;
-				co_yield(true);    // returns true to caller. But next time operator() is invoked execution skips all above code and resumes from next statement 
-				((*s).*mem).reset();  // undo side effects
-		   }
-	   }
-       co_end();  // default last line .. end of coroutine
-  }
-};
-
-
-template<class T>
-Eq_m<T> eq_m( lref<state> s, lref<T> state::* mem, lref<T> rhs ) {
-       return Eq_m<T>(s,mem,rhs);
-}
-
-struct Spin {
-	string s;
-	Spin(string& s) : s(s) {}
-	string& operator()(void) {
-		rotate(s.begin(), s.begin()+1, s.end());
-		s.append("9");
-		return s;
-	}
-};
-
-struct CFunc {
-	typedef int result_type;
-	int operator()(void) {
-		return 7;
-	}
-	int operator()(void) const{
-		return 9;
-	}
-};
+//struct triplet {
+//	lref<int> p1,p2,p3;
+//	triplet(lref<int> p1, lref<int> p2, lref<int> p3) : p1(p1), p2(p2), p3(p3)
+//	{ }
+//	bool operator==(const triplet& rhs) {
+//		return *p1==*rhs.p1 && *p2==*rhs.p2 && *p3==*rhs.p3;
+//	}
+//};
+//
+//template<typename A1,  typename A2>
+//struct Recall_2 : public TestOnlyRelation<Recall_2<A1,A2> > {
+//	lref<set<pair<A1,A2> > > s;
+//	lref<A1> a1; lref<A2> a2;
+//	pair<A1,A2> p;
+//	Recall_2 (lref<set<pair<A1,A2> > > s, const lref<A1>& a1, const lref<A2>& a2) : s(s), a1(a1), a2(a2)
+//	{ }
+//
+//	bool operator()(void) {
+//		co_begin();
+//		while( true ) {
+//			if(!a1.defined() || !a2.defined()) {
+//				co_yield(true)
+//				continue;
+//			}
+//			p = make_pair(*a1,*a2);
+//			if( s->find(p)==s->end() ) {
+//				s->insert(p);
+//				co_yield( true );
+//			}
+//			else 
+//				co_yield(false);
+//		}
+//		co_end();
+//	}
+//};
+//
+//template<typename A1,  typename A2>
+//struct Recall /*: public TestOnlyRelation<Recall<A1,A2> >*/ {
+//	lref<set<pair<A1,A2> > > s;
+//	lref<A1> a1; lref<A2> a2;
+//	pair<A1,A2> p;
+//	Recall (lref<set<pair<A1,A2> > > s, const lref<A1>& a1, const lref<A2>& a2) : s(s), a1(a1), a2(a2)
+//	{ }
+//
+//	bool operator()(void) {
+//		if(!a1.defined()) {
+//			if(!a2.defined())
+//				p = make_pair(-1,-1);
+//			else
+//				p = make_pair(-1,*a2);
+//		} else if (!a2.defined()) {
+//			p = make_pair(*a1,-1);
+//		}
+//		else 
+//			p = make_pair(*a1,*a2);
+//		if( s->find(p)==s->end() ) {
+//			s->insert(p);
+//			return true ;
+//		}
+//		return false;
+//	}
+//};
+//
+//
+//typedef pair<int,int> pr;
+//
+//template<typename A1, typename A2> inline
+//Recall<A1,A2> recall(lref<set<pr> > s, lref<A1>& a1, lref<A2>& a2) {
+//	return Recall<A1,A2>(s,a1,a2);
+//}
+//
+//relation redge(lref<int> n1, lref<int> n2) {
+//    return eq(n1,1) && eq(n2,2)
+//        || eq(n1,2) && eq(n2,3)
+//        || eq(n1,3) && eq(n2,1)
+//        || eq(n1,3) && eq(n2,4)
+//        || eq(n1,4) && eq(n2,5) ;
+//}
+//
+//relation rpath_body(lref<set<pr> > s, lref<int> n1, lref<int> n2) {
+//    lref<int> X;
+//    return  recall(s,n1,n2) && (   redge(n1, n2)
+//                                || redge(n1, X) && recurse(rpath_body, s, X, n2) );
+//}
+//
+//relation rpath(lref<int> n1, lref<int> n2) {
+//    lref<set<pr> > s = set<pr>();
+//    return rpath_body(s, n1, n2) ;
+//}
+//
+//template<typename Rel>
+//struct Memo_r : public Coroutine {
+//	relation rel;
+//	lref<unsigned long> p1, p2; 
+//	lref<map<unsigned long,unsigned long> > m;
+//	pr p;
+//	bool b, p2WasDefined;
+//
+//	Memo_r(Rel r, lref<unsigned long> p1, lref<unsigned long> p2, lref<map<unsigned long,unsigned long> > m) : rel(recurse(r,p1,p2,m)), p1(p1), p2(p2), m(m), b(false), p2WasDefined(false)
+//	{ }
+//	
+//	bool operator() (void) {
+//		map<unsigned long,unsigned long>::iterator tmp;
+//		co_begin();
+//		p2WasDefined=p2.defined();
+//		if( p1.defined() ) {
+//			tmp = m->find(*p1);
+//			if( tmp==m->end() ) { // not computed previously
+//				if(rel()) {
+//					m->insert(make_pair(*p1,*p2));
+//					co_yield(true);
+//				}
+//				else
+//					co_return(false);
+//			}
+//			else { // computed previously
+//				if(p2.defined()) {
+//					co_yield(*p2==tmp->second);
+//				}
+//				else {
+//					p2=tmp->second;
+//					co_yield(true);
+//					p2.reset();
+//					co_return(false)
+//				}
+//			}
+//		} // if( p1.defined() )
+//		else { 
+//			// .. todo: check if p2 is defined
+//			if(rel()) {
+//				m->insert(make_pair(*p1,*p2));
+//				co_return(true);
+//			} 
+//			else
+//				co_return(false);
+//		}
+//		co_end();
+//	}
+//	void reset() {
+//		if(!p2WasDefined && p2.defined())
+//			throw "Reset may have to do some resetting";
+//	}
+//	typedef int UseFastAnd;
+//};
+//
+//template<typename Rel>
+//Memo_r<Rel> memo(Rel r, lref<unsigned long> p1, lref<unsigned long> p2, lref<map<unsigned long,unsigned long> > m) {
+//	return Memo_r<Rel>(r,p1,p2,m);
+//}
+//
+//
+//relation fib_(lref<unsigned long> n, lref<unsigned long> f, lref<map<unsigned long,unsigned long> > m) {
+//	lref<unsigned long> n1,n2, f1,f2;
+//	return     eq(n,0) && eq(f,0)
+//			|| eq(n,1) && eq(f,1) 
+//			|| eq_f(n1,n-1) && eq_f(n2,n-2) && memo(fib_,n1,f1,m) && memo(fib_,n2,f2,m) && eq_f(f,f1+f2);
+//}
+//
+//relation fib(lref<unsigned long> n, lref<unsigned long> f) {
+//	lref<map<unsigned long,unsigned long> > m(new map<unsigned long,unsigned long>(), true);
+//	return memo(fib_,n,f,m);
+//}
+//
+//
+//
+//relation fib2(lref<int> n, lref<int> f) {
+//	lref<int> n1, n2, f1, f2;
+//	return     eq(n,0) && eq(f,0)
+//			|| eq(n,1) && eq(f,1) 
+//			|| prev(n,n1) && prev(n1,n2) && recurse(fib2,n1,f1) && recurse(fib2,n2,f2) && eq_f(f,f1+f2);
+//}
+//
+//map<unsigned long,unsigned long> answers;
+//
+//unsigned long
+//fibo(unsigned long n) {
+//	unsigned long fn1=0,fn2=0;
+//	if(n==0) {
+//		answers[n]=0;
+//		return 0;
+//	}
+//	if(n==1) {
+//		answers[n]=1;
+//		return 1;
+//	}
+//	map<unsigned long,unsigned long>::iterator n1 = answers.find(n-1), n2;
+//	if(n1!=answers.end())
+//		fn1 = n1->second;
+//	else
+//		fn1 = fibo(n-1);
+//
+//	n2 = answers.find(n-2);
+//	if(n2!=answers.end())
+//		fn2 = n2->second;
+//	else
+//		fn2 = fibo(n-2);
+//	
+//	unsigned long result = fn1 + fn2;
+//	answers[n]=result;
+//	return result;
+//}
+//
+//
+//const bool has    = true;
+//const bool hasnot = false;
+//
+//struct state {
+//    lref<string> _monkeyHoriz;
+//    lref<string> _monkeyVert;
+//    lref<string> _boxPos;
+//    lref<bool>   _hasBanana;
+//
+//	state(lref<string> h, lref<string> v, lref<string> p, lref<bool> s)
+//       : _monkeyHoriz(h), _monkeyVert(v), _boxPos(p), _hasBanana(s) 
+//	{}
+//	
+//	bool alldefined() const {
+//		return _monkeyHoriz.defined() &&  _monkeyVert.defined() &&  _boxPos.defined() && _hasBanana.defined();
+//
+//	}
+//	bool operator ==(const state& rhs) const {
+//		if(alldefined() && rhs.alldefined())  
+//			return *_monkeyHoriz==*(rhs._monkeyHoriz)  && *_monkeyVert==*(rhs._monkeyVert) && *_boxPos==*(rhs._boxPos) && *_hasBanana==*(rhs._hasBanana);
+//		else 
+//			return false;
+//   }
+//};
+//
+//
+//// Data member level unification support for state
+//template<class T>
+//struct Eq_m  : Coroutine {   // definition of class Coroutine and macros co_* are given at the bottom. 
+//  lref<state> s;
+//  lref<T> state::* mem;   // pointer to a lref data member of state
+//  lref<T> rhs;
+//
+//  Eq_m (lref<state> s, lref<T> state::* mem, const lref<T>& rhs) : s(s), mem(mem), rhs(rhs)
+//  { }
+// 
+//  // Compare the two
+//  bool operator() (void)  {
+//       co_begin();  // default first line .. beginning of coroutine
+//
+//	   if( rhs.defined() ) {
+//		   if( ((*s).*mem).defined() ) {
+//				co_return( *((*s).*mem) == *rhs  ); // returns result of comparison to caller. All future invocations of operator() will return false
+//		   }
+//		   else {
+//			   (*s).*mem = rhs;
+//				co_yield(true);    // returns true to caller. But next time operator() is invoked execution skips all above code and resumes from next statement 
+//				((*s).*mem).reset();  // undo side effects
+//		   }
+//	   }
+//       co_end();  // default last line .. end of coroutine
+//  }
+//};
+//
+//
+//template<class T>
+//Eq_m<T> eq_m( lref<state> s, lref<T> state::* mem, lref<T> rhs ) {
+//       return Eq_m<T>(s,mem,rhs);
+//}
+//
+//struct Spin {
+//	string s;
+//	Spin(string& s) : s(s) {}
+//	string& operator()(void) {
+//		rotate(s.begin(), s.begin()+1, s.end());
+//		s.append("9");
+//		return s;
+//	}
+//};
+//
+//struct CFunc {
+//	typedef int result_type;
+//	int operator()(void) {
+//		return 7;
+//	}
+//	int operator()(void) const{
+//		return 9;
+//	}
+//};
 
 
 //template<class K, class V> inline
@@ -990,8 +990,8 @@ struct mod3 {
 void bar() {
 	{
 		lref<int> i,j;
-		lref<group<int,group<int,int>>> g1;
-		lref<group<int,int>> g2;
+		lref<group<int,group<int,int> > > g1;
+		lref<group<int,int> > g2;
 		relation r = range(i,1,30000) >> group_by(i, mod10(), g1).then(mod3()) ;
 		//relation r = range(i,1,30000) >> group_by(i, mod10(), g2) ;
 		clock_t start = clock();
