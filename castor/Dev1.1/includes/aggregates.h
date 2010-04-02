@@ -590,7 +590,12 @@ public:
 		return iterator(getV,last);
 	}
 
+#ifdef __GNUG__
 	template<int N, class ElementT>
+	struct GCC {
+#else
+	template<int N, class ElementT>
+#endif
 	static group get_group(lref<std::vector<ElementT> >& v, size_t first, size_t last) {
 		using namespace detail;
 		if( first>=last || v->size()<last)
@@ -605,6 +610,9 @@ public:
 		}
 		return group( nth<N,K>::key((*v)[first]), first, end1, nthValue<ElementT>(v) );
 	}
+#ifdef __GNUG__
+	};
+#endif
 };
 
 template<class K, class V, class T>
@@ -649,8 +657,12 @@ public:
 	iterator end() const {
 		return subgroups->end();
 	}
-
+#ifdef __GNUG__
 	template<int N, class T>
+	struct GCC {
+#else
+	template<int N, class T>
+#endif
 	static group get_group(lref<std::vector<T> >& v, size_t first, size_t last) {
 		using namespace detail;
 		if( first>=last || v->size()<last)
@@ -663,10 +675,17 @@ public:
 		}
 		lref<std::vector<value_type> > subgroups(new std::vector<value_type>(), true);
 		for(size_t first2=first; first2<end1; first2=subgroups->rbegin()->last )
+#ifdef __GNUG__
+			subgroups->push_back( value_type::template GCC<N+1,T>::get_group(v, first2, end1) );
+#else
 			subgroups->push_back( value_type::get_group<N+1,T>(v, first2, end1) );
+#endif
 
 		return group( nth<N,K>::key(rvec[first]), subgroups, first, end1);
 	}
+#ifdef __GNUG__
+	};
+#endif
 };
 
 //------------------------------------------
@@ -927,7 +946,11 @@ public:
 		std::sort(elements->begin(), elements->end(), detail::GroupElemCmp<KCmp,detail::None>(keyCmps,detail::None()));
  
 		for(; first<elements->size(); first = g->last) {
+#ifdef __GNUG__
+			g = Grp::template GCC<1,ElementType>::get_group(elements, first, elements->size());
+#else
 			g = Grp::get_group<1>(elements, first, elements->size());
+#endif
 			co_yield(true);
 		}
 		g.reset();
