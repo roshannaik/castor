@@ -974,35 +974,35 @@ void runtests() {
 //		&& write_grp(subgroup);
 //}
 
-struct mod10 {
-	typedef int result_type;
-	int operator()(int i) {
-		return i%10;
-	}
-};
-
-struct mod3 {
-	typedef int result_type;
-	int operator()(int i) {
-		return i%3;
-	}
-};
+//struct mod10 {
+//	typedef int result_type;
+//	int operator()(int i) {
+//		return i%10;
+//	}
+//};
+//
+//struct mod3 {
+//	typedef int result_type;
+//	int operator()(int i) {
+//		return i%3;
+//	}
+//};
 void bar() {
 	{
-		lref<int> i,j;
-		lref<group<int,group<int,int> > > g1;
-		lref<group<int,int> > g2;
-		relation r = range(i,1,30000) >> group_by(i, mod10(), g1).then(mod3()) ;
-		//relation r = range(i,1,30000) >> group_by(i, mod10(), g2) ;
-		clock_t start = clock();
-		while(r()) {
-			relation r2 = item(g2,g1);
-			while(r2()) {
-				relation r3 = item(j,g2);
-				while(r());
-			}
-		}
-		cout << (clock() - start) ;
-		cout << " ms\n";
+		//lref<int> i,j;
+		//lref<group<int,group<int,int> > > g1;
+		//lref<group<int,int> > g2;
+		//relation r = range(i,1,30000) >> group_by(i, mod10(), g1).then(mod3()) ;
+		////relation r = range(i,1,30000) >> group_by(i, mod10(), g2) ;
+		//clock_t start = clock();
+		//while(r()) {
+		//	relation r2 = item(g2,g1);
+		//	while(r2()) {
+		//		relation r3 = item(j,g2);
+		//		while(r());
+		//	}
+		//}
+		//cout << (clock() - start) ;
+		//cout << " ms\n";
 	}
 }
