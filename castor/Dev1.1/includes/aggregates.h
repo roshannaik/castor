@@ -838,7 +838,7 @@ struct GroupElemCmp {
 	{ }
 
 	template<class T>
-	bool operator ()(T& lhs, const T& rhs) {
+	bool operator ()(const T& lhs, const T& rhs) {
 		if(keyCmp(lhs.second,rhs.second))
 			return true;
 		if(keyCmp(rhs.second,lhs.second))
@@ -854,7 +854,7 @@ struct GroupElemCmp<KeyCmp,None> {
 	{ }
 
 	template<class T>
-	bool operator ()(T& lhs, const T& rhs) {
+	bool operator ()(const T& lhs, const T& rhs) {
 		return keyCmp(lhs.second,rhs.second);
 	}
 };
@@ -942,8 +942,9 @@ public:
 			elements->push_back(std::make_pair(*i,selectors(*i)));
 		if(elements->empty())
 			co_return(false);
-		
-		std::sort(elements->begin(), elements->end(), detail::GroupElemCmp<KCmp,detail::None>(keyCmps,detail::None()));
+
+		typedef detail::GroupElemCmp<KCmp,detail::None> GCmp;
+		std::sort(elements->begin(), elements->end(), GCmp(keyCmps,detail::None()));
  
 		for(; first<elements->size(); first = g->last) {
 #ifdef __GNUG__
@@ -982,8 +983,9 @@ public:
 			elements->push_back(std::make_pair(*i,selectors(*i)));
 		if(elements->empty())
 			co_return(false);
-		
-		std::sort(elements->begin(), elements->end(), detail::GroupElemCmp<KCmp,VCmp>(keyCmps,valueCmp));
+
+		typedef detail::GroupElemCmp<KCmp,VCmp> GCmp;
+		std::sort(elements->begin(), elements->end(), GCmp(keyCmps,valueCmp));
  
 		for(; first<elements->size(); first = g->last) {
 #ifdef __GNUG__
