@@ -986,7 +986,11 @@ public:
 		std::sort(elements->begin(), elements->end(), detail::GroupElemCmp<KCmp,VCmp>(keyCmps,valueCmp));
  
 		for(; first<elements->size(); first = g->last) {
+#ifdef __GNUG__
+			g = Grp::template GCC<1,ElementType>::get_group(elements, first, elements->size());
+#else
 			g = Grp::get_group<1>(elements, first, elements->size());
+#endif
 			co_yield(true);
 		}
 		g.reset();
