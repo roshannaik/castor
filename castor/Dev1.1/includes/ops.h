@@ -120,7 +120,7 @@ public:
 
 namespace detail {
 struct twoBytes { char a[2]; };
-template<typename T> char     fastAndCheck(typename T::UseFastAnd const*);
+template<typename T> char     fastAndCheck(typename T::UseFastAnd *);
 template<typename T> twoBytes fastAndCheck(...);
 
 } // namespace detail
@@ -161,9 +161,9 @@ And_r<relation,R,IsTestOnlyRelation<R>::result> operator && (const relation & l,
 
 template<typename L, typename R>
 class ExOr_r : public Coroutine {
-	bool lSucceeded;
     L l; 
     R r;
+	bool lSucceeded;
 public:
     ExOr_r(const L& l, const R& r) : l(l), r(r), lSucceeded(false)
     { }
@@ -176,8 +176,9 @@ public:
       }
       if(lSucceeded)
         co_return(false);
-      while(r())
+	  while(r()) {
         co_yield(true);
+	  }
       co_end();
     }
 };

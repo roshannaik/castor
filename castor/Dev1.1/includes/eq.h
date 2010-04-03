@@ -275,8 +275,8 @@ public:
 template<typename L, typename Func1, typename A1>
 class Eq_f_r1 : public Coroutine {
     lref<L> l;
-    A1 arg1;
     Func1 func;
+    A1 arg1;
 public:
     Eq_f_r1 (const lref<L>& l, const Func1& func, const A1& arg1) : l(l), func(func), arg1(arg1)
     { }
@@ -295,8 +295,8 @@ public:
 template<typename L, typename Func2, typename A1, typename A2>
 class Eq_f_r2 : public Coroutine {
     lref<L> l;
-    A1 arg1; A2 arg2; 
     Func2 func;
+    A1 arg1; A2 arg2; 
 public:
     Eq_f_r2 (const lref<L>& l, const Func2& func, const A1& arg1, const A2& arg2) : l(l), func(func), arg1(arg1), arg2(arg2)
     { }
@@ -316,8 +316,8 @@ public:
 template<typename L, typename Func3, typename A1, typename A2, typename A3>
 class Eq_f_r3 : public Coroutine {
     lref<L> l;
-    A1 arg1; A2 arg2; A3 arg3;
     Func3 func;
+    A1 arg1; A2 arg2; A3 arg3;
 public:
     Eq_f_r3 (const lref<L>& l, const Func3& func, const A1& arg1, const A2& arg2, const A3& arg3) : l(l), func(func), arg1(arg1), arg2(arg2), arg3(arg3)
     { }
@@ -336,8 +336,8 @@ public:
 template<typename L, typename Func4, typename A1, typename A2, typename A3, typename A4>
 class Eq_f_r4 : public Coroutine {
     lref<L> l;
-    A1 arg1; A2 arg2; A3 arg3; A4 arg4;
     Func4 func;
+    A1 arg1; A2 arg2; A3 arg3; A4 arg4;
 public:
     Eq_f_r4 (const lref<L>& l, const Func4& func, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4) : l(l), func(func), arg1(arg1), arg2(arg2), arg3(arg3), arg4(arg4)
     { }
@@ -357,8 +357,8 @@ public:
 template<typename L, typename Func5, typename A1, typename A2, typename A3, typename A4, typename A5>
 class Eq_f_r5 : public Coroutine {
     lref<L> l;
-    A1 arg1; A2 arg2; A3 arg3; A4 arg4; A5 arg5;
     Func5 func;
+    A1 arg1; A2 arg2; A3 arg3; A4 arg4; A5 arg5;
 public:
     Eq_f_r5 (const lref<L>& l, const Func5& func, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, const A5& arg5) : l(l), func(func), arg1(arg1), arg2(arg2), arg3(arg3), arg4(arg4), arg5(arg5)
     { }
@@ -377,8 +377,8 @@ public:
 template<typename L, typename Func6, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
 class Eq_f_r6 : public Coroutine {
     lref<L> l;
-    A1 arg1; A2 arg2; A3 arg3; A4 arg4; A5 arg5; A6 arg6;
     Func6 func;
+    A1 arg1; A2 arg2; A3 arg3; A4 arg4; A5 arg5; A6 arg6;
 public:
     Eq_f_r6 (const lref<L>& l, const Func6& func, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, const A5& arg5, const A6& arg6) : l(l), func(func), arg1(arg1), arg2(arg2), arg3(arg3), arg4(arg4), arg5(arg5), arg6(arg6)
     { }
