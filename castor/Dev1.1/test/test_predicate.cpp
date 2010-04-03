@@ -35,10 +35,10 @@ struct Functor {
         return i==j==k==l==*m==n;
     }
 
-    bool ternaryConstPred(int i, const int j, int k) const {
+    bool ternaryConstPred(int, const int, int) const {
         return true;
     }
-    static bool staticMembPred(int i) {
+    static bool staticMembPred(int) {
         return true;
     }
 };
