@@ -201,9 +201,10 @@ struct OrderByBase : public Coroutine {
 		
 		std::sort(v.begin(), v.end(), pred);
 		for(itr=v.begin(); itr!=v.end(); ++itr) {
-			obj = *itr;
+			obj.set_ptr(&*itr,false);
 			co_yield(true);
 		}
+		obj.reset();
 		co_end();
 	}
 };
