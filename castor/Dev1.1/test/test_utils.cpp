@@ -10,28 +10,28 @@ int getNIntResult=0;
 double getNDblResult=0;
 
 int getN(void)                                               { return getNIntResult=0; }
-int getN(int i1)                                             { return getNIntResult=1; }
-int getN(int i1, int i2)                                     { return getNIntResult=2; }
-int getN(int i1, int i2, int i3)                             { return getNIntResult=3; }
-int getN(int i1, int i2, int i3, int i4)                     { return getNIntResult=4; }
-int getN(int i1, int i2, int i3, int i4, int i5)             { return getNIntResult=5; }
-int getN(int i1, int i2, int i3, int i4, int i5, int i6)     { return getNIntResult=6; }
+int getN(int /*i1*/)                                             { return getNIntResult=1; }
+int getN(int /*i1*/, int /*i2*/)                                     { return getNIntResult=2; }
+int getN(int /*i1*/, int /*i2*/, int /*i3*/)                             { return getNIntResult=3; }
+int getN(int /*i1*/, int /*i2*/, int /*i3*/, int /*i4*/)                     { return getNIntResult=4; }
+int getN(int /*i1*/, int /*i2*/, int /*i3*/, int /*i4*/, int /*i5*/)             { return getNIntResult=5; }
+int getN(int /*i1*/, int /*i2*/, int /*i3*/, int /*i4*/, int /*i5*/, int /*i6*/)     { return getNIntResult=6; }
 
-double getN(double i1)                                                            { return getNDblResult=-1; }
-double getN(double i1, double i2)                                                 { return getNDblResult=-2; }
-double getN(double i1, double i2, double i3)                                      { return getNDblResult=-3; }
-double getN(double i1, double i2, double i3, double i4)                           { return getNDblResult=-4; }
-double getN(double i1, double i2, double i3, double i4, double i5)                { return getNDblResult=-5; }
-double getN(double i1, double i2, double i3, double i4, double i5, double i6)     { return getNDblResult=-6; }
+double getN(double /*i1*/)                                                            { return getNDblResult=-1; }
+double getN(double /*i1*/, double /*i2*/)                                                 { return getNDblResult=-2; }
+double getN(double /*i1*/, double /*i2*/, double /*i3*/)                                      { return getNDblResult=-3; }
+double getN(double /*i1*/, double /*i2*/, double /*i3*/, double /*i4*/)                           { return getNDblResult=-4; }
+double getN(double /*i1*/, double /*i2*/, double /*i3*/, double /*i4*/, double /*i5*/)                { return getNDblResult=-5; }
+double getN(double /*i1*/, double /*i2*/, double /*i3*/, double /*i4*/, double /*i5*/, double /*i6*/)     { return getNDblResult=-6; }
 
 
 int getN2Result=0;
-double getN2(double i1)                                                            { return getN2Result=-1; }
-double getN2(double i1, lref<double> i2)                                           { return getN2Result=-2; }
-double getN2(lref<double> i1, double i2, double i3)                                { return getN2Result=-3; }
-double getN2(double i1, double i2, double i3, double i4)                           { return getN2Result=-4; }
-double getN2(double i1, double i2, double i3, double i4, double i5)                { return getN2Result=-5; }
-double getN2(double i1, double i2, double i3, double i4, double i5, double i6)     { return getN2Result=-6; }
+double getN2(double /*i1*/)                                                            { return getN2Result=-1; }
+double getN2(double /*i1*/, lref<double> /*i2*/)                                           { return getN2Result=-2; }
+double getN2(lref<double> /*i1*/, double /*i2*/, double /*i3*/)                                { return getN2Result=-3; }
+double getN2(double /*i1*/, double /*i2*/, double /*i3*/, double /*i4*/)                           { return getN2Result=-4; }
+double getN2(double /*i1*/, double /*i2*/, double /*i3*/, double /*i4*/, double /*i5*/)                { return getN2Result=-5; }
+double getN2(double /*i1*/, double /*i2*/, double /*i3*/, double /*i4*/, double /*i5*/, double /*i6*/)     { return getN2Result=-6; }
 
 
 struct Functor6 {

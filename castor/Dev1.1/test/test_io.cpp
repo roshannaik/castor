@@ -11,7 +11,7 @@
 using namespace std;
 using namespace castor;
 
-int getN(int i1, int i2, int i3, int i4, int i5, int i6)     { return 6; }
+int getN(int /*i1*/, int /*i2*/, int /*i3*/, int /*i4*/, int /*i5*/, int /*i6*/)     { return 6; }
 
 void test_writeTo() {
 	{ // write value to stream
@@ -42,7 +42,7 @@ void test_writeAllTo() {
     vector<string> vs (as,as+4);
     if(!writeAllTo(sstrm,vs.begin(),vs.end(),"")())
         throw "failed test_writeAllTo 2"; 
-    string s; int i=0;
+    string s;
     while(sstrm >> s) {
       if(s!="1234")
           throw "failed test_writeAllTo 2"; 
@@ -53,7 +53,7 @@ void test_writeAllTo() {
     lref<vector<string> > vls = vector<string>(as,as+4);
     if(!writeAllTo(sstrm,vls,"")())
         throw "failed test_writeAllTo 3"; 
-    string s; int i=0;
+    string s;
     while(sstrm >> s) {
       if(s!="1234")
           throw "failed test_writeAllTo 3"; 
@@ -66,7 +66,7 @@ void test_writeAllTo() {
     lref<vector<string>::iterator> b,e;
     relation r = begin(lvs,b) && end(lvs,e) && writeAllTo(sstrm,b,e,"");
     while(r());
-    string s; int i=0;
+    string s;
     while(sstrm >> s) {
       if(s!="1234")
           throw "failed test_writeAllTo 4"; 

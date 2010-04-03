@@ -16,11 +16,11 @@ namespace castor {
 
 template<typename Cont, typename Index>
 class At {
-	lref<Cont>& c;
+	lref<Cont> c;
     Index i;
 public:
 	typedef typename Cont::value_type result_type;
-    At(lref<Cont>& c, Index i) : c(c), i(i) 
+    At(const lref<Cont>& c, Index i) : c(c), i(i) 
     { }
 
 	typename Cont::value_type operator()(void) {

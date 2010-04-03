@@ -49,7 +49,7 @@ struct Pause_r : Coroutine {
 
 template<>
 struct Pause_r<const char*> : Coroutine {
-	const std::string s;
+	std::string s;
 	Pause_r(std::string s) : s(s)
 	{ }
 	bool operator()(void) {
@@ -134,7 +134,7 @@ relation empty(const Cont& c) {
 template<typename Cont> inline
 relation not_empty(lref<Cont>& c_) {
     lref<typename Cont::size_type> sz;
-    return size(c_, sz) && predicate(sz!=0);
+    return size(c_, sz) && predicate(sz!=(size_t)0);
 }
 
 // this overload allows calls to not_empty without explicit template type arguments

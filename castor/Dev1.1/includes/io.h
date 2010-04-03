@@ -710,14 +710,14 @@ template<typename Obj, typename MemberT>
 class WriteMem_r : public Coroutine {
 	lref<Obj> obj_;
 	MemberT Obj::* mem;
-    std::ostream& outputStrm;
+    std::ostream* outputStrm;
 public:
-	WriteMem_r(const lref<Obj>& obj_, MemberT Obj::* mem, std::ostream& outputStrm=std::cout) : obj_(obj_), mem(mem), outputStrm(outputStrm)
+	WriteMem_r(const lref<Obj>& obj_, MemberT Obj::* mem, std::ostream& outputStrm=std::cout) : obj_(obj_), mem(mem), outputStrm(&outputStrm)
 	{ }
 
     bool operator() (void) {
 		co_begin();
-		co_return ( (outputStrm << (*obj_).*mem)? true :false );
+		co_return ( (*outputStrm << (*obj_).*mem)? true :false );
 		co_end();
 	}
 };

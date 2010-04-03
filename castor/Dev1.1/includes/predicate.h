@@ -96,7 +96,7 @@ struct Predicate6_r : public TestOnlyRelation<Predicate6_r<Pred,A1,A2,A3,A4,A5,A
 	Pred pred;
 	A1 a1;	A2 a2;	A3 a3;	A4 a4;	A5 a5;  A6 a6;
 
-	Predicate6_r (const Pred& pred, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6) : pred(pred), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5), a6(6)
+	Predicate6_r (const Pred& pred, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6) : pred(pred), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5), a6(a6)
 	{ }
 
 	bool apply() {

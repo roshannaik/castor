@@ -398,7 +398,7 @@ void test_mcall() {
 		string values[] = {"four","","one", "","two","three"};
 		lref<string> s;
 		int count=0;
-		for( relation r = item(s,values,values+6) && predicate(mcall(s,&string::length)==0); r(); ++count )
+		for( relation r = item(s,values,values+6) && predicate(mcall(s,&string::length)==(size_t)0); r(); ++count )
 			if(s->length()!=0)
 				throw "failed test_mcall 1";
 		if( count!=2)

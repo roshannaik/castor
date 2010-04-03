@@ -668,7 +668,7 @@ public:
 		if( first>=last || v->size()<last)
 			throw IndexOutOfBounds();
 		std::vector<T>& rvec = v.get();
-		size_t end1=0, first2=first;
+		size_t end1=0;
 		for(end1=first+1; end1!=last; ++end1) {
 			if( nth<N,K>::key(rvec[end1]) != nth<N,K>::key(rvec[first]) )
 				break;
