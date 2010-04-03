@@ -188,7 +188,7 @@ template<typename T>
 class Range_Step_r : public Coroutine {
     lref<T> val, min_, max_, step_;
 public:
-    Range_Step_r(lref<T> val, const lref<T>& min_, const lref<T>& max_, const lref<T>& step_) : min_(min_), max_(max_), step_(step_), val(val)
+    Range_Step_r(lref<T> val, const lref<T>& min_, const lref<T>& max_, const lref<T>& step_) : val(val), min_(min_), max_(max_), step_(step_)
     { }
 
     bool operator () (void) {
@@ -266,8 +266,8 @@ relation ritem(lref<typename Cont::value_type> obj, lref<Cont>& cont_) {
 
 template<typename T>
 class Unique_r : public Coroutine {
-    lref<std::set<T> > items;
     lref<T> item_;
+	lref<std::set<T> > items;
 public:
     Unique_r(const lref<T>& item_) : item_(item_), items(std::set<T>())
     { }
@@ -456,9 +456,9 @@ Head_r<Seq> head(lref<Seq>& seq_, lref<typename Seq::value_type> h) {
 //------------------------------------------------------------------
 template<typename Seq, typename HeadSeq>
 class Head_n_r : public Coroutine {
-    lref<HeadSeq> h;
-    lref<typename HeadSeq::size_type> n_;
     lref<Seq> seq_;
+    lref<typename HeadSeq::size_type> n_;
+    lref<HeadSeq> h;
 public:
     Head_n_r(const lref<Seq>& seq_, const lref<typename HeadSeq::size_type>& n_, const lref<HeadSeq>& h) : seq_(seq_), n_(n_), h(h)
     { }
@@ -1509,7 +1509,7 @@ struct Repeat_r : public Coroutine {
 	lref<T> val, val_i, r;
 	unsigned int count_i;
 	unsigned int i;
-	Repeat_r(const lref<T>& val_i, const unsigned int count_i, const lref<T>& r) : val(), val_i(val_i), count_i(count_i), r(r) { 
+	Repeat_r(const lref<T>& val_i, const unsigned int count_i, const lref<T>& r) : val(), val_i(val_i), r(r), count_i(count_i) { 
 	}
 
 	bool operator()(void) {
