@@ -87,7 +87,7 @@ Aggregate_r operator >> (const relation& r, const agg_relation& ar) {
 
 template<typename T, typename Pred>
 struct Order_ar : public Coroutine {
-	lref<T> obj, initialValue;
+	lref<T> obj;
 	std::vector<T> v;
 	typename std::vector<T>::iterator itr;
 	Pred pred;
@@ -97,7 +97,8 @@ struct Order_ar : public Coroutine {
 
 	bool operator() (relation& r) {
 		co_begin();
-		initialValue = obj;
+		if(obj.defined())
+			co_return(false);
 		if(!r())
 			co_return(false);
 		do {
@@ -106,10 +107,10 @@ struct Order_ar : public Coroutine {
 
 		std::sort(v.begin(), v.end(),pred);
 		for(itr=v.begin(); itr!=v.end(); ++itr) {
-			obj = *itr;
+			obj.set_ptr(&*itr,false);
 			co_yield(true);
 		}
-		obj = initialValue;
+		obj.reset();
 		co_end();
 	}
 };
@@ -180,7 +181,7 @@ struct MfPred2 {
 
 template<typename T, typename Pred>
 struct OrderByBase : public Coroutine {
-	lref<T> obj, initialValue;
+	lref<T> obj;
 	std::vector<T> v;
 	typename std::vector<T>::iterator itr;
 	Pred pred;
@@ -190,7 +191,8 @@ struct OrderByBase : public Coroutine {
 
 	bool operator() (relation& r) {
 		co_begin();
-		initialValue = obj;
+		if(obj.defined())
+			co_return(false);
 		if(!r())
 			co_return(false);
 		do {
@@ -202,7 +204,6 @@ struct OrderByBase : public Coroutine {
 			obj = *itr;
 			co_yield(true);
 		}
-		obj = initialValue;
 		co_end();
 	}
 };
@@ -275,7 +276,7 @@ order_mem(lref<T>& obj, MemberT T::* mem, Pred p) {
 //-------------------------------------------------
 template<typename T>
 struct Reverse : public Coroutine {
-	lref<T> obj, initialValue;
+	lref<T> obj;
 	std::vector<T> v;
 	typename std::vector<T>::reverse_iterator itr;
 
@@ -284,7 +285,8 @@ struct Reverse : public Coroutine {
 
 	bool operator() (relation& r) {
 		co_begin();
-		initialValue = obj;
+		if(obj.defined())
+			co_return(false);
 		if(!r())
 			co_return(false);
 		do {
@@ -292,10 +294,9 @@ struct Reverse : public Coroutine {
 		} while(r());
 
 		for(itr=v.rbegin(); itr!=v.rend(); ++itr) {
-			obj = *itr;
+			obj.set_ptr(&*itr, false);
 			co_yield(true);
 		}
-		obj = initialValue;
 		co_end();
 	}
 };
