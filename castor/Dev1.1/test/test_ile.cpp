@@ -336,18 +336,17 @@ void test_call() {
     if( ! eq(6,call(My(),1,2,3,4,5,6)())() )
         throw "failed test_call 2";
     }
-	{
+	{ // invoking const and non const operator() 
 	const Func cf=Func();
-	if(call(cf,4)() != 4)
+	if(call<const Func>(cf,4)() != 4)
         throw "failed test_call 3";
-	Func f;
-	if(call(f,4)() != 5)
+	if(call<Func>(cf,4)() != 5)
         throw "failed test_call 3";
 	}
 	{
 	lref<int> i=0;
 	if( call(bar,i)()!=2 )
-		throw "what ?";
+		throw "failed test_call 4";
 	}
 
 }
