@@ -39,10 +39,10 @@ namespace detail {
 
 template<typename LRel, typename RRel>
 class CutAnd : public Coroutine {
-	enum {A, A1, A2, B, C} state;
     LRel l;
-    RRel rbegin;
     relation r;
+	enum {A, A1, A2, B, C} state;
+    RRel rbegin;
 public:
     CutAnd(const LRel& l, const RRel& r) : l(l), r(r), rbegin(r), state(A)
     { }
@@ -86,9 +86,9 @@ public:
 
 template<typename LRel, typename RRel/*=cut*/>
 class CutOr  {
-    bool leftdone, rightdone;
     LRel l;
     RRel r;
+    bool leftdone, rightdone;
 public:
     CutOr(const LRel& l, const RRel& r) : l(l), r(r), leftdone(false), rightdone(false)
     { }

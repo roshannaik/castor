@@ -75,8 +75,8 @@ bool equal_bags(InItr first_b, InItr first_e, InItr second_b, InItr second_e, Pr
 template<typename Cont, typename InItr>
 class Shuffle_r : public Coroutine {
 	typedef typename std::iterator_traits<typename effective_type<InItr>::result_type>::value_type value_type;
-	lref<Cont> shuf;
 	InItr begin_i, end_i;
+	lref<Cont> shuf;
 
 public:
 	Shuffle_r(InItr begin_i, InItr end_i, const lref<Cont>& shuf) : begin_i(begin_i), end_i(end_i), shuf(shuf) 
