@@ -41,8 +41,8 @@ template<typename LRel, typename RRel>
 class CutAnd : public Coroutine {
     LRel l;
     relation r;
-	enum {A, A1, A2, B, C} state;
     RRel rbegin;
+	enum {A, A1, A2, B, C} state;
 public:
     CutAnd(const LRel& l, const RRel& r) : l(l), r(r), rbegin(r), state(A)
     { }
