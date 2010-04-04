@@ -102,7 +102,7 @@ void test_ILE_more() {
 	{
 		lref<int> i=3;
 		int global=0;
-		if( (ref(global)+3!=3)() )
+		if( (ref(global)+i!=3)() )
 			throw "failed test_ILE_more 1";
 	}
 }
