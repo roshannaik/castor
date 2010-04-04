@@ -170,6 +170,15 @@ void swap(lref<T>& l, lref<T>& r) {
     l.swap(r);
 }
 
+//Get a lref to obj. This lref will not manage the obj.
+template<typename T> inline
+lref<T> ref(T& obj) {
+	return lref<T>(&obj,false);
+}
+
+template<typename T>
+lref<T>& ref(lref<T>& obj); // not defined
+
 
 // Helper function overloads to abstract away details of acquiring the value of lref<T>, or other T
 // This helps in avoiding multiple specializations of the operator classes that perform computation on lref<>
