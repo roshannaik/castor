@@ -93,8 +93,18 @@ void test_ILE() {
     relation r = predicate(lj+2-li > li+3-lj);
     int i=0;
     for(; r(); ++i);
-    if(i!=1) throw "failed test_ILE 2";
+    if(i!=1) 
+		throw "failed test_ILE 2";
     }
+}
+
+void test_ILE_more() {
+	{
+		lref<int> i=3;
+		int global=0;
+		if( (ref(global)+3!=3)() )
+			throw "failed test_ILE_more 1";
+	}
 }
 
 void test_eq_ILE() {
@@ -144,7 +154,6 @@ void test_eq_ILE() {
         throw "failed test_eq_ILE 4";
     }
 }
-
 
 struct My {
     int i;
@@ -235,6 +244,11 @@ void test_create() {
     if((create<string>(hello)+world)() == (hello+dear)())
         throw "failed test_create 2";
     }
+	{
+	string hello = "hello";
+	if((create<string,const char*>("hello")!= hello)())
+		throw "failed test_create 3";
+	}
 }
 
 struct Name {
@@ -404,6 +418,7 @@ void test_mcall() {
 			throw "failed test_mcall 1";
 	}
 }
+
 
 void test_at() {
 	lref<vector<int> > lv = vector<int>();

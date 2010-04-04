@@ -33,14 +33,14 @@ void test_shuffle() {
 	}	
 	{ // test mode
 	  lref<int> c;
-	  lref<string> s = "hello", ss;
+	  lref<string> s = "hello", ps;
 	  lref<string::iterator> sb = s->begin(), se = s->end();
-	  relation r = (permute(s,ss) && shuffle(ss,s)) >> count(c);
+	  relation r = (permute(s,ps) && shuffle(ps,s)) >> count(c);
 	  if(!r())
 		  throw "failed test_shuffle 3";
 	  if(*c!=60)
 		  throw  "failed test_shuffle 3";
-	  if(r() || c.defined() || ss.defined())
+	  if(r() || c.defined() || ps.defined())
 		  throw  "failed test_shuffle 3";
 	}
 }

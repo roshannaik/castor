@@ -7,6 +7,7 @@
 void test_Prefix_UnaryOps_ILE();
 void test_Postfix_UnaryOps_ILE();
 void test_ILE();
+void test_ILE_more();
 void test_eq_ILE();
 
 // named ILEs
