@@ -561,6 +561,7 @@ void runtests() {
 
     // ILE
     run_test( test_ILE );
+	run_test( test_ILE_more );
     run_test( test_eq_ILE );
     run_test( test_Create_with );
     run_test( test_create );
@@ -987,9 +988,25 @@ void runtests() {
 //		return i%3;
 //	}
 //};
+        char firstChar(const string& s) { return s[0]; };
+        char str_len(const string& s) { return s.size(); };
 void bar() {
 	{
-		//lref<int> i,j;
+        lref<string> n;
+        lref<vector<string> > names ;
+        lref<group<char,group<size_t,string> > > g;
+        relation r = item(n,names) >> group_by(n, &firstChar, g).then(&str_len);
+        while(r()) {
+           cout << "\n" << g->key;
+           lref<group<size_t,string> > g2;
+           relation subgroups = item(g2,g);
+           while(subgroups()) {
+                cout << "\n   " << g2->key << " : ";
+                lref<string> s;
+                relation values = item(s,g2);
+                while(values()) cout << *s << " ";
+           }
+        }		//lref<int> i,j;
 		//lref<group<int,group<int,int> > > g1;
 		//lref<group<int,int> > g2;
 		//relation r = range(i,1,30000) >> group_by(i, mod10(), g1).then(mod3()) ;

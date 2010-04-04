@@ -233,33 +233,6 @@ Ile<Get<Obj,MemberT> > get(const lref<Obj>& obj_, MemberT Obj::* mem) {
 
 
 //-------------------------------------------------
-// ref() - maintain a reference to an obj and return that reference on evaluation
-//-------------------------------------------------
-template<typename T>
-class Ref {
-    T& obj;
-public:
-    typedef T& result_type;
-
-    Ref(T& obj) :obj(obj)
-    { }
-
-    T& operator()(void) {
-        return obj;
-    }
-    const T& operator()(void) const {
-        return obj;
-    }
-};
-
-template<typename T> inline
-Ile<Ref<T> > ref(T& obj) {
-    return Ref<T>(obj);
-}
-
-
-
-//-------------------------------------------------
 // call() - invoke a function
 //-------------------------------------------------
 
