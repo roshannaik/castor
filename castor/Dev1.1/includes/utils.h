@@ -1067,6 +1067,9 @@ Error<ExceptionType> error( const ExceptionType& err ) {
     return Error<ExceptionType>(err);
 }
 
+// This overload is merely a workaround to easily allow: error("char* exceptions") 
+// This would normally be handled by defining a non-template relation error(char*)
+// But cannot do that as this is a pure template library
 template<typename ExceptionType> inline
 Error<const ExceptionType*> error( const ExceptionType* err ) {
     return Error<const ExceptionType*>(err);
