@@ -16,7 +16,7 @@ void test_order() {
 		sort(vi.begin(), vi.end());
 
 		lref<int> j;
-		relation r = item(j,ai,ai+10) >> order(j);
+		relation r = item(j,ai,ai+10) >>= order(j);
 		for(int i=0; r(); ++i) {
 			if(vi.at(i)!=*j)
 				throw "failed test_order 1";
@@ -34,7 +34,7 @@ void test_order_mf() {
 		vector<string> sorted_values(svalues,svalues+3);
 
 		lref<string> v;
-		relation r = item(v, values, values+3) >> order_mf(v, &string::length );
+		relation r = item(v, values, values+3) >>= order_mf(v, &string::length );
 		for(int i=0; r(); ++i) {
 			if(sorted_values.at(i)!=*v)
 				throw "failed test_order_mf 1";
@@ -48,7 +48,7 @@ void test_order_mf() {
 		vector<string> sorted_values(svalues,svalues+3);
 
 		lref<string> v;
-		relation r = item(v, values, values+3) >> order_mf(v, &string::length, greater<int>() );
+		relation r = item(v, values, values+3) >>= order_mf(v, &string::length, greater<int>() );
 		for(int i=0; r(); ++i) {
 			if(sorted_values.at(i)!=*v)
 				throw "failed test_order_mf 2";
@@ -78,7 +78,7 @@ void test_order_mem() {
 		vector<Number> sorted_values(svalues,svalues+4);
 
 		lref<Number> v;
-		relation r = item(v, values, values+4) >> order_mem(v, &Number::i );
+		relation r = item(v, values, values+4) >>= order_mem(v, &Number::i );
 		for(int i=0; r(); ++i) {
 			if(sorted_values.at(i).i!=v->i)
 				throw "failed test_order_mem 1";
@@ -92,7 +92,7 @@ void test_order_mem() {
 		vector<Number> sorted_values(svalues,svalues+4);
 
 		lref<Number> v;
-		relation r = item(v, values, values+4) >> order_mem(v, &Number::i, greater<int>() );
+		relation r = item(v, values, values+4) >>= order_mem(v, &Number::i, greater<int>() );
 		for(int i=0; r(); ++i) {
 			if(sorted_values.at(i).i!=v->i)
 				throw "failed test_order_mem 2";
@@ -109,7 +109,7 @@ void test_reverse() {
 		std::reverse(rev.begin(), rev.end());
 		
 		lref<string> s;
-		relation r = item(s,values, values+4) >> reverse(s);
+		relation r = item(s,values, values+4) >>= reverse(s);
 		for(int i=0; r(); ++i) {
 			if(rev.at(i)!=*s)
 				throw "failed test_reverse 1";
@@ -121,7 +121,7 @@ void test_count() {
 		{ // generate
 		int ai[] = { 10,9,8,7,6,5,4,3,2,1 };
 		lref<int> j,c;
-		relation r = item(j,ai,ai+10) >> count(c);
+		relation r = item(j,ai,ai+10) >>= count(c);
 		if(!r())
 			throw "failed test_count 1";
 		if(*c!=10)
@@ -133,7 +133,7 @@ void test_count() {
 		}
 		{ // generate
 			lref<int> j,c;
-			relation r = range(j,1,-1) >> count(c);
+			relation r = range(j,1,-1) >>= count(c);
 			if(!r())
 				throw "failed test_count 2";
 			if(*c!=0)
@@ -145,7 +145,7 @@ void test_count() {
 		}
 		{ // test .. success
 			lref<int> j, c=100;
-			relation r = range(j,1,100) >> count(c);
+			relation r = range(j,1,100) >>= count(c);
 			if(!r())
 				throw "failed test_count 3";
 			if(*c!=100)
@@ -157,22 +157,40 @@ void test_count() {
 		}
 		{ // test .. fail
 			lref<int> j, c=9;
-			relation r = range(j,1,10) >> count(c);
+			relation r = range(j,1,10) >>= count(c);
 			if(r())
 				throw "failed test_count 4";
 			if(!c.defined() || *c!=9)
 				throw "failed test_count 4";
 			if(r())
 				throw "failed test_count 4";
-			if(!c.defined())
-				throw "failed test_count 4";
+		}
+		{ // test .. fail
+			lref<int> j;
+			relation r = range(j,1,10) >>= count(9);
+			if(r())
+				throw "failed test_count 5";
+			if(j.defined())
+				throw "failed test_count 5";
+			if(r())
+				throw "failed test_count 5";
+		}
+		{ // test .. success
+			lref<int> j;
+			relation r = range(j,1,10) >>= count(10);
+			if(!r())
+				throw "failed test_count 6";
+			if(j.defined())
+				throw "failed test_count 6";
+			if(r())
+				throw "failed test_count 6";
 		}
 }
 
 void test_sum() {
 	{
 		lref<int> j;
-		relation r = range(j,1,10) >> sum(j);
+		relation r = range(j,1,10) >>= sum(j);
 		if(!r() || !j.defined())
 			throw "failed test_sum 1";
 		if(*j!=55)
@@ -184,7 +202,7 @@ void test_sum() {
 	}
 	{
 		lref<int> j;
-		relation r = range(j,1,1) >> sum(j);
+		relation r = range(j,1,1) >>= sum(j);
 		if(!r() || !j.defined())
 			throw "failed test_sum 2";
 		if(*j!=1)
@@ -196,7 +214,7 @@ void test_sum() {
 	}
 	{
 		lref<int> j;
-		relation r = range(j,2,1) >> sum(j);
+		relation r = range(j,2,1) >>= sum(j);
 		if(r() || j.defined())
 			throw "failed test_sum 3";
 	}
@@ -205,7 +223,7 @@ void test_sum() {
 void test_reduce() {
 	{ // multiple values in input
 		lref<int> j;
-		relation r = range(j,1,10) >> reduce(j, std::multiplies<int>());
+		relation r = range(j,1,10) >>= reduce(j, std::multiplies<int>());
 		if(!r() || !j.defined())
 			throw "failed test_reduce 1";
 		if(*j!=3628800)
@@ -217,7 +235,7 @@ void test_reduce() {
 	}
 	{ // single input
 		lref<int> j;
-		relation r = range(j,1,1) >> reduce(j, std::multiplies<int>());
+		relation r = range(j,1,1) >>= reduce(j, std::multiplies<int>());
 		if(!r() || !j.defined())
 			throw "failed test_reduce 2";
 		if(*j!=1)
@@ -229,7 +247,7 @@ void test_reduce() {
 	}
 	{ // no inputs
 		lref<int> j;
-		relation r = range(j,2,1) >> reduce(j, std::plus<int>());
+		relation r = range(j,2,1) >>= reduce(j, std::plus<int>());
 		if(r() || j.defined())
 			throw "failed test_reduce 3";
 	}
@@ -277,7 +295,7 @@ void test_group_by() {
 		lref<group<size_t,group<bool,string> > > g2;
 		lref<group<bool,string> > g3;
 
-		relation r1 = item(num,lnums) >> group_by(num, &firstChar, g1).then(slength).then(palind) ;
+		relation r1 = item(num,lnums) >>= group_by(num, &firstChar, g1).then(slength).then(palind) ;
 		lref<string> s;
 		while(r1()) {
 			if(g1->key!=keys1[k1++])
@@ -313,7 +331,7 @@ void test_group_by() {
 
 		lref<group<char,group<size_t,string> > > g1;
 		lref<group<size_t,string> > g2;
-		relation outer = item(num,lnums) >> group_by(num, &firstChar, g1).then(slength);
+		relation outer = item(num,lnums) >>= group_by(num, &firstChar, g1).then(slength);
 		lref<string> s;
 		while(outer()) {
 			if((g1->key)!=keys1[k1++])
@@ -337,7 +355,7 @@ void test_group_by() {
 		char keys[] = { 'F', 'O', 'S', 'T', 'm' };
 		int v=0, k=0;
 		lref<group<char,string> > g;
-		relation r = item(num,lnums) >> group_by(num, &firstChar, g) ;
+		relation r = item(num,lnums) >>= group_by(num, &firstChar, g) ;
 		lref<string> s;
 		while(r()) {
 			if((g->key)!=keys[k++])
@@ -357,7 +375,7 @@ void test_group_by() {
 		char keys[] = { 'm', 'T', 'S', 'O', 'F' };
 		int v=0, k=0;
 		lref<group<char,string> > g;
-		relation r = item(num,lnums) >> group_by(num, &firstChar, g, std::greater<char>());
+		relation r = item(num,lnums) >>= group_by(num, &firstChar, g, std::greater<char>());
 		lref<string> s;
 		while(r()) {
 			if((g->key)!=keys[k++])
@@ -380,7 +398,7 @@ void test_group_by() {
 
 		lref<group<char,group<size_t,string> > > g1;
 		lref<group<size_t,string> > g2;
-		relation outer = item(num,lnums) >> group_by(num, &firstChar, g1, std::greater<char>()).then(slength, std::greater<int>());
+		relation outer = item(num,lnums) >>= group_by(num, &firstChar, g1, std::greater<char>()).then(slength, std::greater<int>());
 		lref<string> s;
 		while(outer()) {
 			if((g1->key)!=keys1[k1++])
@@ -408,7 +426,7 @@ void test_group_by() {
 
 		lref<group<char,group<size_t,string> > > g1;
 		lref<group<size_t,string> > g2;
-		relation outer = item(num,lnums) >> group_by(num, &firstChar, g1, std::greater<char>()).then(slength, std::greater<int>()).values_by(std::less<string>());
+		relation outer = item(num,lnums) >>= group_by(num, &firstChar, g1, std::greater<char>()).then(slength, std::greater<int>()).values_by(std::less<string>());
 		lref<string> s;
 		while(outer()) {
 			if((g1->key)!=keys1[k1++])

@@ -80,7 +80,7 @@ public:
 };
 
 inline
-Aggregate_r operator >> (const relation& r, const agg_relation& ar) {
+Aggregate_r operator >>= (const relation& r, const agg_relation& ar) {
 	return Aggregate_r(r,ar);
 }
 
@@ -378,6 +378,9 @@ struct Count_ar : public Coroutine {
 	Count_ar(const lref<T>& obj) : obj(obj)
 	{}
 
+    Count_ar(const T& obj) : obj(obj)
+	{}
+
 	bool operator() (relation& r) {
 		co_begin();
 		tmp=0;
@@ -397,11 +400,15 @@ struct Count_ar : public Coroutine {
 
 
 // Cocnept : T is a numeric type
-template<typename T> inline
+template<class T> inline
 Count_ar<T> count(const lref<T>& obj) {
 	return Count_ar<T>(obj);
 }
 
+template<class T> inline
+Count_ar<T> count(const T& obj) {
+	return Count_ar<T>(obj);
+}
 
 //-------------------------------------------------
 // group_by(i, selector).then(..).then(..) - group seq using cond into (key,grp)

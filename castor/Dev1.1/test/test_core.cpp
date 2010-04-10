@@ -495,7 +495,7 @@ void test_op_exor() {
 void test_True() {
 	{
 	  lref<int> c;
-	  relation r = True(20) >> count(c);
+	  relation r = True(20) >>= count(c);
 	  if(!r())
 		  throw "failed test_times 1";
 	  if(*c!=20)
@@ -505,7 +505,7 @@ void test_True() {
 	}
 	{
 	  lref<int> c;
-	  relation r = True() >> count(c);
+	  relation r = True() >>= count(c);
 	  if(!r())
 		  throw "failed test_times 2";
 	  if(*c!=1)
