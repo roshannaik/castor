@@ -252,7 +252,7 @@ void test_eq_seq() {
 void test_eq_f() {
     { // unify .. should pass
     lref<int> refi;
-    relation r = eq_f( refi, ::castor::detail::bind<int>(plus<int>(), 6, 3) );
+    relation r = eq_f( refi, detail::bind<int>(plus<int>(), 6, 3) );
 	int i=0;
 	for(; r(); ++i) {
         if(i>0 || *refi!=6+3)
@@ -263,7 +263,7 @@ void test_eq_f() {
     }
     { // comparison .. should pass
     lref<int> refk = 9;
-    relation r2 = eq_f( refk, ::castor::detail::bind<int>(plus<int>(), 6, 3) );
+    relation r2 = eq_f( refk, detail::bind<int>(plus<int>(), 6, 3) );
 	int k=0;
 	for(; r2(); ++k) {
         if(k>0 || *refk!=6+3)
@@ -274,7 +274,7 @@ void test_eq_f() {
     }
     { // comparison .. should fail
     lref<int> refj = 1;
-    relation r3 = eq_f( refj, ::castor::detail::bind<int>(plus<int>(), 6, 3) );
+    relation r3 = eq_f( refj, detail::bind<int>(plus<int>(), 6, 3) );
 	int j=0;
 	for(; r3(); ++j);
 	if(j!=0 || !refj.defined())
