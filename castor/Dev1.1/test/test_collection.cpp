@@ -11,7 +11,7 @@ void test_shuffle() {
 	  lref<int> c;
 	  lref<string> s = "hello", ss;
 	  lref<string::iterator> sb = s->begin(), se = s->end();
-	  relation r = zip(True(20), shuffle(sb,se,ss)) >> count(c);
+	  relation r = zip(True(20), shuffle(sb,se,ss)) >>= count(c);
 	  if(!r())
 		  throw "failed test_shuffle 1";
 	  if(*c!=20)
@@ -23,7 +23,7 @@ void test_shuffle() {
 	  lref<int> c;
 	  lref<string> s = "hello", ss;
 	  string::iterator sb = s->begin(), se = s->end();
-	  relation r = zip(True(20), shuffle(sb,se,ss)) >> count(c);
+	  relation r = zip(True(20), shuffle(sb,se,ss)) >>= count(c);
 	  if(!r())
 		  throw "failed test_shuffle 2";
 	  if(*c!=20)
@@ -35,7 +35,7 @@ void test_shuffle() {
 	  lref<int> c;
 	  lref<string> s = "hello", ps;
 	  lref<string::iterator> sb = s->begin(), se = s->end();
-	  relation r = (permute(s,ps) && shuffle(ps,s)) >> count(c);
+	  relation r = (permute(s,ps) && shuffle(ps,s)) >>= count(c);
 	  if(!r())
 		  throw "failed test_shuffle 3";
 	  if(*c!=60)

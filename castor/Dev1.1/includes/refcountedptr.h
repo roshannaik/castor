@@ -92,7 +92,7 @@ protected:
 
     template<typename T2>
     static T* initPtr(const T2& value) {
-        return ::castor::detail::alloc_<T, IsDerivedStrict<T2,T>::result> ::exec(value); // return new T2(value);
+        return detail::alloc_<T, IsDerivedStrict<T2,T>::result> ::exec(value); // return new T2(value);
     }
 public:
     typedef T pointee_type;

@@ -30,15 +30,15 @@ struct IndexOutOfBounds {};
 //   Relation pause() - // TODO: document
 //-------------------------------------------------------------------------
 
-template<typename T>
+template<class T>
 struct Pause_r : Coroutine {
-	lref<T> s;
-	Pause_r(const lref<T> &s) : s(s)
+	lref<T> msg;
+	Pause_r(const lref<T> &msg) : msg(msg)
 	{ }
 	bool operator()(void) {
 		co_begin();
-		if(s.defined())
-			std::cout << *s;
+		if(msg.defined())
+			std::cout << *msg;
 		else
 			std::cout << "undefined";
 		std::cin.ignore();
@@ -47,14 +47,14 @@ struct Pause_r : Coroutine {
 	}
 };
 
-template<>
-struct Pause_r<const char*> : Coroutine {
-	std::string s;
-	Pause_r(std::string s) : s(s)
+template<class T>
+struct Pause_r<T*> : Coroutine {
+	T* msg;
+	Pause_r(T* msg) : msg(msg)
 	{ }
 	bool operator()(void) {
 		co_begin();
-		std::cout << s;
+		std::cout << msg
 		std::cin.ignore();
 		co_yield(true);
 		co_end();
@@ -71,9 +71,10 @@ Pause_r<T> pause(const T& s) {
 	return Pause_r<T>(lref<T>(s) );
 }
 
+// handles "..." and L"..." arguments
 template<typename T> inline
-Pause_r<const T*> pause(const T* s) {
-	return Pause_r<const T*>(s);
+Pause_r<T*> pause(T* s) {
+	return Pause_r<T*>(s);
 }
 
 
@@ -223,7 +224,7 @@ Range_Step_r<T> range(lref<T> val, T min_, T max_, T step_) {
 template<typename Itr>
 class Item_r : public Coroutine {
     Itr itr, end_;
-    typedef typename ::castor::detail::Pointee<Itr>::result_type pointee_type;
+    typedef typename detail::Pointee<Itr>::result_type pointee_type;
     lref<pointee_type> obj;
 public:
     Item_r(Itr beg_, Itr end_, const lref<pointee_type>& obj) : itr(beg_), end_(end_), obj(obj)
@@ -244,7 +245,7 @@ public:
 };
 
 template<typename Itr>
-Item_r<Itr> item(lref<typename ::castor::detail::Pointee<Itr>::result_type> obj, Itr begin_, Itr end_) {
+Item_r<Itr> item(lref<typename detail::Pointee<Itr>::result_type> obj, Itr begin_, Itr end_) {
     return Item_r<Itr>(begin_, end_, obj);
 }
 
@@ -372,16 +373,16 @@ namespace detail {
 //    }
 
     template<typename Itr>
-    typename ::castor::detail::Pointee<Itr>::result_type
+    typename detail::Pointee<Itr>::result_type
     deref_ptr(lref<Itr> ptr) {
         return **ptr;
     }
 } // namespace detail
 
 template<typename Itr> inline
-relation dereference(lref<Itr> pointer_, lref<typename ::castor::detail::Pointee<Itr>::result_type> pointee) {
-  typedef typename ::castor::detail::Pointee<Itr>::result_type T;
-  return eq_f(pointee, ::castor::detail::bind<T>(::castor::detail::deref_ptr<Itr>, pointer_));
+relation dereference(lref<Itr> pointer_, lref<typename detail::Pointee<Itr>::result_type> pointee) {
+  typedef typename detail::Pointee<Itr>::result_type T;
+  return eq_f(pointee, detail::bind<T>(detail::deref_ptr<Itr>, pointer_));
 }
 
 
@@ -726,7 +727,7 @@ public:
     //
     //template<typename Iter>
     //Sequence_r& operator() (Iter start, Iter end) { // appending new items from an arbitrary iterator delimited sequence into the collection
-    //    ::castor::detail::IfElse<is_lref<Iter>::result, push_lref_pair, push_values<Iter> >::type::apply(start, end, *this);
+    //    detail::IfElse<is_lref<Iter>::result, push_lref_pair, push_values<Iter> >::type::apply(start, end, *this);
     //    return *this;
     //} 
 
@@ -832,8 +833,8 @@ private:
                 break;
             case REF_PAIR: {
                 LrefIter b = r_LrefPairs.front().first, e = r_LrefPairs.front().second;
-                size_t numItems = ::castor::detail::countItems(*b, *e);
-                if ( ((unsigned)::castor::detail::countItems(li,l_end)<numItems) || !std::equal(*b, *e, li) )
+                size_t numItems = detail::countItems(*b, *e);
+                if ( ((unsigned)detail::countItems(li,l_end)<numItems) || !std::equal(*b, *e, li) )
                     return false;
                 std::advance(li, numItems);
                 r_LrefPairs.pop_front();
@@ -842,7 +843,7 @@ private:
             default: { //==REF_COLLECTION
                 typename Seq::iterator b = (*r_refLists.front()).begin(),
                                         e = (*r_refLists.front()).end();
-                if ( (unsigned)::castor::detail::countItems(li,l_end)<(*r_refLists.front()).size()
+                if ( (unsigned)detail::countItems(li,l_end)<(*r_refLists.front()).size()
                      || !std::equal(b, e, li) )
                     return false;
                 std::advance(li, (*r_refLists.front()).size());
@@ -1039,7 +1040,7 @@ REnd_r<Cont> rend(lref<Cont>& cont_, const lref<typename Cont::reverse_iterator>
 //---------------------------------------------------------------
 //    Error Relation : Always throws an exception
 //---------------------------------------------------------------
-template<typename ExceptionType=char*>
+template<typename ExceptionType>
 struct Error : TestOnlyRelation<Error<ExceptionType> > {
     ExceptionType e;
     Error(const ExceptionType & e) :e(e)
@@ -1050,10 +1051,10 @@ struct Error : TestOnlyRelation<Error<ExceptionType> > {
     }
 };
 
-template<>
-struct Error<const char*> : TestOnlyRelation<Error<const char*> > {
-    const char* e;
-    Error(const char* e) :e(e)
+template<class ExceptionType>
+struct Error<ExceptionType*> : TestOnlyRelation<Error<ExceptionType*> > {
+    ExceptionType* e;
+    Error(ExceptionType* e) :e(e)
     { }
 
     bool apply(void) const {
@@ -1071,8 +1072,8 @@ Error<ExceptionType> error( const ExceptionType& err ) {
 // This would normally be handled by defining a non-template relation error(char*)
 // But cannot do that as this is a pure template library
 template<typename ExceptionType> inline
-Error<const ExceptionType*> error( const ExceptionType* err ) {
-    return Error<const ExceptionType*>(err);
+Error<ExceptionType*> error( ExceptionType* err ) {
+    return Error<ExceptionType*>(err);
 }
 
 //--------------------------------------------------------
