@@ -84,7 +84,7 @@ struct num {
     num(const num& n) : i(n.i)
     { }
 
-    num operator + (const num& r) {
+    num operator + (const num& r) const {
         return num(i + r.i);
     }
     static num static_compute(num i, num j, num k) {
