@@ -150,8 +150,8 @@ struct RevCmp {
 namespace detail {
 template<typename T, typename MemFunc, typename BinPred>
 struct MfPred {
-	BinPred p;
 	MemFunc mf;
+	BinPred p;
 	MfPred(MemFunc mf, BinPred p) : mf(mf), p(p)
 	{}
 	bool operator()(T& l, T& r) {
@@ -165,8 +165,8 @@ struct MfPred {
 // reverses order arguments to BinPred
 template<typename T, typename MemFunc, typename BinPred>
 struct MfPred2 {
-	BinPred p;
 	MemFunc mf;
+	BinPred p;
 	MfPred2(MemFunc mf, BinPred p) : mf(mf), p(p)
 	{}
 	bool operator()(T& l, T& r) {
@@ -182,9 +182,9 @@ struct MfPred2 {
 template<typename T, typename Pred>
 struct OrderByBase : public Coroutine {
 	lref<T> obj;
-	std::vector<T> v;
 	typename std::vector<T>::iterator itr;
 	Pred pred;
+	std::vector<T> v;
 
 	OrderByBase(const lref<T>& obj, Pred p) : obj(obj), pred(p)
 	{}
