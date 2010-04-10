@@ -35,6 +35,57 @@ at(lref<Obj>& obj, Index i) {
 }
 
 //-------------------------------------------------
+// ref() - Takes a reference to an object/lref
+//-------------------------------------------------
+template<typename T>
+class Ref {
+	lref<T> obj;
+public:
+	typedef T& result_type;
+
+    Ref(T& obj) : obj(&obj,false)
+    { }
+
+    Ref(lref<T>& obj) : obj(obj)
+    { }
+
+	T& operator()(void) {
+        return obj.get();
+    }
+};
+
+template<typename T>
+class Ref<T*> {
+	T* obj;
+public:
+	typedef T* result_type;
+
+    Ref(T* obj) : obj(obj)
+    { }
+
+	T* operator()(void) {
+        return obj;
+    }
+};
+
+template<class T> inline
+Ile<Ref<T> >
+ref(T& obj) {
+    return Ref<T>(obj);
+}
+
+template<class T> inline
+Ile<Ref<T*> >
+ref(T* obj) {
+    return Ref<T*>(obj);
+}
+
+template<class T>
+Ile<Ref<T> > ref(const lref<T>& obj) { 
+    return Ref<T>(obj);
+}
+
+//-------------------------------------------------
 // create() and Create<>::with()
 //-------------------------------------------------
 
