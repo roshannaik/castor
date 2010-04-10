@@ -1388,7 +1388,7 @@ void test_unique_mf() {
 	{
     string words[] = {"mary", "had", "a", "little", "lamb"};
     lref<string> w;
-	relation r = (item(w,words,words+5) && unique_mf(w,&string::length)) >> castor::count<int>(4);
+	relation r = (item(w,words,words+5) && unique_mf(w,&string::length)) >>= count(4);
 	if(!r())
 		throw "failed test_unique_mf 1";
 	}
@@ -1408,7 +1408,7 @@ void test_unique_mem() {
     person people[] = { person("roshan","naik"), person("runa","naik"), person("harry","potter") };
     lref<person> p;
 	lref<int> i=2;
-	relation r = (item(p, people, people+3) && unique_mem(p, &person::lastName)) >> castor::count<int>(2);
+	relation r = (item(p, people, people+3) && unique_mem(p, &person::lastName)) >>= count(2);
 	if(!r())
 		throw "failed test_unique_mem 1";
 	}
@@ -1515,6 +1515,14 @@ void test_error() {
     } catch (const char*)
     { }
     }
+    { // 4
+    relation r =  error(L"unexpected error");
+    try { 
+        r();
+        throw "failed test_error 4";
+    } catch (const wchar_t*)
+    { }
+    }
 }
 
 void test_repeat() {
@@ -1546,7 +1554,7 @@ void test_repeat() {
 }
 
 void test_pause() {
-	{// compilation checks only
+	{// basic compilation checks only
 		pause("hello");
 		string s("hi");
 		pause(s);
