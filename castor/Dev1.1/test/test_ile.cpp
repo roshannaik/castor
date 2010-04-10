@@ -4,6 +4,7 @@
 #include <castor.h>
 #include <string>
 #include <utility>
+#include <sstream>
 
 using namespace castor;
 using namespace std;
@@ -105,6 +106,36 @@ void test_ILE_more() {
 		if( (ref(global)+i!=3)() )
 			throw "failed test_ILE_more 1";
 	}
+    {
+        stringstream sout;
+        (ref<ostream>(sout) << "hello" << 3)();
+        string s;
+        (ref<istream>(sout) >> ref(s))();
+        if(s!="hello3")
+            throw "failed test_ILE_more 2";
+    }
+    {
+        stringstream sout;
+        lref<int> one = 1;
+        lref<ostream> lsout(&sout,false);
+        (lsout << "hello" << one)();
+        string s;
+        lref<string> ls(&s,false);
+        (ref<istream>(sout) >> ls)();
+
+        if(s!="hello1")
+            throw "failed test_ILE_more 3";
+    }
+    {
+        lref<string> ls("hello");
+        if(!(ls=="hello")())
+            throw "failed test_ILE_more 4";
+    }
+    {
+        lref<string> ls("hell");
+        if((ls+"o"!="hello")())
+            throw "failed test_ILE_more 5";
+    }
 }
 
 void test_eq_ILE() {
