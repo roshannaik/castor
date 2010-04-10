@@ -54,7 +54,7 @@ struct Pause_r<T*> : Coroutine {
 	{ }
 	bool operator()(void) {
 		co_begin();
-		std::cout << msg
+		std::cout << msg;
 		std::cin.ignore();
 		co_yield(true);
 		co_end();

@@ -298,6 +298,7 @@ struct Reverse : public Coroutine {
 			obj.set_ptr(&*itr, false);
 			co_yield(true);
 		}
+        obj.reset();
 		co_end();
 	}
 };
