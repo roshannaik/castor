@@ -18,7 +18,7 @@ namespace castor {
 //    relation 
 //---------------------------------------------------------------
 template <typename Expr>
-class Ile;
+struct Ile;
 
 class relation {
     struct impl {

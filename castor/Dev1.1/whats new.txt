@@ -11,22 +11,31 @@ Enhancements to lref:
 - lref::bound(lref& rhs) will check if this lref and rhs are bound/joined together
 
 // - Relations supporting Fast && : False, Boolean, predicate, predicate_mf, predicate_mem, defined, undefined, negate
-- Function ref() to construct a non-managing lref to an object.
-     E.g.   lref<int> i=2;  eval(ref(cout)<<i)();
-     
+
+
 Enhancements to ILE (closure/lambda facility):
 ----------------------------------------------
 - New named ILEs have been provided:
-    + at - Allows indexed access. Equivalent to the operator []. 
+    + at - Allows indexed access. Equivalent to the operator [].
         E.g.   lref<string> str=..; cout << at(str,0)();
-    + create - To create an new object. Equivalent to operator new. Supercedes Create::with(). 
-        E.g.   create<int>(1); create<pair<int,int> >(1,2);  create<string,const char*>("castor");  
-    + get - To access a data member of an object. 
-        E.g.   lref<pair<int,int> > pr .. ; write_f( get(pr,&pair:;first) ) 
-    + mcall - To invoke a member function with upto 6 arguments. 
-        E.g.   lref<string> str= "hello" ;  predicate( mcall(str, &string::at,0)=='h' )
     + call - To invoke a function/function object with upto 6 arguments.
-        E.g.   eq_f(x, call(&foo,1,2,3); eq_f(3, call(plus<int,int>(),1,2) ) 
+        E.g.   eq_f(x, call(&foo,1,2,3); eq_f(3, call(plus<int,int>(),1,2) )
+    + create - To create an new object. Equivalent to operator new. Supercedes Create::with().
+        E.g.   create<int>(1); create<pair<int,int> >(1,2);  create<string,const char*>("castor");
+    + get - To access a data member of an object.
+        E.g.   lref<pair<int,int> > pr .. ; write_f( get(pr,&pair:;first) )
+    + mcall - To invoke a member function with upto 6 arguments.
+        E.g.   lref<string> str= "hello" ;  predicate( mcall(str, &string::at,0)=='h' )
+    + ref - Takes a reference to an object. Object's lifetime should extend beyond the life of the ILE referencing the object.
+        E.g.   lref<int> s="hello";  eval( ref(cout) << s );
+- ILE expressions now support use of "string literals".
+    E.g.  - lref<string> ls="castor"; predicate(ls=="castor");
+          - eval(ref(cout) << "hello" << " world" )();          // cout << "hello" << "world";
+          - string s; eval(ref(cin) >> ref(s) )();              // cin >> s;
+          - stringstream strm; eval(ref<ostream>(strm) << "hello")();   // return type of this operator << is ostream& and not stringstream&
+          - eval(ref<istream>(strm) >> ref(s))();                       // return type of this operator >> is istream& and not stringstream&
+
+- Speed improvements for ILE expressions. Fairly close to the speed of custom function objects.
 
 Enhancements:
 -------------
@@ -54,8 +63,8 @@ New relations:
 - writeAll(), writeAllTo() : To print write all elements in a sequence to cout or to a stream.
 - write_mem(), writeTo_mem() : To print value of a data member to cout or a stream.
 
-- Special Relations to be used with operator >> : 
-   + count() - For counting the number of items in a sequence. e.g. range(i,1,10) >> count(n)
+- Special Relations to be used with operator >>= : 
+   + count() - For counting the number of items in a sequence. e.g. range(i,1,10) >>= count(n)
    + group_by() - For grouping objects based on some criteria. Allows nested grouping. e.g
         E.g: 
         // Group strings by first char & then by length
@@ -66,7 +75,7 @@ New relations:
         lref<string> n;
         lref<vector<string> > names ;
         lref<group<char,group<size_t,string> > > g;
-        relation r = item(n,names) >> group_by(n, &firstChar, g).then(&str_len);
+        relation r = item(n,names) >>= group_by(n, &firstChar, g).then(&str_len);
         while(r()) {
            cout << "\n" << g->key;
            lref<group<size_t,string> > g2;
@@ -81,10 +90,10 @@ New relations:
    + order() - For producing a sorted sequence of objects.
    + order_mem() - For producing a sorted sequence of objects. Sort objects on a data member. (e.g. pair<,>.first )
    + order_mf() - For producing a sorted sequence of objects. Sort based on value method call (e.g. string::length() )
-   + reverse() - For reversing a sequence of objects. e.g. range(i,1,10) >> reverse(i)
+   + reverse() - For reversing a sequence of objects. e.g. range(i,1,10) >>= reverse(i)
    + reduce() - For reducing a sequence to a value by applying a operator(similar to accumulate). e.g.
-         range(j,1,10) >> reduce(j, std::multiplies<int>()); // product of first 10 numbers
-   + sum - For summing the values in a sequence. e.g. range(i,1,10) >> sum(i)
+         range(j,1,10) >>= reduce(j, std::multiplies<int>()); // product of first 10 numbers
+   + sum - For summing the values in a sequence. e.g. range(i,1,10) >>= sum(i)
 
 
 
