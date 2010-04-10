@@ -59,13 +59,13 @@ struct RefType <T&> {
 };
 
 template <typename T>
-struct NonRefType {
-    typedef T result_type;
+struct NonRef {
+    typedef T type;
 };
 
 template <typename T>
-struct NonRefType <T&> {
-    typedef T result_type;
+struct NonRef <T&> {
+    typedef T type;
 };
 
 
@@ -239,10 +239,10 @@ class is_class {
 	typedef char one;
 	typedef struct {char c[2];} two;
 
-	template<typename C> static one test(int C::*);
-	template<typename C> static two test(...);
+	static one test(int T::*);
+	static two test(...);
 public:
-	enum { result = (sizeof(test<T>(0))==1) };
+	enum { result = (sizeof(test(0))==1) };
 };
 
 
@@ -261,8 +261,8 @@ class is_function_obj  {
    template <typename T, T t>  class Helper
    {}; 
 
-   template <typename U> 
-   static twoBytes  deduce(U*, Helper<bool (BaseMixin::*)(void),&U::operator()>*  = 0); 
+   //template <typename U> U=Base
+   static twoBytes  deduce(Base*, Helper<bool (BaseMixin::*)(void),&Base::operator()>*  = 0); 
    static oneByte   deduce(...);
 
 public: 
