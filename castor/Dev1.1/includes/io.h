@@ -123,8 +123,8 @@ public:
 
 template<typename OP1, typename A1>
 class WriteF1_r : public TestOnlyRelation<WriteF1_r<OP1, A1> > {
-    A1 arg1;
     OP1 func;
+    A1 arg1;
     std::ostream* outputStrm;
 public:
     WriteF1_r (const OP1& func, const A1& arg1, std::ostream* outputStrm=std::cout) : func(func), arg1(arg1), outputStrm(&outputStrm)
@@ -137,8 +137,8 @@ public:
 
 template<typename OP2, typename A1, typename A2>
 class WriteF2_r : public TestOnlyRelation<WriteF2_r<OP2, A1, A2> > {
-    A1 arg1; A2 arg2;
     OP2 func;
+    A1 arg1; A2 arg2;
     std::ostream* outputStrm;
 public:
     WriteF2_r (const OP2& func, const A1& arg1, const A2& arg2, std::ostream& outputStrm=std::cout) : func(func), arg1(arg1), arg2(arg2), outputStrm(&outputStrm)
@@ -152,8 +152,8 @@ public:
 
 template<typename OP3, typename A1, typename A2, typename A3>
 class WriteF3_r : public TestOnlyRelation<WriteF3_r<OP3, A1, A2, A3> > {
-    A1 arg1; A2 arg2; A3 arg3;
     OP3 func;
+    A1 arg1; A2 arg2; A3 arg3;
     std::ostream* outputStrm;
 public:
     WriteF3_r (const OP3& func, const A1& arg1, const A2& arg2, const A3& arg3, std::ostream& outputStrm=std::cout) : func(func), arg1(arg1), arg2(arg2), arg3(arg3), outputStrm(&outputStrm)
@@ -166,8 +166,8 @@ public:
 
 template<typename OP4, typename A1, typename A2, typename A3, typename A4>
 class WriteF4_r : public TestOnlyRelation<WriteF4_r<OP4, A1, A2, A3, A4> > {
-    A1 arg1; A2 arg2; A3 arg3; A4 arg4;
     OP4 func;
+    A1 arg1; A2 arg2; A3 arg3; A4 arg4;
     std::ostream* outputStrm;
 public:
     WriteF4_r (const OP4& func, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, std::ostream& outputStrm=std::cout) : func(func), arg1(arg1), arg2(arg2), arg3(arg3), arg4(arg4), outputStrm(&outputStrm)
@@ -181,8 +181,8 @@ public:
 
 template<typename OP5, typename A1, typename A2, typename A3, typename A4, typename A5>
 class WriteF5_r : public TestOnlyRelation<WriteF5_r<OP5, A1, A2, A3, A4, A5> > {
-    A1 arg1; A2 arg2; A3 arg3; A4 arg4; A5 arg5;
     OP5 func;
+    A1 arg1; A2 arg2; A3 arg3; A4 arg4; A5 arg5;
     std::ostream* outputStrm;
 public:
     WriteF5_r (const OP5& func, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, const A5& arg5, std::ostream& outputStrm=std::cout) : func(func), arg1(arg1), arg2(arg2), arg3(arg3), arg4(arg4), arg5(arg5), outputStrm(&outputStrm)
@@ -195,8 +195,8 @@ public:
 
 template<typename OP6, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
 class WriteF6_r : public TestOnlyRelation<WriteF6_r<OP6, A1, A2, A3, A4, A5, A6> > {
-    A1 arg1; A2 arg2; A3 arg3; A4 arg4; A5 arg5; A6 arg6;
     OP6 func;
+    A1 arg1; A2 arg2; A3 arg3; A4 arg4; A5 arg5; A6 arg6;
     std::ostream* outputStrm;
 public:
     WriteF6_r (const OP6& func, const A1& arg1, const A2& arg2, const A3& arg3, const A4& arg4, const A5& arg5, const A6& arg6, std::ostream& outputStrm=std::cout) : func(func), arg1(arg1), arg2(arg2), arg3(arg3), arg4(arg4), arg5(arg5), arg6(arg6), outputStrm(&outputStrm)
