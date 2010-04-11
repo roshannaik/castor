@@ -45,8 +45,8 @@ Enhancements:
   argument. These overloads allow passing an *overloaded* function (or method) to these
   relations without requiring explicit overload disambiguation. Also arguments to be forwarded can be 
   POTs or lrefs :
-  + Additional overloads for eq_f, eq_mf, predicate_f, predicate_mf, writeAll_f and writeAll_mf.
-  + Signatures for eq_f, predicate_f and writeAll_f modified (new signatures continue to be backward compatible).
+  + Additional overloads for eq_f, eq_mf, predicate_f & predicate_mf.
+  + Signatures for eq_f and predicate_f modified (new signatures continue to be backward compatible).
 
 - Enhanced relations: Additional constructor for relation True that takes an integral argument denoting how many times to succeed.
 
@@ -60,7 +60,7 @@ New relations:
 - ritem() -  To generate values from a sequence in reverse. The sequence must provide rbegin() and rend().
 - shuffle() - To generate a randomized sequence/string.
 - unique_mem(), unique_mf() - Similar to unique() but filtering is based on a data member or value returned by a method call.
-- writeAll(), writeAllTo() : To print write all elements in a sequence to cout or to a stream.
+- writeAll(), writeAllTo() : To print all elements in a sequence to cout or to a stream.
 - write_mem(), writeTo_mem() : To print value of a data member to cout or a stream.
 
 - Special Relations to be used with operator >>= : 
@@ -70,7 +70,7 @@ New relations:
         // Group strings by first char & then by length
         
         char firstChar(const string& s) { return s[0]; };
-        char str_len(const string& s) { return s.size(); };
+        size_t str_len(const string& s) { return s.size(); };
         
         lref<string> n;
         lref<vector<string> > names ;
