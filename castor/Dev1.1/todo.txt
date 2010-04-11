@@ -1,26 +1,21 @@
   Todo
 ------------
 MUST
-- make all aggregates uni/bidirectional
-- review shuffle and permute
-- rename writeAllTo to writeTo_all
-- list writeAll_f and writeAll_mf as *new*
-- look into constraining generic operator && and ||
-- define operator & , | as alternatives
-- operator >> should be replaced with >>=
-- dont release error() without catch()
-
 group_by:
 - member function support for group_by
-?- Ile support for keySelector (not comparator)
 - consider case of empty groups... if(first==last)
-  
+
+- make all aggregates uni/bidirectional
+- Wrap up aggregates (consider renaming them .."eager" ?)
+- look into constraining generic operator && and ||
+- define operator & , | as alternatives
+
+- dont release error() without catch()
++ operator >> should be replaced with >>=
++ review shuffle and permute
+
 ILE:
-> ILE support for _1 _2
 > ILE support for []
-> Assignment operator support for ILEs 
-> consider deriving ILE classes from binary_function or unary_function
-> Wrap up aggregates (consider naming them .."eager" ?)
 > Update example in eq_mem ref manual to use sum()
 > test ILEs with const objects
 + can empty base class optimization be applied to ILEs - no use
@@ -29,23 +24,28 @@ ILE:
 
 
 LATER
+> ILE support for _1 _2
+> Assignment operator support for ILEs 
+> is it really necessary to derive ILE classes from binary_function or unary_function ?
 > Try quick-select algorithm for group_by
 > random()
-> Parameter support for ILEs
-> Left recursion / memoization support
+> Left recursion 
+> dynamic programming/Memoization support
 > Consider removing member typedef UseFastAnd and just rely on method reset()
+- writeAll_f(), writeAll_mf() 
+- writeAllTo_f(), writeAllTo_mf() 
 
 
-- mark None with detail:: prefix
-- split
-- Fast Coroutines
-  + Add fast&& support for && if both args support fast&&
+
+- Split
+- Fast-testOnly relations
+  + Add fast&& support for && if both args support fast &&
+  + CutAnd needs support for fast && 
  ?+ Consider adding fast && support to relation empty  - (but one of its overloads may not qualify)
-- Consider supporting binding instead of assignment in eq() to make it more Prolog compatible
+- Consider alternative unification using binding instead of assignment as in eq() - for simulating Prolog behavior
 
 
 - Tabling support
-- CutAnd needs support for fast && 
 - Look into perfect forwarding issues with create
 ?- relations readAll and readAllFrom
 
@@ -53,16 +53,15 @@ LATER
 
 
 Document:
-    - ILE at()
+    - ILE at(), ref()
     - ritem
-    - reverse does not restore
-	- all eager relations
+	- all eager relations - fial immdly if out param is initialized
 	- Coroutines should not have const and reference data members
-	- 2 co_yield on same line wont work, local variables wont work without exta {} for if/else blocks:
+	- 2 co_yields on same line wont work, local variables wont work without exta {} for if/else blocks:
 			if(..)
-				co_yield(..)
+				co_yield(..);
 			else
-				co_yield(..)
+				co_yield(..);
 	- normally passing local POT variables to relations is disastrous unless the members of the POT are all lrefs.
 	- 	{ // invoking const and non const operator() 
 			const Func cf=Func();
