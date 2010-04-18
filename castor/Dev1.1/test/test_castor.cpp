@@ -621,8 +621,11 @@ void runtests() {
 
     run_test( test_range );
     run_test( test_range_with_step );
+    run_test( test_range_dec );
+    run_test( test_range_dec_with_step );
 
     run_test( test_item );
+    run_test( test_ritem );
 
     run_test( test_getValueCont );
 
@@ -653,7 +656,6 @@ void runtests() {
 
     run_test( test_op_and_fast );
     run_test( test_op_exor );
-    run_test( test_error );
 	run_test( test_repeat );
 	run_test( test_pause );
 	run_test( test_zip );
@@ -681,6 +683,6 @@ void runtests() {
 
 void bar() {
 	{
-
+        
 	}
 }
