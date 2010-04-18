@@ -143,48 +143,6 @@ void test_count() {
 			if(c.defined())
 				throw "failed test_count 2";
 		}
-		{ // test .. success
-			lref<int> j, c=100;
-			relation r = range(j,1,100) >>= count(c);
-			if(!r())
-				throw "failed test_count 3";
-			if(*c!=100)
-				throw "failed test_count 3";
-			if(r())
-				throw "failed test_count 3";
-			if(!c.defined())
-				throw "failed test_count 3";
-		}
-		{ // test .. fail
-			lref<int> j, c=9;
-			relation r = range(j,1,10) >>= count(c);
-			if(r())
-				throw "failed test_count 4";
-			if(!c.defined() || *c!=9)
-				throw "failed test_count 4";
-			if(r())
-				throw "failed test_count 4";
-		}
-		{ // test .. fail
-			lref<int> j;
-			relation r = range(j,1,10) >>= count(9);
-			if(r())
-				throw "failed test_count 5";
-			if(j.defined())
-				throw "failed test_count 5";
-			if(r())
-				throw "failed test_count 5";
-		}
-		{ // test .. success
-			lref<int> j;
-			relation r = range(j,1,10) >>= count(10);
-			if(!r())
-				throw "failed test_count 6";
-			if(j.defined())
-				throw "failed test_count 6";
-			if(r())
-				throw "failed test_count 6";
-		}
 }
 
 void test_sum() {
@@ -443,6 +401,13 @@ void test_group_by() {
 			}
 		}
 		if(g1.defined() || g2.defined() || s.defined() || num.defined())
-			throw "failed test_group_by 2";
+			throw "failed test_group_by 6";
 	}
+    { // empty input range
+        lref<string> num;
+		lref<group<char,group<size_t,string> > > g;
+        relation r = item(num,numbers,numbers) >>= group_by(num, firstChar, g).then(slength);
+        if(r())
+			throw "failed test_group_by 7";
+    }
 }
