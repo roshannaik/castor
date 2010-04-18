@@ -20,7 +20,10 @@ void test_sequence();
 void test_size();
 void test_range();
 void test_range_with_step();
+void test_range_dec();
+void test_range_dec_with_step();
 void test_item();
+void test_ritem();
 void test_getValueCont();
 void test_defined();
 void test_undefined();
@@ -31,7 +34,6 @@ void test_unique_mem();
 void test_empty();
 void test_not_emtpy();
 void test_dereference();
-void test_error();
 void test_repeat();
 void test_pause();
 

@@ -27,7 +27,7 @@ namespace castor {
 struct IndexOutOfBounds {};
 
 //-------------------------------------------------------------------------
-//   Relation pause() - // TODO: document
+//   Relation pause()
 //-------------------------------------------------------------------------
 
 template<class T>
@@ -71,7 +71,7 @@ Pause_r<T> pause(const T& s) {
 	return Pause_r<T>(lref<T>(s) );
 }
 
-// handles "..." and L"..." arguments
+// handles "string" and L"widestring" arguments
 template<typename T> inline
 Pause_r<T*> pause(T* s) {
 	return Pause_r<T*>(s);
@@ -199,7 +199,7 @@ public:
                      || ( *min_==*val )
                      || ( *max_==*val ) );
 
-      for (val=min_; *val<*max_ || *val==*max_; *val+=*step_)
+      for (val=min_; val.get()<*max_ || val.get()==*max_; val.get()+=*step_)
         co_yield(true);
       val.reset();
       co_end();
@@ -217,11 +217,82 @@ Range_Step_r<T> range(lref<T> val, T min_, T max_, T step_) {
     return Range_Step_r<T>(val, min_, max_, step_);
 }
 
+//--------------------------------------------------------
+//  Relation range_dec
+//--------------------------------------------------------
+// Concepts : T>T, T==T 
+
+template<typename T>
+class RangeDec_r : public Coroutine {
+    lref<T> val, min_, max_;
+public:
+    RangeDec_r(const lref<T>& val, const lref<T>& min_, const lref<T>& max_) : val(val), min_(min_), max_(max_)
+    { }
+
+    bool operator() () {
+      co_begin();
+      if(val.defined())
+         co_return(    ( *min_<*val && *val<*max_ ) 
+                     || ( *min_==*val ) 
+                     || ( *max_==*val ) );
+      for(val=max_; (*min_<val.get()) || (val.get()==*min_); --val.get())
+        co_yield(true);
+      val.reset();
+      co_end();
+    }
+};
+
+// Concepts : T<T , T==T and prefix --
+template<typename T> inline
+RangeDec_r<T> range_dec(lref<T> val, lref<T> max_, lref<T> min_) {
+    return RangeDec_r<T>(val, min_, max_);
+}
+
+template<typename T> inline
+RangeDec_r<T> range_dec(lref<T> val, T max_, T min_) {
+    return RangeDec_r<T>(val, min_, max_);
+}
+
+//--------------------------------------------------------
+//  Relation range_dec (with step)
+//--------------------------------------------------------
+template<typename T>
+class RangeDec_Step_r : public Coroutine {
+    lref<T> val, min_, max_, step_;
+public:
+    RangeDec_Step_r(lref<T> val, const lref<T>& min_, const lref<T>& max_, const lref<T>& step_) : val(val), min_(min_), max_(max_), step_(step_)
+    { }
+
+    bool operator () (void) {
+      co_begin();
+      if(val.defined())
+        co_return (    ( *min_<*val && *val<*max_ )
+                     || ( *min_==*val )
+                     || ( *max_==*val ) );
+
+      for (val=max_; *min_<val.get() || val.get()==*min_; val.get()-=*step_)
+        co_yield(true);
+      val.reset();
+      co_end();
+    }
+};
+
+// Concepts : T supports -=, < and ==
+template<typename T> inline
+RangeDec_Step_r<T> range_dec(lref<T> val, lref<T> max_, lref<T> min_, lref<T> step_) {
+    return RangeDec_Step_r<T>(val, min_, max_, step_);
+}
+
+template<typename T> inline
+RangeDec_Step_r<T> range_dec(lref<T> val, T max_, T min_, T step_) {
+    return RangeDec_Step_r<T>(val, min_, max_, step_);
+}
+
 
 //--------------------------------------------------------
 //  Relation item
 //--------------------------------------------------------
-template<typename Itr>
+template<class Itr>
 class Item_r : public Coroutine {
     Itr itr, end_;
     typedef typename detail::Pointee<Itr>::result_type pointee_type;
@@ -232,8 +303,13 @@ public:
 
     bool operator () (void) {
       co_begin();
-      if(obj.defined()) 
-        co_return ( std::count( effective_value(itr), effective_value(end_), *obj)!=0 );
+      if(obj.defined()) {
+        for( ; effective_value(itr)!=effective_value(end_); ++effective_value(itr) ) {
+          itr = std::find( effective_value(itr), effective_value(end_), obj.get() );
+          co_yield(effective_value(itr)!=effective_value(end_));
+        }
+        co_return(false);
+      }
 
       for ( ; effective_value(itr)!=effective_value(end_); ++effective_value(itr) ) {
         obj.set_ptr(&*effective_value(itr),false);
@@ -244,21 +320,78 @@ public:
     }
 };
 
+
 template<typename Itr>
 Item_r<Itr> item(lref<typename detail::Pointee<Itr>::result_type> obj, Itr begin_, Itr end_) {
     return Item_r<Itr>(begin_, end_, obj);
 }
 
-template<typename Cont>
-relation item(lref<typename Cont::value_type> obj, lref<Cont>& cont_) {
-    lref<typename Cont::iterator> b, e;
-    return begin(cont_,b) && end(cont_, e) && item(obj, b, e);
-}
+
+template<class Cont>
+class ItemCont_r : public Coroutine {
+    typedef typename Cont::value_type value_type;
+    lref<value_type> obj;
+    lref<Cont> cont;
+    lref<typename Cont::iterator> i;
+public:
+    ItemCont_r(const lref<value_type>& obj, const lref<Cont>& cont_) : obj(obj), cont(cont_)
+    { }
+
+    bool operator () (void) {
+      co_begin();
+      if(obj.defined()) {
+        for(i=cont->begin(); i.get()!=cont->end(); ++i.get()) {
+          i = std::find( i.get(), cont->end(), obj.get() );
+          co_yield(i.get()!=cont->end());
+        }
+        co_return(false);
+      }
+      for (i=cont->begin() ; i.get()!=cont->end(); ++i.get() ) {
+        obj.set_ptr(&*i.get(),false);
+        co_yield(true);
+      }
+      obj.reset();
+      co_end();
+    }
+};
+
 
 template<typename Cont>
-relation ritem(lref<typename Cont::value_type> obj, lref<Cont>& cont_) {
-    lref<typename Cont::reverse_iterator> b, e;
-    return rbegin(cont_,b) && rend(cont_, e) && item<lref<typename Cont::reverse_iterator> >(obj, b, e);
+ItemCont_r<Cont> item(lref<typename Cont::value_type> obj, lref<Cont>& cont_) {
+    return ItemCont_r<Cont>(obj, cont_);
+}
+
+template<class Cont>
+class ItemRCont_r : public Coroutine {
+    typedef typename Cont::value_type value_type;
+    lref<value_type> obj;
+    lref<Cont> cont;
+    lref<typename Cont::reverse_iterator> i;
+public:
+    ItemRCont_r(const lref<value_type>& obj, const lref<Cont>& cont_) : obj(obj), cont(cont_)
+    { }
+
+    bool operator () (void) {
+      co_begin();
+      if(obj.defined()) {
+        for(i=cont->rbegin(); i.get()!=cont->rend(); ++i.get()) {
+          i = std::find( i.get(), cont->rend(), obj.get() );
+          co_yield(i.get()!=cont->rend());
+        }
+        co_return(false);
+      }
+      for (i=cont->rbegin() ; i.get()!=cont->rend(); ++i.get() ) {
+        obj.set_ptr(&*i.get(),false);
+        co_yield(true);
+      }
+      obj.reset();
+      co_end();
+    }
+};
+
+template<typename Cont> inline
+ItemRCont_r<Cont> ritem(lref<typename Cont::value_type> obj, lref<Cont>& cont_) {
+    return ItemRCont_r<Cont>(obj, cont_);
 }
 
 //-------------------------------------------------------------------------
@@ -1035,65 +1168,6 @@ public:
 template<typename Cont> inline
 REnd_r<Cont> rend(lref<Cont>& cont_, const lref<typename Cont::reverse_iterator>& iter) {
     return REnd_r<Cont>(cont_, iter);
-}
-
-//---------------------------------------------------------------
-//    Error Relation : Always throws an exception
-//---------------------------------------------------------------
-template<typename ExceptionType>
-struct Error : TestOnlyRelation<Error<ExceptionType> > {
-    ExceptionType e;
-    Error(const ExceptionType & e) :e(e)
-    { }
-
-    bool apply(void) const {
-        throw e;
-    }
-};
-
-template<class ExceptionType>
-struct Error<ExceptionType*> : TestOnlyRelation<Error<ExceptionType*> > {
-    ExceptionType* e;
-    Error(ExceptionType* e) :e(e)
-    { }
-
-    bool apply(void) const {
-        throw e;
-    }
-};
-
-
-template<typename ExceptionType> inline
-Error<ExceptionType> error( const ExceptionType& err ) {
-    return Error<ExceptionType>(err);
-}
-
-// This overload is merely a workaround to easily allow: error("char* exceptions") 
-// This would normally be handled by defining a non-template relation error(char*)
-// But cannot do that as this is a pure template library
-template<typename ExceptionType> inline
-Error<ExceptionType*> error( ExceptionType* err ) {
-    return Error<ExceptionType*>(err);
-}
-
-//--------------------------------------------------------
-//  negate relation : invert true/false result from another relation
-//--------------------------------------------------------
-template<typename Rel>
-class Negate_r : public TestOnlyRelation<Negate_r<Rel> > {
-    Rel r;
-public:
-    Negate_r(const Rel& r) : r(r)
-    { }
-
-    bool apply() {
-        return !r();
-    }
-};
-
-template<typename Rel>
-Negate_r<Rel> negate(const Rel& rel) {
-    return Negate_r<Rel>(rel);
 }
 
 

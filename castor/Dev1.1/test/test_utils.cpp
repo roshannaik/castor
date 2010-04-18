@@ -1149,18 +1149,100 @@ void test_range_with_step() {
 	lref<int> i =9, min =0 , max=7, step=3;
     relation r = range(i, min, max, step);
     if(r())
-        throw "failed test_range_with_step 2";
+        throw "failed test_range_with_step 3";
     if(!i.defined())
-        throw "failed test_range_with_step 2";
+        throw "failed test_range_with_step 3";
     if(r())
-        throw "failed test_range_with_step 2";
+        throw "failed test_range_with_step 3";
     }
     { // empty range
         relation r = range<int>(7,10,2,-1);
         if(r())
-            throw "failed test_range_with_step 3";
+            throw "failed test_range_with_step 4";
     }
 }
+
+void test_range_dec() {
+    { // generate
+    lref<int> li;
+    int expected=7;
+    relation r = range_dec<int>(li, 7,0);
+    while(r()) {
+        if(*li!=expected--)
+            throw "failed test_range_dec  1";
+    }
+    if(li.defined())
+        throw "failed test_range_dec  1";
+    }
+    { // test 
+    lref<int> i =2;
+    relation r = range_dec(i, 7, 0);
+    if(!r())
+        throw "failed test_range_dec  2";
+    if(!i.defined())
+        throw "failed test_range_dec  2";
+    if(r())
+        throw "failed test_range_dec  2";
+    }
+    { // test out of range
+    relation r = range_dec<int>(9, 7, 0);
+    if(r())
+        throw "failed test_range_dec  3";
+    if(r())
+        throw "failed test_range_dec  3";
+    }
+    { // empty range
+        lref<int> i;
+        relation r = range_dec(i,10,11);
+        if(r())
+            throw "failed test_range_dec  4";
+    }
+}
+
+void test_range_dec_with_step() {
+    { // generate
+    lref<int> li;
+	int expected=7, step=2;
+	relation r = range_dec(li, 7, 0, step);
+	while(r()) {
+		if(*li!=expected)
+			throw "failed test_range_dec_with_step 1";
+		expected-=step;
+	}
+	if(li.defined())
+		throw "failed test_range_dec_with_step 1";
+	}
+	{ // test  step>max
+	relation r = range_dec<int>(2, 7, 0, 8);
+	if(!r())
+		throw "failed test_range_dec_with_step 2";
+	}
+	{ // gen  step>max
+    lref<int> i;
+	relation r = range_dec<int>(i, 7, 0, 8);
+	if(!r())
+		throw "failed test_range_dec_with_step 3";
+	if(r())
+		throw "failed test_range_dec_with_step 3";
+	}
+	{ // test out of range
+	lref<int> i =9, min =0 , max=7, step=3;
+    relation r = range(i, max, min, step);
+    if(r())
+        throw "failed test_range_dec_with_step 4";
+    if(!i.defined())
+        throw "failed test_range_dec_with_step 4";
+    if(r())
+        throw "failed test_range_dec_with_step 4";
+    }
+    { // empty range
+        relation r = range<int>(7,10,12);
+        if(r())
+            throw "failed test_range_dec_with_step 5";
+    }
+}
+
+
 void test_item() {
     {//1 - iterate over std::collection
     list<int> li;
@@ -1176,14 +1258,16 @@ void test_item() {
     }
     {//2 - lookup over std::collection (using lref)
     list<int> li;
-    li.push_back(1); li.push_back(2); li.push_back(3); li.push_back(4); li.push_back(5);
+    li.push_back(1); li.push_back(2); li.push_back(3); li.push_back(4); li.push_back(5); li.push_back(2);
     lref<int> obj=2;
     relation r = item(obj, li.begin(), li.end());
-    int j=2;
-    while(r())
-        if(*obj!= j++)
+    int j=0;
+    while(r()) {
+        if(*obj!=2)
             throw "failed test_item 2";
-    if(j!=3 && *obj!=2)
+        ++j;
+    }
+    if(j!=2 && *obj!=2)
         throw "failed test_item 2";
     }
     {//3 - iterator with array type
@@ -1268,12 +1352,59 @@ void test_item() {
     int j=1;
     while(r())
         if(*obj!= j++)
-            throw "failed test_item 5";
+            throw "failed test_item 9";
     if(obj.defined())
-        throw "failed test_item 5";
+        throw "failed test_item 9";
+    }
+    {
+    //10- lookup mode - with duplicates - using item(cont)
+    int ai[] = {1,2,3,4,2};
+    lref<vector<int> > vi = vector<int>(ai+0, ai+5);
+    relation r = item(2, vi);
+    int j=0;
+    while(r())
+        ++j;
+    if(j!=2)
+        throw "failed test_item 10";
+    }
+    {
+    //11- lookup mode - non existent value - using item(cont)
+    int ai[] = {1,2,3,4,2};
+    lref<vector<int> > vi = vector<int>(ai+0, ai+5);
+    relation r = item(9, vi);
+    int j=0;
+    while(r())
+        ++j;
+    if(j!=0)
+        throw "failed test_item 11";
     }
 }
 
+void test_ritem() {
+    {
+    //1- lookup mode - with duplicates
+    int ai[] = {1,2,3,4,2};
+    lref<vector<int> > vi = vector<int>(ai+0, ai+5);
+    relation r = ritem(2, vi);
+    int j=0;
+    while(r())
+        ++j;
+    if(j!=2)
+        throw "failed test_ritem 1";
+    }
+    {//2 - iterate over std::collection
+    lref<list<int> > li = list<int>();
+	li->push_back(1); li->push_back(2); li->push_back(3); li->push_back(4); li->push_back(5);
+	lref<int> obj;
+	relation r = ritem(obj, li);
+    int j=5;
+    while(r())
+        if(*obj!= j--)
+            throw "failed test_ritem 2";
+    if(obj.defined() || j!=0)
+        throw "failed test_ritem 2";
+    }
+}
 void test_getValueCont() {
     {// going from from list<lref<int> > to vector<int>
     list<lref<int> > lri;
@@ -1388,7 +1519,8 @@ void test_unique_mf() {
 	{
     string words[] = {"mary", "had", "a", "little", "lamb"};
     lref<string> w;
-	relation r = (item(w,words,words+5) && unique_mf(w,&string::length)) >>= count(4);
+    lref<int> c;
+	relation r = (item(w,words,words+5) && unique_mf(w,&string::length) >>= count(c)) && predicate(c==4);
 	if(!r())
 		throw "failed test_unique_mf 1";
 	}
@@ -1407,8 +1539,8 @@ void test_unique_mem() {
 	{
     person people[] = { person("roshan","naik"), person("runa","naik"), person("harry","potter") };
     lref<person> p;
-	lref<int> i=2;
-	relation r = (item(p, people, people+3) && unique_mem(p, &person::lastName)) >>= count(2);
+	lref<int> c;
+	relation r = ( item(p, people, people+3) && unique_mem(p, &person::lastName) >>= count(c) ) && predicate(c==2);
 	if(!r())
 		throw "failed test_unique_mem 1";
 	}
@@ -1487,42 +1619,6 @@ void test_dereference() {
         throw "failed test_deref 3"; 
     }
 
-}
-
-void test_error() {
-    { // 1
-    std::exception e;
-    relation r =  error(e);
-    try { 
-        r();
-        throw "failed test_error 1";
-    } catch (std::exception&)
-    { }
-    }
-    { // 2
-    relation r =  error(string("unexpected error"));
-    try { 
-        r();
-        throw "failed test_error 2";
-    } catch (const string&)
-    { }
-    }
-    { // 3
-    relation r =  error("unexpected error");
-    try { 
-        r();
-        throw "failed test_error 3";
-    } catch (const char*)
-    { }
-    }
-    { // 4
-    relation r =  error(L"unexpected error");
-    try { 
-        r();
-        throw "failed test_error 4";
-    } catch (const wchar_t*)
-    { }
-    }
 }
 
 void test_repeat() {
