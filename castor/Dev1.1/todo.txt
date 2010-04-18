@@ -1,18 +1,26 @@
   Todo
 ------------
 MUST
-group_by:
-- member function support for group_by
-- consider case of empty groups... if(first==last)
+- Consider splitting set_ptr into two nullary methods
+- Item should be able to support random lookup for containers
+- Boost Coroutines
+- Wrap up aggregates (consider renaming them .."TakeLeft" ?)
+- Breakup into namespaces/ headers 
+   - core(eq, relation, lref, ile, higher_order, cut, predicate, eval, recurse)
+   - named_ile, io, utils(util,collection), aggregates
+   - Move helper headers into detail directory
 
-- make all aggregates uni/bidirectional
-- Wrap up aggregates (consider renaming them .."eager" ?)
-- look into constraining generic operator && and ||
+group_by:
+?- member function support for group_by
++ consider case of empty groups... if(first==last)
+
+- Look into constraining generic operator && and ||
 - define operator & , | as alternatives
 
-- dont release error() without catch()
++ do not release error() without catch()
 + operator >> should be replaced with >>=
 + review shuffle and permute
++ make all aggregates unidirectional
 
 ILE:
 > ILE support for []
@@ -22,9 +30,9 @@ ILE:
 + optimize ILEs
 
 
-
 LATER
-> ILE support for _1 _2
+> consider bidirectionality for all TakeLeft relations
+> ILE support for positional parameters _1 _2
 > Assignment operator support for ILEs 
 > is it really necessary to derive ILE classes from binary_function or unary_function ?
 > Try quick-select algorithm for group_by
@@ -34,15 +42,12 @@ LATER
 > Consider removing member typedef UseFastAnd and just rely on method reset()
 - writeAll_f(), writeAll_mf() 
 - writeAllTo_f(), writeAllTo_mf() 
-
-
-
-- Split
+- split
 - Fast-testOnly relations
   + Add fast&& support for && if both args support fast &&
   + CutAnd needs support for fast && 
  ?+ Consider adding fast && support to relation empty  - (but one of its overloads may not qualify)
-- Consider alternative unification using binding instead of assignment as in eq() - for simulating Prolog behavior
+- Alternative unification using binding instead of assignment as in eq() - for simulating Prolog behavior
 
 
 - Tabling support
@@ -54,7 +59,7 @@ LATER
 
 Document:
     - ILE at(), ref()
-    - ritem
+    - pause
 	- all eager relations - fial immdly if out param is initialized
 	- Coroutines should not have const and reference data members
 	- 2 co_yields on same line wont work, local variables wont work without exta {} for if/else blocks:
