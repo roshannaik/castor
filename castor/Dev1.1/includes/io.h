@@ -51,14 +51,14 @@ public:
     { }
     
     bool apply(void) {
-	  typedef typename effective_type<Itr>::result_type effective_type;
-      effective_type f = effective_value(beg_), e = effective_value(end_);
-      for( effective_type i=f; i!=e; ++i ) {
-        if( i!=f )
-            *out << sep;
-          *out << *i;
-      }
-	  *out << terminateWith;
+	    typedef typename effective_type<Itr>::result_type effective_type;
+        effective_type b = effective_value(beg_), e = effective_value(end_);
+        if(b==e)
+            return false;
+        *out << *b;
+        while( ++b!=e )
+            *out << sep << *b;
+	    *out << terminateWith;
       return true;
     }
 };
