@@ -33,11 +33,11 @@ Enhancements to ILE (closure/lambda facility):
           - eval(ref(cout) << "hello" << " world" )();          // cout << "hello" << "world";
           - string s; eval(ref(cin) >> ref(s) )();              // cin >> s;
           - stringstream strm; eval(ref<ostream>(strm) << "hello")();   // return type of this operator << is ostream& and not stringstream&
-          - eval(ref<istream>(strm) >> ref(s))();                       // return type of this operator >> is istream& and not stringstream&
+          - eval(ref<istream>(strm)) >> ref(s))();                       // return type of this operator >> is istream& and not stringstream&
 
 - Speed improvements for ILE expressions. Fairly close to the speed of custom function objects.
 
-Enhancements:
+New features:
 -------------
 - Class Coroutine and macros co_begin, co_end, co_return & co_yield that support coroutine style programming
   Helpful for defining relations imperatively.
@@ -47,24 +47,31 @@ Enhancements:
   POTs or lrefs :
   + Additional overloads for eq_f, eq_mf, predicate_f & predicate_mf.
   + Signatures for eq_f and predicate_f modified (new signatures continue to be backward compatible).
+  + Additional constructor for relation True that takes an integral argument denoting how many times to succeed.
 
-- Enhanced relations: Additional constructor for relation True that takes an integral argument denoting how many times to succeed.
+- New relations: 
+  + eq_mem() - for unifying with (non static) data members.
+  + eval() and eval_mf() - To execute a function or member function. Return value (if any) is discarded.
+  + error() - To throw an exception. 
+  + pause() - To pause execution. Waits for a key press by calling cin.ignore(). Helpful as a debugging aid.
+  + permute() -  To generate permutations of a sequnce/string.
+  + range_dec() - To iterate over a range in decreasing order.
+  + ritem() -  To generate values from a sequence in reverse. The sequence must provide rbegin() and rend().
+  + shuffle() - To generate a randomized sequence/string.
+  + unique_mem(), unique_mf() - Similar to unique() but filtering is based on a data member or value returned by a method call.
+  + writeAll(), writeAllTo() : To print all elements in a sequence to cout or to a stream.
+  + write_mem(), writeTo_mem() : To print value of a data member to cout or a stream.
+  + zip() : Takes two relations as argument and evaluates them in an interleaved manner until one of them fails.
 
-New relations: 
---------------
-- eq_mem() - for unifying with (non static) data members.
-- eval() and eval_mf() - To execute and function or member function. Return value (if any) is discarded.
-- error() - To throw an exception. 
-- pause() - To pause execution. Waits for a key press by calling cin.ignore(). Helpful as a debugging aid.
-- permute() -  To generate permutations of a sequnce/string.
-- ritem() -  To generate values from a sequence in reverse. The sequence must provide rbegin() and rend().
-- shuffle() - To generate a randomized sequence/string.
-- unique_mem(), unique_mf() - Similar to unique() but filtering is based on a data member or value returned by a method call.
-- writeAll(), writeAllTo() : To print all elements in a sequence to cout or to a stream.
-- write_mem(), writeTo_mem() : To print value of a data member to cout or a stream.
-
-- Special Relations to be used with operator >>= : 
+- New Relations for use with operator >>= : 
    + count() - For counting the number of items in a sequence. e.g. range(i,1,10) >>= count(n)
+   + order() - For producing a sorted sequence of objects.
+   + order_mem() - For producing a sorted sequence of objects. Sort objects on a data member. (e.g. pair<,>.first )
+   + order_mf() - For producing a sorted sequence of objects. Sort based on value method call (e.g. string::length() )
+   + reverse() - For reversing a sequence of objects. e.g. range(i,1,10) >>= reverse(i)
+   + reduce() - For reducing a sequence to a value by applying a operator(similar to accumulate). e.g.
+         range(j,1,10) >>= reduce(j, std::multiplies<int>()); // product of first 10 numbers
+   + sum() - For summing the values in a sequence. e.g. range(i,1,10) >>= sum(i)
    + group_by() - For grouping objects based on some criteria. Allows nested grouping. e.g
         E.g: 
         // Group strings by first char & then by length
@@ -87,13 +94,6 @@ New relations:
                 while(values()) cout << *s << " ";
            }
         }
-   + order() - For producing a sorted sequence of objects.
-   + order_mem() - For producing a sorted sequence of objects. Sort objects on a data member. (e.g. pair<,>.first )
-   + order_mf() - For producing a sorted sequence of objects. Sort based on value method call (e.g. string::length() )
-   + reverse() - For reversing a sequence of objects. e.g. range(i,1,10) >>= reverse(i)
-   + reduce() - For reducing a sequence to a value by applying a operator(similar to accumulate). e.g.
-         range(j,1,10) >>= reduce(j, std::multiplies<int>()); // product of first 10 numbers
-   + sum - For summing the values in a sequence. e.g. range(i,1,10) >>= sum(i)
 
 
 

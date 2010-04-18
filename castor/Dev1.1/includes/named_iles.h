@@ -15,12 +15,12 @@ namespace castor {
 //-------------------------------------------------
 
 template<typename Cont, typename Index>
-class At {
+class At_ILE {
 	lref<Cont> c;
     Index i;
 public:
 	typedef typename Cont::value_type result_type;
-    At(const lref<Cont>& c, Index i) : c(c), i(i) 
+    At_ILE(const lref<Cont>& c, Index i) : c(c), i(i) 
     { }
 
 	typename Cont::value_type operator()(void) {
@@ -29,24 +29,24 @@ public:
 };
 
 template<typename Obj, typename Index> inline
-Ile<At<Obj,Index> >
+Ile<At_ILE<Obj,Index> >
 at(lref<Obj>& obj, Index i) {
-    return At<Obj,Index>(obj,i);
+    return At_ILE<Obj,Index>(obj,i);
 }
 
 //-------------------------------------------------
 // ref() - Takes a reference to an object/lref
 //-------------------------------------------------
 template<typename T>
-class Ref {
+class Ref_ILE {
 	lref<T> obj;
 public:
 	typedef T& result_type;
 
-    Ref(T& obj) : obj(&obj,false)
+    Ref_ILE(T& obj) : obj(&obj,false)
     { }
 
-    Ref(lref<T>& obj) : obj(obj)
+    Ref_ILE(lref<T>& obj) : obj(obj)
     { }
 
 	T& operator()(void) {
@@ -55,12 +55,12 @@ public:
 };
 
 template<typename T>
-class Ref<T*> {
+class Ref_ILE<T*> {
 	T* obj;
 public:
 	typedef T* result_type;
 
-    Ref(T* obj) : obj(obj)
+    Ref_ILE(T* obj) : obj(obj)
     { }
 
 	T* operator()(void) {
@@ -69,20 +69,20 @@ public:
 };
 
 template<class T> inline
-Ile<Ref<T> >
+Ile<Ref_ILE<T> >
 ref(T& obj) {
-    return Ref<T>(obj);
+    return Ref_ILE<T>(obj);
 }
 
 template<class T> inline
-Ile<Ref<T*> >
+Ile<Ref_ILE<T*> >
 ref(T* obj) {
-    return Ref<T*>(obj);
+    return Ref_ILE<T*>(obj);
 }
 
 template<class T>
-Ile<Ref<T> > ref(const lref<T>& obj) { 
-    return Ref<T>(obj);
+Ile<Ref_ILE<T> > ref(const lref<T>& obj) { 
+    return Ref_ILE<T>(obj);
 }
 
 //-------------------------------------------------
@@ -259,13 +259,13 @@ Ile<CreateWith6<T,A1,A2,A3,A4,A5,A6> > create(const A1& a1, const A2& a2, const 
 //-------------------------------------------------
 
 template<typename Obj, typename MemberT>
-class Get {
+class Get_ILE {
     lref<Obj> obj_;
 	MemberT Obj::* mem;
 public:
     typedef MemberT result_type;
 
-    Get(const lref<Obj>& obj_, MemberT Obj::* mem) : obj_(obj_), mem(mem)
+    Get_ILE(const lref<Obj>& obj_, MemberT Obj::* mem) : obj_(obj_), mem(mem)
 	{ }
 
     MemberT& operator()(void) {
@@ -278,8 +278,8 @@ public:
 };
 
 template<typename Obj, typename MemberT> inline
-Ile<Get<Obj,MemberT> > get(const lref<Obj>& obj_, MemberT Obj::* mem) {
-	return Get<Obj,MemberT>(obj_,mem);
+Ile<Get_ILE<Obj,MemberT> > get(const lref<Obj>& obj_, MemberT Obj::* mem) {
+	return Get_ILE<Obj,MemberT>(obj_,mem);
 }
 
 
