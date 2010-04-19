@@ -658,6 +658,7 @@ void runtests() {
     run_test( test_op_exor );
 	run_test( test_repeat );
 	run_test( test_pause );
+	run_test( test_pause_f );
 	run_test( test_zip );
 	run_test( test_True );
 

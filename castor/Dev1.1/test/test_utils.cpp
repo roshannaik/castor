@@ -1658,3 +1658,11 @@ void test_pause() {
 		pause(ls);
 	}
 }
+
+void test_pause_f() {
+	{// basic compilation checks only
+        lref<string> s;
+        lref<vector<string> > names;
+        relation r = item(s, names) && pause_f(s + "\n");
+	}
+}

@@ -3,24 +3,25 @@
 MUST
 - Consider splitting set_ptr into two nullary methods
 - Item should be able to support random lookup for containers
-- Boost Coroutines
 - Wrap up aggregates (consider renaming them .."TakeLeft" ?)
 - Breakup into namespaces/ headers 
    - core(eq, relation, lref, ile, higher_order, cut, predicate, eval, recurse)
    - named_ile, io, utils(util,collection), aggregates
    - Move helper headers into detail directory
 
-group_by:
-?- member function support for group_by
-+ consider case of empty groups... if(first==last)
-
 - Look into constraining generic operator && and ||
-- define operator & , | as alternatives
 
 + do not release error() without catch()
 + operator >> should be replaced with >>=
 + review shuffle and permute
 + make all aggregates unidirectional
+x define operator & , | as alternatives
+x evaluate Boost Coroutines - not suitable
+
+group_by:
+x member function support for group_by
++ consider case of empty groups... if(first==last)
+
 
 ILE:
 > ILE support for []

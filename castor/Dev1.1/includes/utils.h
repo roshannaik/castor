@@ -79,6 +79,28 @@ Pause_r<T*> pause(T* s) {
 
 
 //-------------------------------------------------------------------------
+//   Relation pause_f()
+//-------------------------------------------------------------------------
+template<class F>
+struct PauseF_r : Coroutine {
+	F func;
+	PauseF_r(const F& func) : func(func)
+	{ }
+	bool operator()(void) {
+		co_begin();
+		std::cout << func();
+		std::cin.ignore();
+		co_yield(true);
+		co_end();
+	}
+};
+
+template<typename Func> inline
+PauseF_r<Func> pause_f(Func f) {
+	return PauseF_r<Func>(f);
+}
+
+//-------------------------------------------------------------------------
 //   Relations defined() and undefined()
 //      Equivalent to Prolog's metalogical predicates nonvar() and var()
 //-------------------------------------------------------------------------

@@ -24,6 +24,20 @@ void test_order() {
 		if(j.defined())
 			throw "failed test_order 1";
 	}
+	{// with comparator
+		int ai[] = { 10,9,8,7,6,5,4,3,2,1 };
+		vector<int> vi(ai,ai+10); 
+		sort(vi.begin(), vi.end());
+
+		lref<int> j;
+        relation r = item(j,ai,ai+10) >>= order(j, std::greater<int>());
+		for(int i=9; r(); --i) {
+			if(vi.at(i)!=*j)
+				throw "failed test_order 2";
+		}
+		if(j.defined())
+			throw "failed test_order 2";
+	}
 }
 
 
@@ -42,7 +56,7 @@ void test_order_mf() {
 		if(v.defined())
 			throw "failed test_order_mf 1";
 	}
-	{
+	{ // with comparator
 		string values[] = {"four","one","three"};
 		string svalues[] = {"three","four","one"};
 		vector<string> sorted_values(svalues,svalues+3);
