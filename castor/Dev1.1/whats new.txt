@@ -4,11 +4,10 @@
 
 Enhancements to lref:
 ---------------------
-- Now lrefs can reference existing objects via pointers. A new constructor lref(T*,bool) and a 
-  method set_ptr(T*,bool) added to support this. bool parameter specifies if object's lifetime should be managed.
-     + item() relation now uses set_ptr instead of performing an element wise copy into the lref.
+- A new constructor lref(T*,bool) and a method set_ptr(T*,bool) allow lrefs to reference existing objects 
+    via pointers. If bool argument is false, object's lifetime will not be managed.
 - lref::operator=(rhs) will reset the lref if rhs is not initialized
-- lref::bound(lref& rhs) will check if this lref and rhs are bound/joined together
+- lref::bound(lref& rhs) will check if 'this' lref and rhs are bound/joined together
 
 // - Relations supporting Fast && : False, Boolean, predicate, predicate_mf, predicate_mem, defined, undefined, negate
 
@@ -26,14 +25,15 @@ Enhancements to ILE (closure/lambda facility):
         E.g.   lref<pair<int,int> > pr .. ; write_f( get(pr,&pair:;first) )
     + mcall - To invoke a member function with upto 6 arguments.
         E.g.   lref<string> str= "hello" ;  predicate( mcall(str, &string::at,0)=='h' )
-    + ref - Takes a reference to an object. Object's lifetime should extend beyond the life of the ILE referencing the object.
+    + ref - References an object. Referenced object's lifetime must extend beyond the life of this ILE.
         E.g.   lref<int> s="hello";  eval( ref(cout) << s );
 - ILE expressions now support use of "string literals".
-    E.g.  - lref<string> ls="castor"; predicate(ls=="castor");
-          - eval(ref(cout) << "hello" << " world" )();          // cout << "hello" << "world";
-          - string s; eval(ref(cin) >> ref(s) )();              // cin >> s;
-          - stringstream strm; eval(ref<ostream>(strm) << "hello")();   // return type of this operator << is ostream& and not stringstream&
-          - eval(ref<istream>(strm)) >> ref(s))();                       // return type of this operator >> is istream& and not stringstream&
+    E.g. - lref<string> ls="castor"; predicate(ls=="castor");
+         - eval(ref(cout) << "hello" << " world" )();  // cout << "hello" << "world";
+         - string s; eval(ref(cin) >> ref(s) )();      // cin >> s;
+         - stringstream strm; 
+           eval(ref<ostream>(strm) << "hello")();   // return type of operator << is ostream& and not stringstream&
+         - eval(ref<istream>(strm)) >> ref(s))();   // return type of operator >> is istream& and not stringstream&
 
 - Speed improvements for ILE expressions. Fairly close to the speed of custom function objects.
 
@@ -53,7 +53,8 @@ New features:
   + eq_mem() - for unifying with (non static) data members.
   + eval() and eval_mf() - To execute a function or member function. Return value (if any) is discarded.
   + error() - To throw an exception. 
-  + pause() - To pause execution. Waits for a key press by calling cin.ignore(). Helpful as a debugging aid.
+  + pause() - To pause execution. Prints a message and waits for a key press by calling cin.ignore(). Helpful as a debugging aid.
+  + pause_f() - Similar to pause(), but prints result of a function call instead of a string message.
   + permute() -  To generate permutations of a sequnce/string.
   + range_dec() - To iterate over a range in decreasing order.
   + ritem() -  To generate values from a sequence in reverse. The sequence must provide rbegin() and rend().
@@ -64,14 +65,14 @@ New features:
   + zip() : Takes two relations as argument and evaluates them in an interleaved manner until one of them fails.
 
 - New Relations for use with operator >>= : 
-   + count() - For counting the number of items in a sequence. e.g. range(i,1,10) >>= count(n)
+   + count() - For counting the number of items in a sequence. E.g. range(i,1,10) >>= count(n)
    + order() - For producing a sorted sequence of objects.
-   + order_mem() - For producing a sorted sequence of objects. Sort objects on a data member. (e.g. pair<,>.first )
-   + order_mf() - For producing a sorted sequence of objects. Sort based on value method call (e.g. string::length() )
-   + reverse() - For reversing a sequence of objects. e.g. range(i,1,10) >>= reverse(i)
-   + reduce() - For reducing a sequence to a value by applying a operator(similar to accumulate). e.g.
-         range(j,1,10) >>= reduce(j, std::multiplies<int>()); // product of first 10 numbers
-   + sum() - For summing the values in a sequence. e.g. range(i,1,10) >>= sum(i)
+   + order_mem() - For producing a sorted sequence of objects. Sort objects on a data member.
+   + order_mf() - For producing a sorted sequence of objects. Sort based on value method call.
+   + reverse() - For reversing a sequence of objects. E.g. range(i,1,10) >>= reverse(i)
+   + reduce() - For reducing a sequence to a value by applying a operator(similar to accumulate). 
+       E.g.:  range(j,1,10) >>= reduce(j, std::multiplies<int>()); // product of first 10 numbers
+   + sum() - For summing the values in a sequence. E.g. range(i,1,10) >>= sum(i)
    + group_by() - For grouping objects based on some criteria. Allows nested grouping. e.g
         E.g: 
         // Group strings by first char & then by length
@@ -96,7 +97,6 @@ New features:
         }
 
 
-
 Deprecated:
 -----------
 In order to use the following deprecated facilites a #define CASTOR_ENABLE_DEPRECATED is required.
@@ -108,7 +108,8 @@ Potential Incompatibilites:
 ---------------------------
 - item() relation now yields an lref<> that references the actual element in the container/sequence 
   instead of a copy.
-
+- item() will now succeed once for every occurance of the value in the container/sequence. Old behavior
+  of item was to succeed only once for such cases.
 
 Bug fixes:
 ----------
@@ -118,3 +119,4 @@ Bug fixes:
 - Added #include<cstring.h> in eq.h  (Thanks to David Côme)
 - Added #include<algorithm> in refcountedptr.h
 - Exception types InvalidDeref and Underflow moved to namespace castor.
+- Fixes for Gcc related warnings. (Thanks to Ali Cehreli)
