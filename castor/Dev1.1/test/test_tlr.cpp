@@ -121,7 +121,7 @@ void test_reverse() {
 		string values[] = {"four","one","two","three"};
 		vector<string> rev(values,values+4);
 		std::reverse(rev.begin(), rev.end());
-		
+
 		lref<string> s;
 		relation r = item(s,values, values+4) >>= reverse(s);
 		for(int i=0; r(); ++i) {

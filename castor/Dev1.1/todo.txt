@@ -1,20 +1,23 @@
   Todo
 ------------
 MUST
+- All TLRs should be collection oriented also ?
+   + reverse/ritem
+- relocate zip
 - Consider splitting set_ptr into two nullary methods
 - Item should be able to support random lookup for containers
-- Wrap up aggregates (consider renaming them .."TakeLeft" ?)
+- Wrap up TLRs (consider renaming them .."TakeLeft" ?)
 - Breakup into namespaces/ headers 
    - core(eq, relation, lref, ile, higher_order, cut, predicate, eval, recurse)
-   - named_ile, io, utils(util,collection), aggregates
+   - named_ile, io, utils(util,collection), TLRs
    - Move helper headers into detail directory
+- review shuffle and permute
 
 - Look into constraining generic operator && and ||
 
 + do not release error() without catch()
 + operator >> should be replaced with >>=
-+ review shuffle and permute
-+ make all aggregates unidirectional
++ make all TLRs unidirectional
 x define operator & , | as alternatives
 x evaluate Boost Coroutines - not suitable
 
@@ -27,12 +30,12 @@ ILE:
 > ILE support for []
 > Update example in eq_mem ref manual to use sum()
 > test ILEs with const objects
-+ can empty base class optimization be applied to ILEs - no use
+x can empty base class optimization be applied to ILEs - no use
 + optimize ILEs
 
 
 LATER
-> consider bidirectionality for all TakeLeft relations
+> consider bidirectionality for all TLRs
 > ILE support for positional parameters _1 _2
 > Assignment operator support for ILEs 
 > is it really necessary to derive ILE classes from binary_function or unary_function ?
@@ -57,18 +60,12 @@ LATER
 
 - Implement head_n, head_tail etc. in terms of views instead of lists.
 
-
 Document:
-    - ILE at(), ref()
-    - pause
-	- all eager relations - fial immdly if out param is initialized
+    - Ref Manual - how to write named ILEs
+	- All TLRs - fail immdly if out param is initialized
 	- Coroutines should not have const and reference data members
-	- 2 co_yields on same line wont work, local variables wont work without exta {} for if/else blocks:
-			if(..)
-				co_yield(..);
-			else
-				co_yield(..);
-	- normally passing local POT variables to relations is disastrous unless the members of the POT are all lrefs.
+	- local variables wont work without exta {} 
+?	- normally passing local POT variables to relations is disastrous unless the members of the POT are all lrefs.
 	- 	{ // invoking const and non const operator() 
 			const Func cf=Func();
 			if(call<const Func>(cf,4)() != 4)
@@ -77,4 +74,3 @@ Document:
 				throw "failed test_call 3";
 		}
 
-  

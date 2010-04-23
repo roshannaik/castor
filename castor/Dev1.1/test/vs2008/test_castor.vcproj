@@ -175,10 +175,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\test_aggregates.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\test_castor.cpp"
 				>
 			</File>
@@ -211,6 +207,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\test_tlr.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\test_utils.cpp"
 				>
 			</File>
@@ -220,10 +220,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath="..\test_aggregates.h"
-				>
-			</File>
 			<File
 				RelativePath="..\test_collection.h"
 				>
@@ -253,16 +249,16 @@
 				>
 			</File>
 			<File
+				RelativePath="..\test_tlr.h"
+				>
+			</File>
+			<File
 				RelativePath="..\test_utils.h"
 				>
 			</File>
 			<Filter
 				Name="Castor"
 				>
-				<File
-					RelativePath="..\..\includes\aggregates.h"
-					>
-				</File>
 				<File
 					RelativePath="..\..\castor.h"
 					>
@@ -333,6 +329,10 @@
 				</File>
 				<File
 					RelativePath="..\..\includes\relation.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\includes\tlr.h"
 					>
 				</File>
 				<File
