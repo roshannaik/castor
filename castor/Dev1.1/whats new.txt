@@ -16,22 +16,23 @@ Enhancements to ILE (closure/lambda facility):
 ----------------------------------------------
 - New named ILEs have been provided:
     + at - Allows indexed access. Equivalent to the operator [].
-        E.g.   lref<string> str=..; cout << at(str,0)();
+          E.g.  lref<string> str=..; cout << at(str,0)();
     + call - To invoke a function/function object with upto 6 arguments.
-        E.g.   eq_f(x, call(&foo,1,2,3); eq_f(3, call(plus<int,int>(),1,2) )
-    + create - To create an new object. Equivalent to operator new. Supercedes Create::with().
-        E.g.   create<int>(1); create<pair<int,int> >(1,2);  create<string,const char*>("castor");
+          E.g.  eq_f(x, call(&foo,1,2,3); eq_f(3, call(plus<int,int>(),1,2) )
+    + create - To instantiate an object.    Supercedes Create::with().
+          E.g.  create<int>(1); create<pair<int,int> >(1,2);  create<string,const char*>("castor");
     + get - To access a data member of an object.
-        E.g.   lref<pair<int,int> > pr .. ; write_f( get(pr,&pair:;first) )
+          E.g.  lref<pair<int,int> > pr .. ; write_f( get(pr,&pair:;first) )
     + mcall - To invoke a member function with upto 6 arguments.
-        E.g.   lref<string> str= "hello" ;  predicate( mcall(str, &string::at,0)=='h' )
+          E.g.  lref<string> str= "hello" ;  predicate( mcall(str, &string::at,0)=='h' )
     + ref - References an object. Referenced object's lifetime must extend beyond the life of this ILE.
-        E.g.   lref<int> s="hello";  eval( ref(cout) << s );
+          E.g.  lref<string> s="";
+                (eval(ref(cin) >> s) && eval( ref(cout) << s ))();  // cin >> *s ; cout << *s;
 - ILE expressions now support use of "string literals".
     E.g. - lref<string> ls="castor"; predicate(ls=="castor");
          - eval(ref(cout) << "hello" << " world" )();  // cout << "hello" << "world";
-         - string s; eval(ref(cin) >> ref(s) )();      // cin >> s;
-         - stringstream strm; 
+         - string s;
+           stringstream strm; 
            eval(ref<ostream>(strm) << "hello")();   // return type of operator << is ostream& and not stringstream&
          - eval(ref<istream>(strm)) >> ref(s))();   // return type of operator >> is istream& and not stringstream&
 
@@ -45,14 +46,13 @@ New features:
   argument. These overloads allow passing an *overloaded* function (or method) to these
   relations without requiring explicit overload disambiguation. Also arguments to be forwarded can be 
   POTs or lrefs :
-  + Additional overloads for eq_f, eq_mf, predicate_f & predicate_mf.
+  + Additional/updated overloads for eq_f, eq_mf, predicate_f & predicate_mf.
   + Signatures for eq_f and predicate_f modified (new signatures continue to be backward compatible).
   + Additional constructor for relation True that takes an integral argument denoting how many times to succeed.
 
 - New relations: 
   + eq_mem() - for unifying with (non static) data members.
   + eval() and eval_mf() - To execute a function or member function. Return value (if any) is discarded.
-  + error() - To throw an exception. 
   + pause() - To pause execution. Prints a message and waits for a key press by calling cin.ignore(). Helpful as a debugging aid.
   + pause_f() - Similar to pause(), but prints result of a function call instead of a string message.
   + permute() -  To generate permutations of a sequnce/string.
@@ -64,7 +64,7 @@ New features:
   + write_mem(), writeTo_mem() : To print value of a data member to cout or a stream.
   + zip() : Takes two relations as argument and evaluates them in an interleaved manner until one of them fails.
 
-- New Relations for use with operator >>= : 
+- New (TakeLeft) relations for use with operator >>= : 
    + count() - For counting the number of items in a sequence. E.g. range(i,1,10) >>= count(n)
    + order() - For producing a sorted sequence of objects.
    + order_mem() - For producing a sorted sequence of objects. Sort objects on a data member.
@@ -74,7 +74,7 @@ New features:
        E.g.:  range(j,1,10) >>= reduce(j, std::multiplies<int>()); // product of first 10 numbers
    + sum() - For summing the values in a sequence. E.g. range(i,1,10) >>= sum(i)
    + group_by() - For grouping objects based on some criteria. Allows nested grouping. e.g
-        E.g: 
+        E.g.: 
         // Group strings by first char & then by length
         
         char firstChar(const string& s) { return s[0]; };

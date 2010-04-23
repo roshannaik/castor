@@ -20,7 +20,7 @@ namespace castor {
 
     struct InvalidArg{};
 
-class agg_relation {
+class relation_tlr {
     struct impl {
         virtual ~impl(){}
         virtual impl* clone() const=0;
@@ -43,21 +43,21 @@ class agg_relation {
 
     std::auto_ptr<impl> pimpl;
 
-    template<class Expr>  // disable instantiating agg_relation from ILE
-    agg_relation(const Ile<Expr>& rhs);
+    template<class Expr>  // disable instantiating relation_tlr from ILE
+    relation_tlr(const Ile<Expr>& rhs);
 public:
     typedef bool result_type;
 
     // Concept : F supports the method... bool F::operator()(relation&)
     template<class F>
-    agg_relation(F f) : pimpl(new wrapper<F>(f)) { 
+    relation_tlr(F f) : pimpl(new wrapper<F>(f)) { 
         typedef bool (F::* boolMethod)(relation&);  // Compiler Error : f must support method bool F::operator()(relation)
     }
 
-    agg_relation(const agg_relation& rhs) : pimpl(rhs.pimpl->clone())
+    relation_tlr(const relation_tlr& rhs) : pimpl(rhs.pimpl->clone())
     { }
 
-    agg_relation& operator=(const agg_relation& rhs) {
+    relation_tlr& operator=(const relation_tlr& rhs) {
         this->pimpl.reset(rhs.pimpl->clone());
         return *this;
     }
@@ -68,11 +68,11 @@ public:
 };
 
 
-class Aggregate_r {
+class TakeLeft_r {
 	relation r;
-	agg_relation ar;
+	relation_tlr ar;
 public:
-	Aggregate_r(const relation& r, const agg_relation& ar) : r(r), ar(ar)
+	TakeLeft_r(const relation& r, const relation_tlr& ar) : r(r), ar(ar)
 	{ }
 
 	bool operator()(void) {
@@ -81,8 +81,8 @@ public:
 };
 
 inline
-Aggregate_r operator >>= (const relation& r, const agg_relation& ar) {
-	return Aggregate_r(r,ar);
+TakeLeft_r operator >>= (const relation& r, const relation_tlr& ar) {
+	return TakeLeft_r(r,ar);
 }
 
 
@@ -289,12 +289,12 @@ order_mem(lref<T>& obj, MemberT T::* mem, Pred p) {
 }
 
 template<typename T>
-struct Reverse : public Coroutine {
+struct Reverse_ar : public Coroutine {
 	lref<T> obj;
 	std::vector<T> v;
 	typename std::vector<T>::reverse_iterator itr;
 
-	explicit Reverse(const lref<T>& obj) : obj(obj)
+	explicit Reverse_ar(const lref<T>& obj) : obj(obj)
 	{}
 
 	bool operator() (relation& r) {
@@ -312,7 +312,7 @@ struct Reverse : public Coroutine {
 			co_yield(true);
 		}
         obj.reset();
-		co_end();
+        co_end();
 	}
 };
 
@@ -322,8 +322,8 @@ struct Reverse : public Coroutine {
 // throws InvalidArg() if obj is initialized at the time evaluation
 //-------------------------------------------------
 template<typename T>  inline
-Reverse<T> reverse(lref<T>& obj) {
-	return Reverse<T>(obj);
+Reverse_ar<T> reverse(lref<T>& obj) {
+	return Reverse_ar<T>(obj);
 }
 
 template<typename T, typename BinFunc>
@@ -373,10 +373,10 @@ template<typename T>
 struct Count_ar : public Coroutine {
 	lref<T> obj;
 
-	Count_ar(const lref<T>& obj) : obj(obj)
+	explicit Count_ar(const lref<T>& obj) : obj(obj)
 	{}
 
-    Count_ar(const T& obj) : obj(obj)
+    explicit Count_ar(const T& obj) : obj(obj)
 	{}
 
 	bool operator() (relation& r) {
@@ -448,7 +448,7 @@ class nthValue {
 public:
 	typedef typename T::first_type& result_type;
 
-	nthValue(lref<std::vector<T> >& v) : v(v)
+	explicit nthValue(lref<std::vector<T> >& v) : v(v)
 	{ }
 
 	result_type operator()(typename std::vector<T>::size_type index) {
@@ -714,7 +714,7 @@ struct FuncList<Func,None> {
 	typedef typename return_type<Func>::result_type result_type;
 	Func selector;
 
-	FuncList(Func f) : selector(f)
+	explicit FuncList(Func f) : selector(f)
 	{ }
 
 	template<class Obj>

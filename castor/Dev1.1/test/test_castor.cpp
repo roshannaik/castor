@@ -26,7 +26,7 @@
 #include "test_io.h"
 #include "test_ile.h"
 #include "test_collection.h"
-#include "test_aggregates.h"
+#include "test_tlr.h"
 #include "test_higher_order.h"
 
 using namespace std;
@@ -684,6 +684,6 @@ void runtests() {
 
 void bar() {
 	{
-        
+ 
 	}
 }
