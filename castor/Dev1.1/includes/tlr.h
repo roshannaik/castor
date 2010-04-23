@@ -87,13 +87,13 @@ TakeLeft_r operator >>= (const relation& r, const relation_tlr& ar) {
 
 
 template<typename T, typename Pred>
-struct Order_ar : public Coroutine {
+struct Order_tlr : public Coroutine {
 	lref<T> obj;
 	std::vector<T> v;
 	typename std::vector<T>::iterator itr;
 	Pred pred;
 
-	Order_ar(const lref<T>& obj, Pred pred) : obj(obj), pred(pred)
+	Order_tlr(const lref<T>& obj, Pred pred) : obj(obj), pred(pred)
 	{}
 
 	bool operator() (relation& r) {
@@ -120,17 +120,17 @@ struct Order_ar : public Coroutine {
 // For use with >>= operator
 // throws InvalidArg() if obj is initialized at the time evaluation
 template<typename T>  inline
-Order_ar<T,std::less<T> > 
+Order_tlr<T,std::less<T> > 
 order(lref<T>& obj) {
-	return Order_ar<T,std::less<T> >(obj,std::less<T>());
+	return Order_tlr<T,std::less<T> >(obj,std::less<T>());
 }
 
 // For use with >>= operator
 // throws InvalidArg() if obj is initialized at the time evaluation
 template<typename T, typename Pred>  inline
-Order_ar<T,Pred> 
-order(lref<T>& obj, Pred p) {
-	return Order_ar<T,Pred>(obj,p);
+Order_tlr<T,Pred> 
+order(lref<T>& obj, Pred cmp) {
+	return Order_tlr<T,Pred>(obj,cmp);
 }
 
 namespace detail {
@@ -214,9 +214,9 @@ struct OrderByBase : public Coroutine {
 };
 
 template<typename T, typename MemFunc, typename Pred>
-struct OrderMf_ar : public OrderByBase<T, detail::MfPred<T,MemFunc,Pred> > {
+struct OrderMf_tlr : public OrderByBase<T, detail::MfPred<T,MemFunc,Pred> > {
 	typedef OrderByBase<T, detail::MfPred<T,MemFunc,Pred> > BaseClass;
-	OrderMf_ar(const lref<T>& obj, MemFunc mf, Pred p) : BaseClass(obj, detail::MfPred<T,MemFunc,Pred>(mf,p))
+	OrderMf_tlr(const lref<T>& obj, MemFunc mf, Pred p) : BaseClass(obj, detail::MfPred<T,MemFunc,Pred>(mf,p))
 	{}
 };
 
@@ -224,10 +224,10 @@ struct OrderMf_ar : public OrderByBase<T, detail::MfPred<T,MemFunc,Pred> > {
 // For use with >>= operator
 // throws InvalidArg() if obj is initialized at the time evaluation
 template<typename T, typename MemFunc>  inline
-OrderMf_ar<T,MemFunc,std::less<typename detail::return_type<MemFunc>::result_type> > 
+OrderMf_tlr<T,MemFunc,std::less<typename detail::return_type<MemFunc>::result_type> > 
 order_mf(lref<T>& obj, MemFunc f) {
 	typedef typename detail::return_type<MemFunc>::result_type R;
-	return OrderMf_ar<T,MemFunc,std::less<R> >(obj,f,std::less<R>());
+	return OrderMf_tlr<T,MemFunc,std::less<R> >(obj,f,std::less<R>());
 }
 
 //-------------------------------------------------
@@ -236,9 +236,9 @@ order_mf(lref<T>& obj, MemFunc f) {
 // throws InvalidArg() if obj is initialized at the time evaluation
 //-------------------------------------------------
 template<typename T, typename MemFunc, typename Pred>  inline
-OrderMf_ar<T,MemFunc,Pred> 
+OrderMf_tlr<T,MemFunc,Pred> 
 order_mf(lref<T>& obj, MemFunc f, Pred p) {
-	return OrderMf_ar<T,MemFunc,Pred>(obj,f,p);
+	return OrderMf_tlr<T,MemFunc,Pred>(obj,f,p);
 }
 
 
@@ -260,9 +260,9 @@ struct CompareMember {
 } // namespace detail
 
 template<typename T, typename Mem, typename Pred>
-struct OrderMem_ar : public OrderByBase<T,detail::CompareMember<T,Mem,Pred> > {
+struct OrderMem_tlr : public OrderByBase<T,detail::CompareMember<T,Mem,Pred> > {
 	typedef OrderByBase<T,detail::CompareMember<T,Mem,Pred> > BaseClass;
-	OrderMem_ar(const lref<T>& obj, Mem T::* mem, Pred p) : BaseClass(obj, detail::CompareMember<T,Mem,Pred>(mem,p))
+	OrderMem_tlr(const lref<T>& obj, Mem T::* mem, Pred p) : BaseClass(obj, detail::CompareMember<T,Mem,Pred>(mem,p))
 	{}
 };
 
@@ -272,9 +272,9 @@ struct OrderMem_ar : public OrderByBase<T,detail::CompareMember<T,Mem,Pred> > {
 // throws InvalidArg() if obj is initialized at the time evaluation
 //-------------------------------------------------
 template<typename T, typename MemberT>  inline
-OrderMem_ar<T,MemberT,std::less<MemberT> > 
+OrderMem_tlr<T,MemberT,std::less<MemberT> > 
 order_mem(lref<T>& obj, MemberT T::* mem) {
-	return OrderMem_ar<T,MemberT,std::less<MemberT> >(obj,mem,std::less<MemberT>());
+	return OrderMem_tlr<T,MemberT,std::less<MemberT> >(obj,mem,std::less<MemberT>());
 }
 
 //-------------------------------------------------
@@ -283,18 +283,18 @@ order_mem(lref<T>& obj, MemberT T::* mem) {
 // throws InvalidArg() if obj is initialized at the time evaluation
 //-------------------------------------------------
 template<typename T, typename MemberT, typename Pred>  inline
-OrderMem_ar<T,MemberT,Pred> 
-order_mem(lref<T>& obj, MemberT T::* mem, Pred p) {
-	return OrderMem_ar<T,MemberT,Pred>(obj,mem,p);
+OrderMem_tlr<T,MemberT,Pred> 
+order_mem(lref<T>& obj, MemberT T::* mem, Pred cmp) {
+	return OrderMem_tlr<T,MemberT,Pred>(obj,mem,cmp);
 }
 
 template<typename T>
-struct Reverse_ar : public Coroutine {
+struct Reverse_tlr : public Coroutine {
 	lref<T> obj;
 	std::vector<T> v;
 	typename std::vector<T>::reverse_iterator itr;
 
-	explicit Reverse_ar(const lref<T>& obj) : obj(obj)
+	explicit Reverse_tlr(const lref<T>& obj) : obj(obj)
 	{}
 
 	bool operator() (relation& r) {
@@ -322,16 +322,16 @@ struct Reverse_ar : public Coroutine {
 // throws InvalidArg() if obj is initialized at the time evaluation
 //-------------------------------------------------
 template<typename T>  inline
-Reverse_ar<T> reverse(lref<T>& obj) {
-	return Reverse_ar<T>(obj);
+Reverse_tlr<T> reverse(lref<T>& obj) {
+	return Reverse_tlr<T>(obj);
 }
 
 template<typename T, typename BinFunc>
-struct Reduce_ar : public Coroutine {
+struct Reduce_tlr : public Coroutine {
 	lref<T> i, total;
 	BinFunc acc;
 
-	Reduce_ar(const lref<T>& i, const BinFunc& acc) : i(i), acc(acc)
+	Reduce_tlr(const lref<T>& i, const BinFunc& acc) : i(i), acc(acc)
 	{}
 
 	bool operator() (relation& r) {
@@ -353,8 +353,8 @@ struct Reduce_ar : public Coroutine {
 // Concept: BinFunc is a functor taking two args:  (Sum&, T&)
 //-------------------------------------------------
 template<typename T, typename BinFunc> inline
-Reduce_ar<T,BinFunc> reduce(lref<T>& i, BinFunc acc) {
-	return Reduce_ar<T,BinFunc>(i,acc);
+Reduce_tlr<T,BinFunc> reduce(lref<T>& i, BinFunc acc) {
+	return Reduce_tlr<T,BinFunc>(i,acc);
 }
 
 
@@ -364,19 +364,19 @@ Reduce_ar<T,BinFunc> reduce(lref<T>& i, BinFunc acc) {
 // throws InvalidArg() if obj is initialized at the time evaluation
 //-------------------------------------------------
 template<typename T> inline
-Reduce_ar<T,std::plus<T> > sum(lref<T>& i) {
-	return Reduce_ar<T,std::plus<T> >(i, std::plus<T>());
+Reduce_tlr<T,std::plus<T> > sum(lref<T>& i) {
+	return Reduce_tlr<T,std::plus<T> >(i, std::plus<T>());
 }
 
 
 template<typename T>
-struct Count_ar : public Coroutine {
+struct Count_tlr : public Coroutine {
 	lref<T> obj;
 
-	explicit Count_ar(const lref<T>& obj) : obj(obj)
+	explicit Count_tlr(const lref<T>& obj) : obj(obj)
 	{}
 
-    explicit Count_ar(const T& obj) : obj(obj)
+    explicit Count_tlr(const T& obj) : obj(obj)
 	{}
 
 	bool operator() (relation& r) {
@@ -400,8 +400,8 @@ struct Count_ar : public Coroutine {
 // Concept: T: is an integral type
 //-------------------------------------------------
 template<class T> inline
-Count_ar<T> count(const lref<T>& obj) {
-	return Count_ar<T>(obj);
+Count_tlr<T> count(const lref<T>& obj) {
+	return Count_tlr<T>(obj);
 }
 
 //-------------------------------------------------
@@ -411,8 +411,8 @@ Count_ar<T> count(const lref<T>& obj) {
 // Concept: T: is an integral type
 //-------------------------------------------------
 template<class T> inline
-Count_ar<T> count(const T& obj) {
-	return Count_ar<T>(obj);
+Count_tlr<T> count(const T& obj) {
+	return Count_tlr<T>(obj);
 }
 
 //-------------------------------------------------
