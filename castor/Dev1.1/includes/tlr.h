@@ -70,19 +70,19 @@ public:
 
 class TakeLeft_r {
 	relation r;
-	relation_tlr ar;
+	relation_tlr tlr;
 public:
-	TakeLeft_r(const relation& r, const relation_tlr& ar) : r(r), ar(ar)
+	TakeLeft_r(const relation& r, const relation_tlr& tlr) : r(r), tlr(tlr)
 	{ }
 
 	bool operator()(void) {
-		return ar(r);
+		return tlr(r);
 	}
 };
 
 inline
-TakeLeft_r operator >>= (const relation& r, const relation_tlr& ar) {
-	return TakeLeft_r(r,ar);
+TakeLeft_r operator >>= (const relation& r, const relation_tlr& tlr) {
+	return TakeLeft_r(r,tlr);
 }
 
 
@@ -371,23 +371,20 @@ Reduce_tlr<T,std::plus<T> > sum(lref<T>& i) {
 
 template<typename T>
 struct Count_tlr : public Coroutine {
-	lref<T> obj;
+	lref<T> n;
 
-	explicit Count_tlr(const lref<T>& obj) : obj(obj)
-	{}
-
-    explicit Count_tlr(const T& obj) : obj(obj)
+	explicit Count_tlr(const lref<T>& n) : n(n)
 	{}
 
 	bool operator() (relation& r) {
 		co_begin();
-		if(obj.defined())
+		if(n.defined())
             throw InvalidArg();
-		obj=0;
+		n=0;
         while(r())
-			++(obj.get());
+			++(n.get());
 		co_yield(true);
-		obj.reset();
+		n.reset();
 		co_end();
 	}
 };
@@ -400,20 +397,20 @@ struct Count_tlr : public Coroutine {
 // Concept: T: is an integral type
 //-------------------------------------------------
 template<class T> inline
-Count_tlr<T> count(const lref<T>& obj) {
-	return Count_tlr<T>(obj);
+Count_tlr<T> count(const lref<T>& n) {
+	return Count_tlr<T>(n);
 }
 
-//-------------------------------------------------
-// count(n) - n is number of times argument relation succeeded
-// For use with >>= operator
-// throws InvalidArg() if obj is initialized at the time evaluation
-// Concept: T: is an integral type
-//-------------------------------------------------
-template<class T> inline
-Count_tlr<T> count(const T& obj) {
-	return Count_tlr<T>(obj);
-}
+////-------------------------------------------------
+//// count(n) - n is number of times argument relation succeeded
+//// For use with >>= operator
+//// throws InvalidArg() if obj is initialized at the time evaluation
+//// Concept: T: is an integral type
+////-------------------------------------------------
+//template<class T> inline
+//Count_tlr<T> count(const T& obj) {
+//	return Count_tlr<T>(obj);
+//}
 
 //-------------------------------------------------
 // group_by(i, selector).then(..).then(..) - group seq using cond into (key,grp)
@@ -1021,7 +1018,7 @@ public:
 // Concept: T: is an integral type
 //-------------------------------------------------
 template<class Item, class Sel, class K, class V>
-GroupBy<Item,group<K,V>,K,V,detail::FuncList<Sel,detail::None>, std::less<K> > //inline
+GroupBy<Item,group<K,V>,K,V,detail::FuncList<Sel,detail::None>, std::less<K> > inline
 group_by(lref<Item>& i, Sel keyselector, lref<group<K,V> >& g) {
 	using namespace detail;
 	typedef typename return_type<Sel>::result_type ret_type;
@@ -1036,7 +1033,7 @@ group_by(lref<Item>& i, Sel keyselector, lref<group<K,V> >& g) {
 // Concept: T: is an integral type
 //-------------------------------------------------
 template<class Item, class Sel, class K, class V, class KCmp>
-GroupBy<Item,group<K,V>, K,V,detail::FuncList<Sel,detail::None>,KCmp> //inline
+GroupBy<Item,group<K,V>, K,V,detail::FuncList<Sel,detail::None>,KCmp> inline
 group_by(lref<Item>& i, Sel keyselector, lref<group<K,V> >& g, KCmp keyCmp) {
 	using namespace detail;
 	typedef typename return_type<Sel>::result_type ret_type;

@@ -139,7 +139,7 @@ public:
       refPtr->swap(*other.refPtr);
   }
 
-  bool bound(const lref& rhs) {
+  bool bound(const lref& rhs) const { // no throw
 	  return refPtr==rhs.refPtr;
   }
 
