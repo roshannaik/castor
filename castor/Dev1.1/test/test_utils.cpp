@@ -1361,7 +1361,7 @@ void test_item() {
     int ai[] = {1,2,3,4,2};
     lref<vector<int> > vi = vector<int>(ai+0, ai+5);
 #ifdef __GNUG__
-    relation r = item<int>(2, vi);
+    relation r = item<vector<int> >(2, vi);
 #else
     relation r = item(2, vi);
 #endif
@@ -1376,7 +1376,7 @@ void test_item() {
     int ai[] = {1,2,3,4,2};
     lref<vector<int> > vi = vector<int>(ai+0, ai+5);
 #ifdef __GNUG__
-    relation r = item<int>(9, vi);
+    relation r = item<vector<int> >(9, vi);
 #else
     relation r = item(9, vi);
 #endif
@@ -1394,7 +1394,7 @@ void test_ritem() {
     int ai[] = {1,2,3,4,2};
     lref<vector<int> > vi = vector<int>(ai+0, ai+5);
 #ifdef __GNUG__
-    relation r = ritem<int>(2, vi);
+    relation r = ritem<vector<int> >(2, vi);
 #else
     relation r = ritem(2, vi);
 #endif
