@@ -649,9 +649,10 @@ private:
 	template<class, class, class, class, class, class> friend class GroupBy;
 	template<class, class, class , class , class> friend class GroupBy2;
 	template<class, class> friend struct group;
-public:
-	group(const K& key, lref<std::vector<value_type> >& subgroups, size_t first, size_t last/*, detail::Func1<value_type&,size_t> getV*/) : key(key), subgroups(subgroups), first(first), last(last)
+
+    group(const K& key, lref<std::vector<value_type> >& subgroups, size_t first, size_t last/*, detail::Func1<value_type&,size_t> getV*/) : key(key), subgroups(subgroups), first(first), last(last)
 	{ }
+public:
 
 	size_t size() const {
 		return last-first;
@@ -672,6 +673,7 @@ public:
 	iterator end() const {
 		return subgroups->end();
 	}
+private:
 #ifdef __GNUG__
 	template<int N, class T>
 	struct GCC {
@@ -910,10 +912,10 @@ public:
 
 	template<class Sel2>
 	GroupBy<Item,Grp,K,typename V::value_type,typename detail::AddFunc<Sel,Sel2>::result_type, typename detail::AddCmp<KCmp,std::less<typename V::key_type> >::result_type>
-    then(Sel2 keyselector) {
+    then(Sel2 keySelector) {
 		typedef typename detail::AddFunc<Sel,Sel2>::result_type NewSelector;
 		typedef typename detail::AddCmp<KCmp,std::less<typename V::key_type> >::result_type NewComparator;
-		return GroupBy<Item,Grp,K,typename V::value_type,NewSelector,NewComparator>(i, NewSelector(selectors,keyselector), g, NewComparator(keyCmps, std::less<typename V::key_type>()));
+		return GroupBy<Item,Grp,K,typename V::value_type,NewSelector,NewComparator>(i, NewSelector(selectors,keySelector), g, NewComparator(keyCmps, std::less<typename V::key_type>()));
 	}
 
 	template<class Sel2, class KCmp2>
@@ -925,7 +927,7 @@ public:
 	}
 };
 
-template<class Item, class Grp, class Sel, class KCmp, class VCmp>
+template<class Item, class Grp, class Sel, class KCmp, class ICmp>
 class GroupBy2;
 
 template<class Item, class Grp, class K, class Sel, class KCmp>
@@ -942,17 +944,17 @@ public:
 	GroupBy(lref<Item> i, Sel selectors, lref<Grp> g, KCmp keyCmps) : i(i), selectors(selectors), g(g), keyCmps(keyCmps), first(0)
 	{ }
 
-	template<class VCmp>
-	GroupBy2<Item,Grp,Sel,KCmp,VCmp>
-    values_by(VCmp valueCmp) {
-		return GroupBy2<Item,Grp,Sel,KCmp,VCmp>(i, selectors, g, keyCmps, valueCmp);
+	template<class ICmp>
+	GroupBy2<Item,Grp,Sel,KCmp,ICmp>
+    item_order(ICmp itemCmp) {
+		return GroupBy2<Item,Grp,Sel,KCmp,ICmp>(i, selectors, g, keyCmps, itemCmp);
 	}
 
 	bool operator()(relation& rhs) {
 		co_begin();
-		elements.set_ptr(new std::vector<ElementType>(), true);
-		if(g.defined())
+		if(g.defined() || i.defined() )
             throw InvalidArg();
+		elements.set_ptr(new std::vector<ElementType>(), true);
 		while(rhs())
 			elements->push_back(std::make_pair(*i,selectors(*i)));
 		if(elements->empty())
@@ -974,33 +976,33 @@ public:
 	}
 };
 
-template<class Item, class Grp, class Sel, class KCmp, class VCmp>
+template<class Item, class Grp, class Sel, class KCmp, class ICmp>
 class GroupBy2 : public Coroutine {
 	lref<Item> i;
 	Sel selectors;
 	lref<Grp> g;
 	KCmp keyCmps;
-	VCmp valueCmp;
+	ICmp itemCmp;
 	typedef std::pair<Item, typename detail::nested_keys<Grp>::result_type> ElementType;
 
 	lref<std::vector<ElementType> > elements;
 	typename std::vector<ElementType>::size_type first;
 public:
-	GroupBy2(lref<Item> i, Sel selectors, lref<Grp> g, KCmp keyCmps, VCmp valueCmp) : i(i), selectors(selectors), g(g), keyCmps(keyCmps), valueCmp(valueCmp), first(0)
+	GroupBy2(lref<Item> i, Sel selectors, lref<Grp> g, KCmp keyCmps, ICmp itemCmp) : i(i), selectors(selectors), g(g), keyCmps(keyCmps), itemCmp(itemCmp), first(0)
 	{ }
 
 	bool operator()(relation& rhs) {
 		co_begin();
-		elements.set_ptr(new std::vector<ElementType>(), true);
-		if(g.defined())
+		if( g.defined()|| i.defined() )
 			throw InvalidArg();
+		elements.set_ptr(new std::vector<ElementType>(), true);
 		while(rhs())
 			elements->push_back(std::make_pair(*i,selectors(*i)));
 		if(elements->empty())
 			co_return(false);
 
-		typedef detail::GroupElemCmp<KCmp,VCmp> GCmp;
-		std::sort(elements->begin(), elements->end(), GCmp(keyCmps,valueCmp));
+		typedef detail::GroupElemCmp<KCmp,ICmp> GCmp;
+		std::sort(elements->begin(), elements->end(), GCmp(keyCmps,itemCmp));
  
 		for(; first<elements->size(); first = g->last) {
 #ifdef __GNUG__
@@ -1023,27 +1025,24 @@ public:
 //-------------------------------------------------
 template<class Item, class Sel, class K, class V>
 GroupBy<Item,group<K,V>,K,V,detail::FuncList<Sel,detail::None>, std::less<K> > inline
-group_by(lref<Item>& i, Sel keyselector, lref<group<K,V> >& g) {
+group_by(lref<Item>& i_, Sel keySelector, lref<group<K,V> >& g) {
 	using namespace detail;
 	typedef typename return_type<Sel>::result_type ret_type;
 	ASSERT_SAME_TYPE(ret_type,K,"Group's key type does not match Selector's return type");
-	return GroupBy<Item,group<K,V>,K,V,FuncList<Sel,None>,std::less<K> >(i,FuncList<Sel,None>(keyselector),g, std::less<K>());
+	return GroupBy<Item,group<K,V>,K,V,FuncList<Sel,None>,std::less<K> >(i_,FuncList<Sel,None>(keySelector),g, std::less<K>());
 }
 
 //-------------------------------------------------
-// group_by().then() - Multilevel grouping of objects
-// For use with >>= operator
-// throws InvalidArg() if obj is initialized at the time evaluation
-// Concept: T: is an integral type
-//-------------------------------------------------
+// with keyCmp support
 template<class Item, class Sel, class K, class V, class KCmp>
 GroupBy<Item,group<K,V>, K,V,detail::FuncList<Sel,detail::None>,KCmp> inline
-group_by(lref<Item>& i, Sel keyselector, lref<group<K,V> >& g, KCmp keyCmp) {
+group_by(lref<Item>& i_, Sel keySelector, lref<group<K,V> >& g, KCmp keyCmp) {
 	using namespace detail;
 	typedef typename return_type<Sel>::result_type ret_type;
 	ASSERT_SAME_TYPE(ret_type,K,"Group's key type does not match Selector's return type");
-	return GroupBy<Item,group<K,V>,K,V,FuncList<Sel,None>,KCmp>(i,FuncList<Sel,None>(keyselector),g,keyCmp);
+	return GroupBy<Item,group<K,V>,K,V,FuncList<Sel,None>,KCmp>(i_,FuncList<Sel,None>(keySelector),g,keyCmp);
 }
+
 
 
 } // namespace castor
