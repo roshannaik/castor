@@ -1,6 +1,7 @@
   Todo
 ------------
-MUST
+HIGH
+- ? writeAll for group<>
 - ritem should work on random access containers
 - All TLRs should be collection oriented also ?
    + reverse/ritem

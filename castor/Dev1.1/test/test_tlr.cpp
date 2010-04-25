@@ -398,7 +398,7 @@ void test_group_by() {
 
 		lref<group<char,group<size_t,string> > > g1;
 		lref<group<size_t,string> > g2;
-		relation outer = item(num,lnums) >>= group_by(num, &firstChar, g1, std::greater<char>()).then(slength, std::greater<int>()).values_by(std::less<string>());
+        relation outer = item(num,lnums) >>= group_by(num, &firstChar, g1, std::greater<char>()).then(slength, std::greater<int>()).item_order(std::less<string>());
 		lref<string> s;
 		while(outer()) {
 			if((g1->key)!=keys1[k1++])
