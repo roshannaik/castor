@@ -39,7 +39,6 @@ void bar();
 int main() 
 {
   clock_t start = clock();
-  bar();
   runtests();
   cout << "\nTime taken " << (clock() - start) << "\n\n Testing Complete! \a";
   cin.ignore();
@@ -678,34 +677,3 @@ void runtests() {
 
 	cout << "\nFailed: " << failCount << "\nPassed: " << passCount  << "\nTotal: " << testCount;
 }
-
-
-char firstChar(const string& s) { return s[0]; }
-size_t str_len(const string& s) { return s.size(); }
-
-void bar() {
-	{
-lref<string> n;
-string numbers[] = { "One", "Two", "Three", "Four", "Fave", "Five", "Six", "Fifty" };
-lref<vector<string> > nums = vector<string>(numbers,numbers+8);
-
-lref<group<char,group<size_t,string> > > g; 
-
-relation r = item(n,nums)  >>= group_by(n, &firstChar, g).then(&str_len).item_order(std::less<string>());
-while(r()) {  // iterate over outer groups
-   cout << g->key;
-   lref<group<size_t,string> > g2; // inner group
-   relation subgroups = item(g2,g);
-   while(subgroups()) {  // iterate over subgroups
-        cout << "\n   " << g2->key << " : ";
-        writeAll(g2)(); // print values in subgroup
-   }
-}
-
-   }
-}
-
-/*
-
-
-*/
