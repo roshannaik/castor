@@ -521,13 +521,17 @@ public:
 		group_iterator tmp(*this);
 		return tmp+=amt;
 	}
-
-	group_iterator operator -(difference_type amt) const {
+    
+    group_iterator operator -(difference_type amt) const {
 		group_iterator tmp(*this);
 		return tmp-=amt;
 	}
 
-	const value_type& operator[](difference_type offset) const {
+	distance_type operator -(const group_iterator& rhs) const {
+        return (rhs.curr<curr) ? (curr-rhs.curr) : (rhs.curr-curr);
+	}
+
+    const value_type& operator[](difference_type offset) const {
 		return getV(curr+offset);
 	}
 

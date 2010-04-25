@@ -91,27 +91,27 @@ struct OP_CLASS {                                                         \
 
 #define LREF_BINARYOP_FUNC_DECL(OPERATOR, OP_CLASS)                      \
 template <typename L, typename R> inline                                 \
-Ile<OP_CLASS<lref<L>, Value_ILE<R> > >                                       \
+Ile<OP_CLASS<lref<L>, Value_ILE<R> > >                                   \
 operator OPERATOR (lref<L>& left, const R& right)  {                     \
-    return OP_CLASS<lref<L>, Value_ILE<R> >(left,right);                     \
+    return OP_CLASS<lref<L>, Value_ILE<R> >(left,right);                 \
 }                                                                        \
                                                                          \
 template <typename L, typename R> inline                                 \
-Ile<OP_CLASS<lref<L>, Value_ILE<R*> > >                                      \
+Ile<OP_CLASS<lref<L>, Value_ILE<R*> > >                                  \
 operator OPERATOR (lref<L>& left, R* right)  {                           \
-    return OP_CLASS<lref<L>, Value_ILE<R*> >(left,right);                    \
+    return OP_CLASS<lref<L>, Value_ILE<R*> >(left,right);                \
 }                                                                        \
                                                                          \
 template <typename L, typename R> inline                                 \
-Ile<OP_CLASS<Value_ILE<L>, lref<R> > >                                       \
+Ile<OP_CLASS<Value_ILE<L>, lref<R> > >                                   \
 operator OPERATOR (const L& left, lref<R>& right)  {                     \
-    return OP_CLASS<Value_ILE<L>, lref<R> >(left,right);                     \
+    return OP_CLASS<Value_ILE<L>, lref<R> >(left,right);                 \
 }                                                                        \
                                                                          \
 template <typename L, typename R> inline                                 \
-Ile<OP_CLASS<Value_ILE<L>, lref<R> > >                                       \
+Ile<OP_CLASS<Value_ILE<L>, lref<R> > >                                   \
 operator OPERATOR (L* left, lref<R>& right)  {                           \
-    return OP_CLASS<Value_ILE<L*>, lref<R> >(left,right);                    \
+    return OP_CLASS<Value_ILE<L*>, lref<R> >(left,right);                \
 }                                                                        \
                                                                          \
 template <typename L, typename R> inline                                 \
@@ -121,27 +121,27 @@ operator OPERATOR (lref<L>& left, lref<R>& right)  {                     \
 }                                                                        \
                                                                          \
 template <typename L, typename R> inline                                 \
-Ile<OP_CLASS<L, Value_ILE<R> > >                                             \
+Ile<OP_CLASS<L, Value_ILE<R> > >                                         \
 operator OPERATOR (const Ile<L>& left, const R& right)  {                \
-	return OP_CLASS<L, Value_ILE<R> >(left.expr,right);                      \
+	return OP_CLASS<L, Value_ILE<R> >(left.expr,right);                  \
 }                                                                        \
 														                 \
 template <typename L, typename R> inline                                 \
-Ile<OP_CLASS<L, Value_ILE<R*> > >                                            \
+Ile<OP_CLASS<L, Value_ILE<R*> > >                                        \
 operator OPERATOR (const Ile<L>& left, R* right)  {                      \
-	return OP_CLASS<L, Value_ILE<R*> >(left.expr,right);                     \
+	return OP_CLASS<L, Value_ILE<R*> >(left.expr,right);                 \
 }                                                                        \
 														                 \
 template <typename L, typename R> inline                                 \
-Ile<OP_CLASS<Value_ILE<L>, R> >                                              \
+Ile<OP_CLASS<Value_ILE<L>, R> >                                          \
 operator OPERATOR (const L& left, const Ile<R>& right)  {                \
-	return OP_CLASS<Value_ILE<L>, R>(left,right.expr);                       \
+	return OP_CLASS<Value_ILE<L>, R>(left,right.expr);                   \
 }                                                                        \
 														                 \
 template <typename L, typename R> inline                                 \
-Ile<OP_CLASS<Value_ILE<L*>, R> >                                             \
+Ile<OP_CLASS<Value_ILE<L*>, R> >                                         \
 operator OPERATOR (L* left, const Ile<R>& right)  {                      \
-	return OP_CLASS<Value_ILE<L*>, R>(left,right.expr);                      \
+	return OP_CLASS<Value_ILE<L*>, R>(left,right.expr);                  \
 }                                                                        \
 																         \
 template <typename L, typename R> inline                                 \
