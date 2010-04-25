@@ -1,6 +1,7 @@
   Todo
 ------------
 MUST
+- ritem should work on random access containers
 - All TLRs should be collection oriented also ?
    + reverse/ritem
 - relocate zip

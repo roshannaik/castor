@@ -65,7 +65,7 @@ New features:
   + zip() : Takes two relations as argument and evaluates them in an interleaved manner until one of them fails.
 
 - New (TakeLeft) relations for use with operator >>= : 
-   + count() - For counting the number of items in a sequence. E.g. range(i,1,10) >>= count(n)
+   + count() - For counting the number of items in a sequence. E.g. range(i,1,10) && predicate(i%2==0) >>= count(n)
    + order() - For producing a sorted sequence of objects.
    + order_mem() - For producing a sorted sequence of objects. Sort objects on a data member.
    + order_mf() - For producing a sorted sequence of objects. Sort based on value method call.
