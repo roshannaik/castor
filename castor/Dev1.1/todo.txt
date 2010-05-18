@@ -17,16 +17,10 @@ HIGH
 
 - Look into constraining generic operator && and ||
 
-+ do not release error() without catch()
-+ operator >> should be replaced with >>=
 + make all TLRs unidirectional
-x define operator & , | as alternatives
-x evaluate Boost Coroutines - not suitable
 
 group_by:
 x member function support for group_by
-+ consider case of empty groups... if(first==last)
-
 
 ILE:
 > ILE support for []
