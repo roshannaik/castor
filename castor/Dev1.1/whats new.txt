@@ -1,15 +1,13 @@
-================================
-   Whats new in Castor 1.1 
-================================
+===================================================
+   Whats new in Castor 1.1 pre beta (Aug 25 2010)
+===================================================
 
 Enhancements to lref:
 ---------------------
 - A new constructor lref(T*,bool) and a method set_ptr(T*,bool) allow lrefs to reference existing objects 
     via pointers. If bool argument is false, object's lifetime will not be managed.
 - lref::operator=(rhs) will reset the lref if rhs is not initialized
-- lref::bound(lref& rhs) will check if 'this' lref and rhs are bound/joined together
-
-// - Relations supporting Fast && : False, Boolean, predicate, predicate_mf, predicate_mem, defined, undefined, negate
+- lref::bound(lref& rhs) will check if 'this' lref and rhs are bound/joined together. Returns bool.
 
 
 Enhancements to ILE (closure/lambda facility):
@@ -30,18 +28,18 @@ Enhancements to ILE (closure/lambda facility):
                 (eval(ref(cin) >> s) && eval( ref(cout) << s ))();  // cin >> *s ; cout << *s;
 - ILE expressions now support use of "string literals".
     E.g. - lref<string> ls="castor"; predicate(ls=="castor");
-         - eval(ref(cout) << "hello" << " world" )();  // cout << "hello" << "world";
+         - eval(ref(cout) << "hello" << " world" )();  // cout << "hello" << " world";
          - string s;
            stringstream strm; 
            eval(ref<ostream>(strm) << "hello")();   // return type of operator << is ostream& and not stringstream&
          - eval(ref<istream>(strm)) >> ref(s))();   // return type of operator >> is istream& and not stringstream&
 
-- Speed improvements for ILE expressions. Fairly close to the speed of custom function objects.
+- Speed improvements for ILE expressions. Close to the speed of custom function objects.
 
 New features:
 -------------
 - Class Coroutine and macros co_begin, co_end, co_return & co_yield that support coroutine style programming
-  Helpful for defining relations imperatively.
+  Helpful for defining relations imperatively. See section 3.2 in tutorial.
 - New overloads for the following relations that take function pointer or member function pointer as
   argument. These overloads allow passing an *overloaded* function (or method) to these
   relations without requiring explicit overload disambiguation. Also arguments to be forwarded can be 
@@ -49,6 +47,7 @@ New features:
   + Additional/updated overloads for eq_f, eq_mf, predicate_f & predicate_mf.
   + Signatures for eq_f and predicate_f modified (new signatures continue to be backward compatible).
   + Additional constructor for relation True that takes an integral argument denoting how many times to succeed.
+
 
 - New relations: 
   + eq_mem() - for unifying with (non static) data members.
@@ -71,7 +70,7 @@ New features:
    + order_mf() - For producing a sorted sequence of objects. Sort based on value method call.
    + reverse() - For reversing a sequence of objects. E.g. range(i,1,10) >>= reverse(i)
    + reduce() - For reducing a sequence to a value by applying a operator(similar to accumulate). 
-       E.g.:  range(j,1,10) >>= reduce(j, std::multiplies<int>()); // product of first 10 numbers
+       E.g.:  range(j,1,10) >>= reduce(j, std::multiplies<int>()); // factorial of 10
    + sum() - For summing the values in a sequence. E.g. range(i,1,10) >>= sum(i)
    + group_by() - For grouping objects based on some criteria. Allows nested grouping. e.g
         E.g.: 
@@ -80,19 +79,20 @@ New features:
         char firstChar(const string& s) { return s[0]; };
         size_t str_len(const string& s) { return s.size(); };
         
+        lref<vector<string> > names = .. ;
         lref<string> n;
-        lref<vector<string> > names ;
+
         lref<group<char,group<size_t,string> > > g;
+
         relation r = item(n,names) >>= group_by(n, &firstChar, g).then(&str_len);
+
         while(r()) {
            cout << "\n" << g->key;
            lref<group<size_t,string> > g2;
            relation subgroups = item(g2,g);
            while(subgroups()) {
                 cout << "\n   " << g2->key << " : ";
-                lref<string> s;
-                relation values = item(s,g2);
-                while(values()) cout << *s << " ";
+                wirteAll(g2)();
            }
         }
 
