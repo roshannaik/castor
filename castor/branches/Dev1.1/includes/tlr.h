@@ -68,7 +68,7 @@ public:
 };
 
 
-class TakeLeft_r {
+class TakeLeft_r : public Coroutine {
 	relation r;
 	relation_tlr tlr;
 public:
@@ -76,7 +76,10 @@ public:
 	{ }
 
 	bool operator()(void) {
-		return tlr(r);
+        co_begin();
+        while(true)
+		    co_yield( tlr(r) );
+        co_end();
 	}
 };
 
@@ -393,7 +396,7 @@ struct Count_tlr : public Coroutine {
 //-------------------------------------------------
 // count(n) - n is number of times argument relation succeeded
 // For use with >>= operator
-// throws InvalidArg() if obj is initialized at the time evaluation
+// throws InvalidArg() if n is initialized at the time evaluation
 // Concept: T: is an integral type
 //-------------------------------------------------
 template<class T> inline
@@ -411,6 +414,8 @@ Count_tlr<T> count(const lref<T>& n) {
 //Count_tlr<T> count(const T& obj) {
 //	return Count_tlr<T>(obj);
 //}
+
+
 
 //-------------------------------------------------
 // group_by(i, selector).then(..).then(..) - group seq using cond into (key,grp)
@@ -569,8 +574,10 @@ template<class K, class V>
 struct group {
 	typedef K key_type;
 	typedef V value_type;
-	K key;
 	typedef detail::group_iterator<V> iterator;
+    typedef typename std::vector<value_type>::size_type size_type;
+
+    K key;
 private:
 	size_t first;
 	size_t last;
@@ -639,7 +646,7 @@ struct group<K, group<K2,V2> > {
 	typedef K key_type;
 	typedef group<K2,V2> value_type;
 	typedef typename std::vector<value_type>::iterator iterator;
-
+    typedef typename std::vector<value_type>::size_type size_type;
 	K key;
 private:
 	lref<std::vector<value_type> > subgroups;
@@ -654,7 +661,7 @@ private:
 	{ }
 public:
 
-	size_t size() const {
+	size_type size() const {
 		return last-first;
 	}
 

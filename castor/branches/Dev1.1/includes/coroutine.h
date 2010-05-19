@@ -4,23 +4,26 @@
 
 #if !defined CASTOR_COROUTINE_H
 #define CASTOR_COROUTINE_H 1
-
+#include <iostream>
 namespace castor {
 
 class Coroutine {
 protected:
-  int co_entryPt;
+  long co_entry_pt;
+  void zero() {
+	  co_entry_pt=0;
+  }
 public:
-  Coroutine() : co_entryPt(0)
+  Coroutine() : co_entry_pt(0)
   { }
 };
 
 
 // macros for implementing relations imperatively (as coroutines)
-#define co_begin()    switch (co_entryPt) { case 0:
-#define co_yield(x)   { co_entryPt = (x)? __LINE__ : -1; return (co_entryPt==__LINE__); case __LINE__: ; }
-#define co_return(x)  { co_entryPt = -1; return (x); }
-#define co_end()      break; } co_entryPt = -1; return false;
+#define co_begin()    switch (co_entry_pt) { case 0:
+#define co_yield(x)   { co_entry_pt = (x)? __LINE__ : -1; return (co_entry_pt==__LINE__); case __LINE__: ; }
+#define co_return(x)  { co_entry_pt = -1; return (x); }
+#define co_end()      break; } co_entry_pt = -1; return false;
 
 
 
