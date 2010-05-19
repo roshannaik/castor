@@ -4,7 +4,7 @@
 
 #if !defined CASTOR_COROUTINE_H
 #define CASTOR_COROUTINE_H 1
-#include <iostream>
+
 namespace castor {
 
 class Coroutine {
