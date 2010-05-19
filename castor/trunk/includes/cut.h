@@ -38,11 +38,11 @@ namespace detail {
 //-----------------------------------------
 
 template<typename LRel, typename RRel>
-class CutAnd {
-	enum {A, A1, A2, B, C} state;
+class CutAnd : public Coroutine {
     LRel l;
-    RRel rbegin;
     relation r;
+    RRel rbegin;
+	enum {A, A1, A2, B, C} state;
 public:
     CutAnd(const LRel& l, const RRel& r) : l(l), r(r), rbegin(r), state(A)
     { }
@@ -50,21 +50,21 @@ public:
     bool exec(bool& cut_occurred) {
 		switch(state) {
 		case A:
-            if( !::castor::detail::exec(l,cut_occurred) ) {
+            if( !detail::exec(l,cut_occurred) ) {
 				state=B;
 				return false;
 			}
 			state=A1;
 			// .. drop down to A1
 		case A1:
-            if(::castor::detail::exec(r,cut_occurred)) {
+            if(detail::exec(r,cut_occurred)) {
 				state=C;
 				return true;
 			}
 			state=A2;
 			// .. drop down to A2
 		case A2:
-            if(::castor::detail::exec(l,cut_occurred)) {
+            if(detail::exec(l,cut_occurred)) {
 				r=rbegin;
 				state=A1;
                 return exec(cut_occurred);
@@ -74,7 +74,7 @@ public:
 		case B:
 			return false;
 		case C:
-			if(::castor::detail::exec(r,cut_occurred))
+			if(detail::exec(r,cut_occurred))
 				return true;
 			state=A2;
             return exec(cut_occurred);
@@ -86,22 +86,22 @@ public:
 
 template<typename LRel, typename RRel/*=cut*/>
 class CutOr  {
-    bool leftdone, rightdone;
     LRel l;
     RRel r;
+    bool leftdone, rightdone;
 public:
     CutOr(const LRel& l, const RRel& r) : l(l), r(r), leftdone(false), rightdone(false)
     { }
 
     bool exec(bool& cut_occurred) {
         if(!leftdone){
-            leftdone=!::castor::detail::exec(l,cut_occurred);
+            leftdone=!detail::exec(l,cut_occurred);
             rightdone=cut_occurred;
             if(!leftdone)
                 return true;
         }
         if(!rightdone) {
-            rightdone=!::castor::detail::exec(r,cut_occurred);
+            rightdone=!detail::exec(r,cut_occurred);
             return !rightdone;
         }
         return false;
@@ -125,7 +125,7 @@ public:
         if(done)
             return false;
         done=true;
-        cut_occurred=::castor::detail::exec(l, cut_occurred);
+        cut_occurred=detail::exec(l, cut_occurred);
         return cut_occurred;
     }
 };
@@ -146,7 +146,7 @@ public:
     bool exec(bool& cut_occurred) {
         if(done)
             return false;
-        if( ::castor::detail::exec(l, cut_occurred) )
+        if( detail::exec(l, cut_occurred) )
             return true;
         cut_occurred = true;
         done = true;
@@ -172,7 +172,7 @@ public:
         if(done)
             return false;
         cut_occurred=true;
-        if( ::castor::detail::exec(r, cut_occurred) )
+        if( detail::exec(r, cut_occurred) )
             return true;
         done=true;
         return false;
