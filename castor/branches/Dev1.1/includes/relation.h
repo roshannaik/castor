@@ -79,7 +79,7 @@ public:
     TestOnlyRelation()
     { }
     
-    void reset() { co_entryPt=0; }
+    void reset() { co_entry_pt=0; }
 
     bool operator()(void) {
       co_begin();
@@ -182,6 +182,12 @@ public:
     Conjunctions() : clauses(False()), size(0)
     { }
 
+    template<typename Rel>
+    Conjunctions& operator +=(const Rel& r) {
+		push_back<Rel>(r);
+        return *this;
+	}
+
 	template <typename Rel>
 	void push_back(const Rel& r) {
 		if(size==0)
@@ -212,6 +218,12 @@ public:
 	Disjunctions() : clauses(False()), size(0)
 	{ }
 
+    template <typename Rel>
+    Disjunctions& operator +=(const Rel& r) {
+		push_back<Rel>(r);
+        return *this;
+	}
+
 	template <typename Rel>
 	void push_back(const Rel& r) {
 		if(size==0)
@@ -241,6 +253,12 @@ class ExDisjunctions {
 public:
 	ExDisjunctions() : clauses(False()), size(0)
 	{ }
+
+    template <typename Rel>
+    ExDisjunctions& operator +=(const Rel& r) {
+		push_back<Rel>(r);
+        return *this;
+	}
 
 	template <typename Rel>
 	void push_back(const Rel& r) {
