@@ -1,0 +1,16 @@
+Unary prefix operators:
+     ++,--   is  T&
+     !       is  bool
+     +,-,~,  is  T
+
+Unary postfix operators: 
+     ++, -- is T
+
+Binary infix operators:
+     ==, <, >, <=, >=, &&, || is bool
+     +,-,*,/,^,%,<<,>>,|,&    is  L
+
+Unsupported :
+     derefence operator *
+     address of operator 
+     member access operator ->
