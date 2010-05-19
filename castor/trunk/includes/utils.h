@@ -1,63 +1,140 @@
 // Castor : Logic Programming Library for C++
-// Copyright © 2007 Roshan Naik (naikrosh@gmail.com)
+// Copyright Â© 2007-2010 Roshan Naik (roshan@mpprogramming.com).
+// This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
 #if !defined CASTOR_UTILS_H
 #define CASTOR_UTILS_H 1
+
+#include "lref.h"
+#include "relation.h"
+#include "eq.h"
+#include "helpers.h"
+#include "functional.h"
 
 #include <list>
 #include <deque>
 #include <set>
 #include <iterator>
 #include <istream>
+#include <iostream>
 #include <algorithm>
 #include <string>
 #include <utility>
 
-#include "lref.h"
-#include "relation.h"
-#include "eq.h"
-#include "helpers.h"
 
 namespace castor {
 
 struct IndexOutOfBounds {};
 
+//-------------------------------------------------------------------------
+//   Relation pause()
+//-------------------------------------------------------------------------
+
+template<class T>
+struct Pause_r : Coroutine {
+	lref<T> msg;
+	Pause_r(const lref<T> &msg) : msg(msg)
+	{ }
+	bool operator()(void) {
+		co_begin();
+		if(msg.defined())
+			std::cout << *msg;
+		else
+			std::cout << "undefined";
+		std::cin.ignore();
+		co_yield(true);
+		co_end();
+	}
+};
+
+template<class T>
+struct Pause_r<T*> : Coroutine {
+	T* msg;
+	Pause_r(T* msg) : msg(msg)
+	{ }
+	bool operator()(void) {
+		co_begin();
+		std::cout << msg;
+		std::cin.ignore();
+		co_yield(true);
+		co_end();
+	}
+};
+
+template<typename T> inline
+Pause_r<T> pause(lref<T>& s) {
+	return Pause_r<T>(s);
+}
+
+template<typename T> inline
+Pause_r<T> pause(const T& s) {
+	return Pause_r<T>(lref<T>(s) );
+}
+
+// handles "string" and L"widestring" arguments
+template<typename T> inline
+Pause_r<T*> pause(T* s) {
+	return Pause_r<T*>(s);
+}
+
+
+//-------------------------------------------------------------------------
+//   Relation pause_f()
+//-------------------------------------------------------------------------
+template<class F>
+struct PauseF_r : Coroutine {
+	F func;
+	PauseF_r(const F& func) : func(func)
+	{ }
+	bool operator()(void) {
+		co_begin();
+		std::cout << func();
+		std::cin.ignore();
+		co_yield(true);
+		co_end();
+	}
+};
+
+template<typename Func> inline
+PauseF_r<Func> pause_f(Func f) {
+	return PauseF_r<Func>(f);
+}
 
 //-------------------------------------------------------------------------
 //   Relations defined() and undefined()
-//      Equivalent to Prologs's metalogical predicates nonvar() and var()
+//      Equivalent to Prolog's metalogical predicates nonvar() and var()
 //-------------------------------------------------------------------------
 
 template<typename T>
 struct Defined_r : public TestOnlyRelation<Defined_r<T> >{
-    const lref<T> ref;
-    Defined_r(const lref<T>& ref) : ref(ref)
+    lref<T> r_;
+    Defined_r(const lref<T>& r_) : r_(r_)
     { }
 
     bool apply(void) const {
-        return ref.defined();
+        return r_.defined();
     }
 };
 
 template<typename T> inline  
-Defined_r<T> defined(lref<T>& r) {
-    return Defined_r<T>(r);
+Defined_r<T> defined(lref<T>& r_) {
+    return Defined_r<T>(r_);
 }
 
 template<typename T>
-struct UnDefined_r : public TestOnlyRelation<UnDefined_r<T> >{
-    const lref<T> reference;
-    UnDefined_r(const lref<T>& reference) : reference(reference)
+struct UnDefined_r : public TestOnlyRelation<UnDefined_r<T> > {
+    lref<T> r_;
+    UnDefined_r(const lref<T>& r_) : r_(r_)
     { }
 
-    bool apply(void) const{
-        return !reference.defined();
+    bool apply(void) const {
+        return !r_.defined();
     }
 };
 
 template<typename T> inline
-UnDefined_r<T> undefined(lref<T>& r) {
-    return UnDefined_r<T>(r);
+UnDefined_r<T> undefined(lref<T>& r_) {
+    return UnDefined_r<T>(r_);
 }
 
 //-------------------------------------------------------------------------
@@ -73,58 +150,46 @@ relation empty( lref<Cont>& c ) {
 // when c is not a lref.
 template<typename Cont> inline 
 relation empty(const Cont& c) {
-    return Boolean(c.size()==0 );
+    return Boolean( c.size()==0 );
 }
 
 
 template<typename Cont> inline
 relation not_empty(lref<Cont>& c_) {
     lref<typename Cont::size_type> sz;
-    return size(c_, sz) && predicate(sz!=0);
+    return size(c_, sz) && predicate(sz!=(size_t)0);
 }
 
-// this overload supports allows calls to not_empty without explicit template type arguments
+// this overload allows calls to not_empty without explicit template type arguments
 // when c is not a lref.
 template<typename Cont> inline 
 relation not_empty(const Cont& c) {
     return Boolean(c.size()!=0 );
 }
 
-//--------------------
+//--------------------------------------------------------
 //  Relation range
-//--------------------
+//--------------------------------------------------------
 // Concepts : T<T, T==T 
 //          : T is default constructable
-template<typename T>
-class Range_r {
-    lref<T> val, min_, max_;
-    T curr;
-    bool done, changed;
 
+template<typename T>
+class Range_r : public Coroutine {
+    lref<T> val, min_, max_;
 public:
-    Range_r(lref<T> val, const lref<T>& min_, const lref<T>& max_) : min_(min_), max_(max_), val(val), done(false), changed(false)
+    Range_r(const lref<T>& val, const lref<T>& min_, const lref<T>& max_) : val(val), min_(min_), max_(max_)
     { }
 
     bool operator() () {
-        if(done)
-            return false;
-        if(val.defined() && !changed) {
-            done=true;
-            return     ( *min_<*val && *val<*max_ )
-                    || ( *min_==*val )
-                    || ( *max_==*val );
-        }
-        if(!changed) curr=*min_;
-        if( curr<*max_  || curr==*max_ ) {
-            changed=true;
-            val=curr;
-            ++curr;
-            return true;
-        }
-        done = true;
-        changed = false;
-        val.reset();
-        return false;
+      co_begin();
+      if(val.defined())
+         co_return(    ( *min_<*val && *val<*max_ ) 
+                     || ( *min_==*val ) 
+                     || ( *max_==*val ) );
+      for(val=min_; (*val<*max_) || (*val==*max_); ++val.get())
+        co_yield(true);
+      val.reset();
+      co_end();
     }
 };
 
@@ -139,39 +204,27 @@ Range_r<T> range(lref<T> val, T min_, T max_) {
     return Range_r<T>(val, min_, max_);
 }
 
-//--------------------
+//--------------------------------------------------------
 //  Relation range (with step)
-//--------------------
+//--------------------------------------------------------
 template<typename T>
-class Range_Step_r {
+class Range_Step_r : public Coroutine {
     lref<T> val, min_, max_, step_;
-    T curr;
-    bool done, changed;
-
 public:
-    Range_Step_r(lref<T> val, const lref<T>& min_, const lref<T>& max_, const lref<T>& step_) : min_(min_), max_(max_), step_(step_), val(val), done(false), changed(false)
+    Range_Step_r(lref<T> val, const lref<T>& min_, const lref<T>& max_, const lref<T>& step_) : val(val), min_(min_), max_(max_), step_(step_)
     { }
 
-    bool operator() () {
-        if(done)
-            return false;
-        if(val.defined() && !changed) {
-            done=true;
-            return     ( *min_<*val && *val<*max_ )
-                    || ( *min_==*val )
-                    || ( *max_==*val );
-        }
-        if(!changed) curr=*min_;
-        if( curr<*max_  || curr==*max_ ) {
-            changed=true;
-            val=curr;
-            curr+=*step_;
-            return true;
-        }
-        done = true;
-        changed = false;
-        val.reset();
-        return false;
+    bool operator () (void) {
+      co_begin();
+      if(val.defined())
+        co_return (    ( *min_<*val && *val<*max_ )
+                     || ( *min_==*val )
+                     || ( *max_==*val ) );
+
+      for (val=min_; val.get()<*max_ || val.get()==*max_; val.get()+=*step_)
+        co_yield(true);
+      val.reset();
+      co_end();
     }
 };
 
@@ -186,77 +239,200 @@ Range_Step_r<T> range(lref<T> val, T min_, T max_, T step_) {
     return Range_Step_r<T>(val, min_, max_, step_);
 }
 
+//--------------------------------------------------------
+//  Relation range_dec
+//--------------------------------------------------------
+// Concepts : T>T, T==T 
 
-//--------------------
-//  Relation item
-//--------------------
-template<typename Itr>
-class Item_r {
-    Itr itr, end_;
-    typedef typename ::castor::detail::Pointee<Itr>::result_type pointee_type;
-    lref<pointee_type> obj;
-    enum {START, CHANGED, DONE} state;
+template<typename T>
+class RangeDec_r : public Coroutine {
+    lref<T> val, min_, max_;
 public:
-    Item_r(Itr beg_, Itr end_, const lref<pointee_type>& obj) : itr(beg_), end_(end_), obj(obj), state(START)
+    RangeDec_r(const lref<T>& val, const lref<T>& min_, const lref<T>& max_) : val(val), min_(min_), max_(max_)
     { }
 
-    bool operator()(void) {
-        switch(state) {
-        case START:
-            if(obj.defined()) {
-                state=DONE;
-                return std::count( effective_value(itr), effective_value(end_), *obj)!=0;
-            }
-            state=CHANGED;
-            obj=*effective_value(itr);
-            return true;
-        case CHANGED:
-            ++effective_value(itr);
-            if( effective_value(itr)==effective_value(end_) ) {
-                obj.reset();
-                state=DONE;
-                return false;
-            }
-            obj=*effective_value(itr);
-            return true; // and no state change
-        default: // case DONE
-            return false;
-        }
+    bool operator() () {
+      co_begin();
+      if(val.defined())
+         co_return(    ( *min_<*val && *val<*max_ ) 
+                     || ( *min_==*val ) 
+                     || ( *max_==*val ) );
+      for(val=max_; (*min_<val.get()) || (val.get()==*min_); --val.get())
+        co_yield(true);
+      val.reset();
+      co_end();
     }
 };
 
+// Concepts : T<T , T==T and prefix --
+template<typename T> inline
+RangeDec_r<T> range_dec(lref<T> val, lref<T> max_, lref<T> min_) {
+    return RangeDec_r<T>(val, min_, max_);
+}
+
+template<typename T> inline
+RangeDec_r<T> range_dec(lref<T> val, T max_, T min_) {
+    return RangeDec_r<T>(val, min_, max_);
+}
+
+//--------------------------------------------------------
+//  Relation range_dec (with step)
+//--------------------------------------------------------
+template<typename T>
+class RangeDec_Step_r : public Coroutine {
+    lref<T> val, min_, max_, step_;
+public:
+    RangeDec_Step_r(lref<T> val, const lref<T>& min_, const lref<T>& max_, const lref<T>& step_) : val(val), min_(min_), max_(max_), step_(step_)
+    { }
+
+    bool operator () (void) {
+      co_begin();
+      if(val.defined())
+        co_return (    ( *min_<*val && *val<*max_ )
+                     || ( *min_==*val )
+                     || ( *max_==*val ) );
+
+      for (val=max_; *min_<val.get() || val.get()==*min_; val.get()-=*step_)
+        co_yield(true);
+      val.reset();
+      co_end();
+    }
+};
+
+// Concepts : T supports -=, < and ==
+template<typename T> inline
+RangeDec_Step_r<T> range_dec(lref<T> val, lref<T> max_, lref<T> min_, lref<T> step_) {
+    return RangeDec_Step_r<T>(val, min_, max_, step_);
+}
+
+template<typename T> inline
+RangeDec_Step_r<T> range_dec(lref<T> val, T max_, T min_, T step_) {
+    return RangeDec_Step_r<T>(val, min_, max_, step_);
+}
+
+
+//--------------------------------------------------------
+//  Relation item
+//--------------------------------------------------------
+template<class Itr>
+class Item_r : public Coroutine {
+    Itr itr, end_;
+    typedef typename detail::Pointee<Itr>::result_type pointee_type;
+    lref<pointee_type> obj;
+public:
+    Item_r(Itr beg_, Itr end_, const lref<pointee_type>& obj) : itr(beg_), end_(end_), obj(obj)
+    { }
+
+    bool operator () (void) {
+      co_begin();
+      if(obj.defined()) {
+        for( ; effective_value(itr)!=effective_value(end_); ++effective_value(itr) ) {
+          itr = std::find( effective_value(itr), effective_value(end_), obj.get() );
+          co_yield(effective_value(itr)!=effective_value(end_));
+        }
+        co_return(false);
+      }
+
+      for ( ; effective_value(itr)!=effective_value(end_); ++effective_value(itr) ) {
+        obj.set_ptr(&*effective_value(itr),false);
+        co_yield(true);
+      }
+      obj.reset();
+      co_end();
+    }
+};
+
+
 template<typename Itr>
-Item_r<Itr> item(lref<typename ::castor::detail::Pointee<Itr>::result_type> obj, Itr begin_, Itr end_) {
+Item_r<Itr> item(lref<typename detail::Pointee<Itr>::result_type> obj, Itr begin_, Itr end_) {
     return Item_r<Itr>(begin_, end_, obj);
 }
 
+
+template<class Cont>
+class ItemCont_r : public Coroutine {
+    typedef typename Cont::value_type value_type;
+    lref<value_type> obj;
+    lref<Cont> cont;
+    lref<typename Cont::iterator> i;
+public:
+    ItemCont_r(const lref<value_type>& obj, const lref<Cont>& cont_) : obj(obj), cont(cont_)
+    { }
+
+    bool operator () (void) {
+      co_begin();
+      if(obj.defined()) {
+        for(i=cont->begin(); i.get()!=cont->end(); ++i.get()) {
+          i = std::find( i.get(), cont->end(), obj.get() );
+          co_yield(i.get()!=cont->end());
+        }
+        co_return(false);
+      }
+      for (i=cont->begin() ; i.get()!=cont->end(); ++i.get() ) {
+        obj.set_ptr(&*i.get(),false);
+        co_yield(true);
+      }
+      obj.reset();
+      co_end();
+    }
+};
+
+
 template<typename Cont>
-relation item(lref<typename Cont::value_type> obj, lref<Cont>& cont_) {
-    lref<typename Cont::iterator> b, e;
-    return begin(cont_,b) && end(cont_, e) && item(obj, b, e);
+ItemCont_r<Cont> item(lref<typename Cont::value_type> obj, lref<Cont>& cont_) {
+    return ItemCont_r<Cont>(obj, cont_);
+}
+
+template<class Cont>
+class ItemRCont_r : public Coroutine {
+    typedef typename Cont::value_type value_type;
+    lref<value_type> obj;
+    lref<Cont> cont;
+    lref<typename Cont::reverse_iterator> i;
+public:
+    ItemRCont_r(const lref<value_type>& obj, const lref<Cont>& cont_) : obj(obj), cont(cont_)
+    { }
+
+    bool operator () (void) {
+      co_begin();
+      if(obj.defined()) {
+        for(i=cont->rbegin(); i.get()!=cont->rend(); ++i.get()) {
+          i = std::find( i.get(), cont->rend(), obj.get() );
+          co_yield(i.get()!=cont->rend());
+        }
+        co_return(false);
+      }
+      for (i=cont->rbegin() ; i.get()!=cont->rend(); ++i.get() ) {
+        obj.set_ptr(&*i.get(),false);
+        co_yield(true);
+      }
+      obj.reset();
+      co_end();
+    }
+};
+
+template<typename Cont> inline
+ItemRCont_r<Cont> ritem(lref<typename Cont::value_type> obj, lref<Cont>& cont_) {
+    return ItemRCont_r<Cont>(obj, cont_);
 }
 
 //-------------------------------------------------------------------------
-// Relations unique and unique_f
+// Relations unique, unique_f, unique_mem, unique_mf
 //------------------------------------------------------------------------
 
 template<typename T>
-class Unique_r : public OneSolutionRelation<Unique_r<T> > {
-    lref<std::set<T> > items;
+class Unique_r : public Coroutine {
     lref<T> item_;
+	lref<std::set<T> > items;
 public:
     Unique_r(const lref<T>& item_) : item_(item_), items(std::set<T>())
     { }
 
-    bool apply(void) {
-        if( items->find( *item_ ) != items->end() )
-            return false;
-        items->insert(*item_);
-        return true;
+    bool operator () (void) {
+      co_begin();
+      co_return( items->insert(*item_).second );
+      co_end();
     }
-
-    void revert() 
-    { }
 };
 
 template<typename T> inline
@@ -266,31 +442,79 @@ Unique_r<T> unique(lref<T> item_) {
 
 
 // FuncObj = Nullary function object that has member typedef result_type
-template<typename FuncObj>
-class Unique_f_r : public OneSolutionRelation<Unique_f_r<FuncObj> > {
-    typedef typename FuncObj::result_type item_type;
-    lref<std::set<typename FuncObj::result_type> > items;
-    FuncObj func;
+template<typename Func>
+class Unique_f_r : public Coroutine {
+    //typedef typename detail::return_type<Func>::result_type item_type;
+    typedef typename Func::result_type item_type;
+    lref<std::set<typename Func::result_type> > items;
+    Func func;
 public:
-    Unique_f_r (const FuncObj& func) : items(std::set<item_type>()), func(func)
+    Unique_f_r (const Func& func) : items(std::set<item_type>()), func(func)
     { }
 
-    bool apply (void) {
-        item_type value = func();
-        if( items->find(value) != items->end() )
-            return false;
-        items->insert(value);
-        return true;
+    bool operator() (void) {
+        co_begin();
+        co_yield( items->insert(func()).second );
+        co_end();
     }
-
-    void revert()
-    { }
 };
 
 // FuncObj = Nullary function object that has member typedef result_type
 template<typename FuncObj> inline
 Unique_f_r<FuncObj> unique_f(FuncObj f) {
     return Unique_f_r<FuncObj>(f);
+}
+
+
+template<typename Obj, typename MemberT>
+class UniqueMem_r : public Coroutine {
+	lref<Obj> obj_;
+	MemberT Obj::* mem;
+    lref<std::set<MemberT> > items;
+public:
+	UniqueMem_r(const lref<Obj>& obj_, MemberT Obj::* mem) : obj_(obj_), mem(mem), items(std::set<MemberT>())
+	{ }
+
+    bool operator() (void) {
+		co_begin();
+        co_yield( items->insert((*obj_).*mem).second );
+		co_end();
+	}
+};
+
+template<typename Obj, typename MemberT> inline
+UniqueMem_r<Obj, MemberT> unique_mem(lref<Obj>& obj_, MemberT Obj::* mem) {
+	return UniqueMem_r<Obj, MemberT>(obj_, mem);
+}
+
+
+template<typename R, typename MFunc, typename Obj>
+class UniqueMf_r : Coroutine {
+    lref<Obj> obj_;
+    MFunc mf;
+    lref<std::set<R> > items;
+public:
+    UniqueMf_r(lref<Obj>& obj_, MFunc mf) :obj_(obj_), mf(mf), items(std::set<R>())
+    { }
+
+    bool operator()(void) {
+		co_begin();
+        co_yield( items->insert( ((*obj_).*mf)() ).second );
+		co_end();
+    }
+};
+
+// Overloads for non-const member functions
+template<typename R, typename Obj> inline
+UniqueMf_r<R,R(Obj::*)(void), Obj>
+unique_mf(lref<Obj>& obj_, R(Obj::*mf)(void) ) {
+    return UniqueMf_r<R,R(Obj::*)(void), Obj>(obj_,mf);
+}
+
+template<typename R, typename Obj> inline
+UniqueMf_r<R,R(Obj::*)(void) const, Obj>
+unique_mf(lref<Obj>& obj_, R(Obj::*mf)(void) const) {
+    return UniqueMf_r<R,R(Obj::*)(void) const, Obj>(obj_,mf);
 }
 
 //-------------------------------------------------------------------------
@@ -304,16 +528,16 @@ namespace detail {
 //    }
 
     template<typename Itr>
-    typename ::castor::detail::Pointee<Itr>::result_type
+    typename detail::Pointee<Itr>::result_type
     deref_ptr(lref<Itr> ptr) {
         return **ptr;
     }
 } // namespace detail
 
 template<typename Itr> inline
-relation deref(lref<Itr> pointer_, lref<typename ::castor::detail::Pointee<Itr>::result_type> pointee) {
-typedef typename ::castor::detail::Pointee<Itr>::result_type T;
-return eq_f(pointee, ::castor::detail::bind<T>(::castor::detail::deref_ptr<Itr>, pointer_));
+relation dereference(lref<Itr> pointer_, lref<typename detail::Pointee<Itr>::result_type> pointee) {
+  typedef typename detail::Pointee<Itr>::result_type T;
+  return eq_f(pointee, detail::bind<T>(detail::deref_ptr<Itr>, pointer_));
 }
 
 
@@ -357,30 +581,24 @@ relation prev(T curr_, const T& p) {
 // head/tail/head_tail : For operating on Collections
 //-------------------------------------------------------------
 template<typename Seq>
-class Head_r : public OneSolutionRelation<Head_r<Seq> > {
+class Head_r : public Coroutine {
     typedef typename Seq::value_type T;
     lref<Seq> seq_;
     lref<T> h;
-    bool changed;
 public:
-    Head_r(const lref<Seq>& seq_, const lref<T>& h) : seq_(seq_), h(h), changed(false)
+    Head_r(const lref<Seq>& seq_, const lref<T>& h) : seq_(seq_), h(h)
     { }
 
-    bool apply (void) {
-        if(seq_->empty())
-            return false;
-        if(h.defined())
-            return *h==*(seq_->begin());
-        h=*(seq_->begin());
-        changed=true;
-        return true;
-    }
-
-    void revert(void) {
-        if(changed) {
-            h.reset();
-            changed=false;
-        }
+    bool operator () (void) {
+      co_begin();
+      if(seq_->empty())
+        co_return(false);
+      if(h.defined())
+          co_return( *h==*(seq_->begin()) );
+      h=*(seq_->begin());
+      co_yield(true);
+      h.reset();
+      co_end();
     }
 };
 
@@ -393,39 +611,34 @@ Head_r<Seq> head(lref<Seq>& seq_, lref<typename Seq::value_type> h) {
 //   Head : h consists of 1st n (n>0) items in the collection
 //------------------------------------------------------------------
 template<typename Seq, typename HeadSeq>
-class Head_n_r : public OneSolutionRelation<Head_n_r<Seq, HeadSeq> > {
-    bool changed;
-    lref<HeadSeq> h;
-    lref<typename HeadSeq::size_type> n_;
+class Head_n_r : public Coroutine {
     lref<Seq> seq_;
+    lref<typename HeadSeq::size_type> n_;
+    lref<HeadSeq> h;
 public:
-    Head_n_r(const lref<Seq>& seq_, const lref<typename HeadSeq::size_type>& n_, const lref<HeadSeq>& h) : seq_(seq_), n_(n_), h(h), changed(false)
+    Head_n_r(const lref<Seq>& seq_, const lref<typename HeadSeq::size_type>& n_, const lref<HeadSeq>& h) : seq_(seq_), n_(n_), h(h)
     { }
-
-    bool apply (void) {
-         if(seq_->empty())
-            return false;
-        if(h.defined()) {
-            if( h->size() > seq_->size() )
-                return false;
-            return std::equal(h->begin(),h->end(),seq_->begin());
-        }
-        if( *n_> seq_->size() )
-            throw IndexOutOfBounds();
-        typename HeadSeq::const_iterator start = seq_->begin(), end=start;
-        std::advance(end, *n_);
-        h=HeadSeq(start,end);
-        changed=true;
-        return true;
-    }
-
-    void revert (void) {
-        if(changed) {
-            h.reset();
-            changed=false;
-        }
+    bool operator () (void) {
+      typename HeadSeq::const_iterator start, end;
+      co_begin();
+      if( *n_ > seq_->size() )
+        co_return(false);
+      if(seq_->empty())
+        co_return(false);
+      if(h.defined()) {
+          if( h->size() > seq_->size() )
+              co_return(false);
+          co_return( std::equal(h->begin(),h->end(),seq_->begin()) );
+      }
+      start = end = seq_->begin();
+      std::advance(end, *n_);
+      h=HeadSeq(start,end);
+      co_yield(true);
+      h.reset();
+      co_end();
     }
 };
+
 
 template<typename Seq, typename HeadSeq> inline
 relation head_n(lref<Seq>& seq_, lref<typename HeadSeq::size_type> n, lref<HeadSeq>& h) {
@@ -436,32 +649,27 @@ relation head_n(lref<Seq>& seq_, lref<typename HeadSeq::size_type> n, lref<HeadS
 //Concepts: Collection should have a constructor taking (T* begin, T* end)
 //          Collection should comparable using operator==
 template<typename Seq, typename TailSeq>
-class Tail_r : public OneSolutionRelation<Tail_r<Seq,TailSeq> > {
-    bool changed;
+class Tail_r : public Coroutine {
     lref<Seq> seq_;
     lref<TailSeq> t;
 public:
-    Tail_r(const lref<Seq>& seq_, const lref<TailSeq>& t) : seq_(seq_), t(t), changed(false)
+    Tail_r(const lref<Seq>& seq_, const lref<TailSeq>& t) : seq_(seq_), t(t)
     { }
 
-    bool apply (void) {
-        if(seq_->empty())
-            return false;
-		if(t.defined()) {
-			typename Seq::iterator b = seq_->begin();
-            return *t == Seq(++b, seq_->end());
-		}
-		typename Seq::iterator b = seq_->begin();
-        t = Seq(++b, seq_->end());
-        changed=true;
-        return true;
-    }
-
-    void revert(void) {
-        if(changed) {
-            t.reset();
-            changed=false;
-        }
+    bool operator() (void) {
+      typename Seq::iterator b;
+      co_begin();
+      if(seq_->empty())
+        co_return(false);
+		  if(t.defined()) {
+			  b = seq_->begin();
+        co_return( *t == Seq(++b, seq_->end()) );
+		  }
+		  b = seq_->begin();
+      t = Seq(++b, seq_->end());
+      co_yield(true);
+      t.reset();
+      co_end();
     }
 };
 
@@ -475,39 +683,31 @@ Tail_r<Seq,TailSeq> tail(lref<Seq>& seq_, lref<TailSeq>& t) {
 //   Tail : 
 //------------------------------------------------------------------
 template<typename Seq, typename TailSeq=Seq>
-class Tail_N_r : public OneSolutionRelation<Tail_N_r<Seq, TailSeq> > {
-    bool changed;
+class Tail_N_r : public Coroutine {
     lref<Seq> seq_;
     lref<typename TailSeq::size_type> n_;
     lref<TailSeq> t;
 public:
-    Tail_N_r(const lref<Seq>& seq_, const lref<typename TailSeq::size_type>& n_, const lref<TailSeq>& t) : seq_(seq_), n_(n_), t(t),  changed(false)
+    Tail_N_r(const lref<Seq>& seq_, const lref<typename TailSeq::size_type>& n_, const lref<TailSeq>& t) : seq_(seq_), n_(n_), t(t)
     { }
 
-    bool apply (void) {
-        if(seq_->empty())
-            return false;
-        if(t.defined()) {
-            if( t->size() > seq_->size() )
-                return false;
-            typename TailSeq::const_iterator start = seq_->begin();
-            std::advance(start, seq_->size() - *n_);
-            return std::equal(t->begin(),t->end(),start);
-        }
-        if( *n_ > seq_->size() )
-            throw IndexOutOfBounds();
-        typename TailSeq::const_iterator start = seq_->begin(), end=seq_->end();
-        std::advance(start, seq_->size() - *n_);
-        t=TailSeq(start,end);
-        changed=true;
-        return true;
-    }
-
-    void revert(void) {
-        if(changed) {
-            t.reset();
-            changed=false;
-        }
+    bool operator() (void) {
+      typename TailSeq::const_iterator start = seq_->begin(), end = seq_->end();
+      co_begin();
+      if(*n_ > seq_->size())
+        co_return(false);
+      if(t.defined()) {
+          if( t->size() > seq_->size() )
+            co_return(false);
+          start = seq_->begin();
+          std::advance(start, seq_->size() - *n_);
+          co_return( std::equal(t->begin(),t->end(),start) );
+      }
+      std::advance(start, seq_->size() - *n_);
+      t=TailSeq(start,end);
+      co_yield(true);
+      t.reset();
+      co_end();
     }
 };
 
@@ -539,10 +739,10 @@ relation insert(lref<typename Seq::value_type> value_, lref<typename Seq::iterat
 #ifdef __BCPLUSPLUS__
 	relation (*self)(lref<typename Seq::value_type> , lref<typename Seq::iterator> , lref<typename Seq::iterator> , lref<Seq>& ) = &insert<Seq>;
 	return   sequence(insertedSeq)(value_)(b_,e_)
-		  || predicate(b_!=e_) && next(b_,n) && recurse(self,value_,n,e_,tmp) && deref(b_,v) && sequence(insertedSeq)(v)(tmp);
+		  || predicate(b_!=e_) && next(b_,n) && recurse(self,value_,n,e_,tmp) && dereference(b_,v) && sequence(insertedSeq)(v)(tmp);
 #else
 	return   sequence(insertedSeq)(value_)(b_,e_)
-		  || predicate(b_!=e_) && next(b_,n) && recurse(&insert<Seq>,value_,n,e_,tmp) && deref(b_,v) && sequence(insertedSeq)(v)(tmp);
+		  || predicate(b_!=e_) && next(b_,n) && recurse(&insert<Seq>,value_,n,e_,tmp) && dereference(b_,v) && sequence(insertedSeq)(v)(tmp);
 #endif
 }
 
@@ -555,10 +755,10 @@ relation insert_seq(lref<typename Seq::iterator> valuesB_, lref<typename Seq::it
 #ifdef __BCPLUSPLUS__
 	relation (*self)(lref<typename Seq::iterator> , lref<typename Seq::iterator> , lref<typename Seq::iterator> , lref<typename Seq::iterator> , lref<Seq>& ) = &insert_seq<Seq>;
 	return   sequence(insertedSeq)(valuesB_,valuesE_)(b_,e_)
-		  || predicate(b_!=e_) && next(b_,n) && recurse(self,valuesB_,valuesE_,n,e_,tmp) && deref(b_,v) && sequence(insertedSeq)(v)(tmp);
+		  || predicate(b_!=e_) && next(b_,n) && recurse(self,valuesB_,valuesE_,n,e_,tmp) && dereference(b_,v) && sequence(insertedSeq)(v)(tmp);
 #else
 	return   sequence(insertedSeq)(valuesB_,valuesE_)(b_,e_)
-		  || predicate(b_!=e_) && next(b_,n) && recurse(&insert_seq<Seq>,valuesB_,valuesE_,n,e_,tmp) && deref(b_,v) && sequence(insertedSeq)(v)(tmp);
+		  || predicate(b_!=e_) && next(b_,n) && recurse(&insert_seq<Seq>,valuesB_,valuesE_,n,e_,tmp) && dereference(b_,v) && sequence(insertedSeq)(v)(tmp);
 #endif
 }
 
@@ -567,21 +767,20 @@ relation insert_seq(lref<typename Seq::iterator> valuesB_, lref<typename Seq::it
 //----------------------------------------------------------------------
 
 template<typename T>
-class Inc_r : public OneSolutionRelation<Inc_r<T> >{
+class Inc_r : public Coroutine {
     lref<T> obj;
     lref<T> oldValue;
 public:
     explicit Inc_r(const lref<T>& obj) : obj(obj)
     { }
 
-    bool apply() {
-        oldValue=obj; // copy the original value
-        ++(*obj);
-        return true;
-    }
-
-    void revert() {
-        obj=*oldValue;
+    bool operator ()(void) {
+      co_begin();
+      oldValue=obj; // copy the original value
+      ++(*obj);
+      co_yield(true);
+      obj=*oldValue;
+      co_end();
     }
 };
 
@@ -592,21 +791,20 @@ Inc_r<T> inc(lref<T>& value_) {
 
 
 template<typename T>
-class Dec_r : public OneSolutionRelation<Dec_r<T> >{
+class Dec_r : public Coroutine {
     lref<T> obj;
     lref<T> oldValue;
 public:
     explicit Dec_r(const lref<T>& obj) : obj(obj)
     { }
 
-    bool apply() {
-        oldValue=obj; // copy the original value
-        --(*obj);
-        return true;
-    }
-
-    void revert() {
-        obj=*oldValue;
+    bool operator()(void) {
+      co_begin();
+      oldValue=obj; // copy the original value
+      --(*obj);
+      co_yield(true);
+      obj=*oldValue;
+      co_end();
     }
 };
 
@@ -684,7 +882,7 @@ public:
     //
     //template<typename Iter>
     //Sequence_r& operator() (Iter start, Iter end) { // appending new items from an arbitrary iterator delimited sequence into the collection
-    //    ::castor::detail::IfElse<is_lref<Iter>::result, push_lref_pair, push_values<Iter> >::type::apply(start, end, *this);
+    //    detail::IfElse<is_lref<Iter>::result, push_lref_pair, push_values<Iter> >::type::apply(start, end, *this);
     //    return *this;
     //} 
 
@@ -790,8 +988,8 @@ private:
                 break;
             case REF_PAIR: {
                 LrefIter b = r_LrefPairs.front().first, e = r_LrefPairs.front().second;
-                size_t numItems = ::castor::detail::countItems(*b, *e);
-                if ( ((unsigned)::castor::detail::countItems(li,l_end)<numItems) || !std::equal(*b, *e, li) )
+                size_t numItems = detail::countItems(*b, *e);
+                if ( ((unsigned)detail::countItems(li,l_end)<numItems) || !std::equal(*b, *e, li) )
                     return false;
                 std::advance(li, numItems);
                 r_LrefPairs.pop_front();
@@ -800,7 +998,7 @@ private:
             default: { //==REF_COLLECTION
                 typename Seq::iterator b = (*r_refLists.front()).begin(),
                                         e = (*r_refLists.front()).end();
-                if ( (unsigned)::castor::detail::countItems(li,l_end)<(*r_refLists.front()).size()
+                if ( (unsigned)detail::countItems(li,l_end)<(*r_refLists.front()).size()
                      || !std::equal(b, e, li) )
                     return false;
                 std::advance(li, (*r_refLists.front()).size());
@@ -824,27 +1022,21 @@ Sequence_r<Seq> sequence(lref<Seq>& seq) {
 //--------------------------------------------------------
 
 template<typename Cont>
-class Size_r : public OneSolutionRelation<Size_r<Cont> >{
+class Size_r : public Coroutine {
     lref<typename Cont::size_type> sz;
     lref<Cont> cont_;
-    bool changed;
 public:
-    Size_r(const lref<Cont>& cont_, const lref<typename Cont::size_type>& sz) : sz(sz), cont_(cont_), changed(false)
+    Size_r(const lref<Cont>& cont_, const lref<typename Cont::size_type>& sz) : sz(sz), cont_(cont_)
     { }
 
-    bool apply (void) {
-        if(sz.defined())
-            return *sz==cont_->size();
-        sz=cont_->size();
-        changed=true;
-        return true;
-    }
-
-    void revert(void) {
-        if(changed) {
-            sz.reset();
-            changed=false;
-        }
+    bool operator() (void) {
+      co_begin();
+      if(sz.defined())
+        co_return( *sz==cont_->size() );
+      sz=cont_->size();
+      co_yield(true);
+      sz.reset();
+      co_end();
     }
 };
 // Concept: Cont provides member function size and member typedef size_type
@@ -887,36 +1079,29 @@ relation merge(lref<Seq>& l_, lref<Seq>& r_, lref<Seq>& m) {
 //  begin relation : For working with iterators
 //--------------------------------------------------------
 template<typename Cont>
-class Begin_r : public OneSolutionRelation<Begin_r<Cont> > {
+class Begin_r : public Coroutine {
     typedef typename Cont::iterator Iter;
     lref<Cont> cont_;
     lref<Iter> iter;
-    bool changed;
 public:
-    Begin_r(const lref<Cont>& cont_, const lref<Iter>& iter) : cont_(cont_), iter(iter), changed(false)
+    Begin_r(const lref<Cont>& cont_, const lref<Iter>& iter) : cont_(cont_), iter(iter)
     { }
 
-    bool apply() {
-        if(iter.defined())
-            return *iter==cont_->begin();
-        iter=cont_->begin();
-        changed=true;
-        return true;
-    }
-
-    void revert() {
-        if(changed) {
-            iter.reset();
-            changed=false;
-        }
+    bool operator()(void) {
+      co_begin();
+      if(iter.defined())
+        co_return( *iter==cont_->begin() );
+      iter=cont_->begin();
+      co_yield(true);
+      iter.reset();
+      co_end();
     }
 };
 
-// 1st argument disallows a raw vector to be passed as argument. This ensures
-// Itr is not an iterator to a copy of the argument... since passing a raw
-// vector to a lref causes the lref to make a copy of the vector.
+// 1st argument disallows a raw vector to be passed as argument... since passing 
+// a raw vector to a lref causes the lref to make a copy of the vector.
 template<typename Cont> inline
-Begin_r<Cont> begin(lref<Cont>& cont_, lref<typename Cont::iterator> iter) {
+Begin_r<Cont> begin(lref<Cont>& cont_, const lref<typename Cont::iterator>& iter) {
     return Begin_r<Cont>(cont_, iter);
 }
 
@@ -924,83 +1109,531 @@ Begin_r<Cont> begin(lref<Cont>& cont_, lref<typename Cont::iterator> iter) {
 //  end relation : For working with iterators 
 //--------------------------------------------------------
 template<typename Cont>
-class End_r : public OneSolutionRelation<End_r<Cont> > {
+class End_r : public Coroutine {
     typedef typename Cont::iterator IterT;
     lref<Cont> cont_;
     lref<IterT> iter;
-    bool changed;
 public:
-    End_r(const lref<Cont>& cont_, const lref<IterT>& iter) : cont_(cont_), iter(iter), changed(false)
+    End_r(const lref<Cont>& cont_, const lref<IterT>& iter) : cont_(cont_), iter(iter)
     { }
-    
-    bool apply() {
-        if(iter.defined())
-            return *iter==cont_->end();
-        iter=cont_->end();
-        changed=true;
-        return true;
-    }
 
-    void revert() {
-        if(changed) {
-            iter.reset();
-            changed=false;
-        }
+    bool operator()(void) {
+      co_begin();
+      if(iter.defined())
+        co_return( *iter==cont_->end() );
+      iter=cont_->end();
+      co_yield(true);
+      iter.reset();
+      co_end();
     }
 };
 
 template<typename Cont> inline
-End_r<Cont> end(lref<Cont>& cont_, lref<typename Cont::iterator> iter) {
+End_r<Cont> end(lref<Cont>& cont_, const lref<typename Cont::iterator>& iter) {
     return End_r<Cont>(cont_, iter);
 }
 
 
-//---------------------------------------------------------------
-//    Error Relation : Always throws an exception
-//---------------------------------------------------------------
-template<typename ExceptionType=char*>
-struct Error : TestOnlyRelation<Error<ExceptionType> >{
-    ExceptionType e;
-    Error(const ExceptionType & e) :e(e)
-    { }
-
-    bool apply(void) const {
-        throw e;
-    }
-};
-
-
-template<typename ExceptionType>
-Error<ExceptionType> error( const ExceptionType& err ) {
-    return Error<ExceptionType>(err);
-}
-
-Error<const char*> error( const char* err ) {
-    return Error<const char*>(err);
-}
-
 //--------------------------------------------------------
-//  negate relation : invert true/false result from another relation
+//  begin relation : For working with reverse iterators
 //--------------------------------------------------------
-template<typename Rel>
-class Negate_r : public TestOnlyRelation<Negate_r<Rel> > {
-    Rel r;
+template<typename Cont>
+class RBegin_r : public Coroutine {
+    typedef typename Cont::reverse_iterator Iter;
+    lref<Cont> cont_;
+    lref<Iter> iter;
 public:
-    Negate_r(const Rel& r) : r(r)
+    RBegin_r(const lref<Cont>& cont_, const lref<Iter>& iter) : cont_(cont_), iter(iter)
     { }
 
-    bool apply() {
-        return !r();
+    bool operator()(void) {
+      co_begin();
+      if(iter.defined())
+        co_return( *iter==cont_->rbegin() );
+      iter=cont_->rbegin();
+      co_yield(true);
+      iter.reset();
+      co_end();
     }
 };
 
-template<typename Rel>
-Negate_r<Rel> negate(const Rel& rel) {
-    return Negate_r<Rel>(rel);
+// 1st argument disallows a raw vector to be passed as argument... since passing 
+// a raw vector to a lref causes the lref to make a copy of the vector.
+template<typename Cont> inline
+RBegin_r<Cont> rbegin(lref<Cont>& cont_, const lref<typename Cont::reverse_iterator>& iter) {
+    return RBegin_r<Cont>(cont_, iter);
 }
+
+//--------------------------------------------------------
+//  rend relation : For working with reverse iterators 
+//--------------------------------------------------------
+template<typename Cont>
+class REnd_r : public Coroutine {
+    typedef typename Cont::reverse_iterator IterT;
+    lref<Cont> cont_;
+    lref<IterT> iter;
+public:
+    REnd_r(const lref<Cont>& cont_, const lref<IterT>& iter) : cont_(cont_), iter(iter)
+    { }
+
+    bool operator()(void) {
+      co_begin();
+      if(iter.defined())
+        co_return( *iter==cont_->rend() );
+      iter=cont_->rend();
+      co_yield(true);
+      iter.reset();
+      co_end();
+    }
+};
+
+template<typename Cont> inline
+REnd_r<Cont> rend(lref<Cont>& cont_, const lref<typename Cont::reverse_iterator>& iter) {
+    return REnd_r<Cont>(cont_, iter);
+}
+
+
+
+//-------------------------------------------------
+// eval() - Invoke the function/function object: Succeeds only once
+//-------------------------------------------------
+template<typename Func>
+class Eval_r0 : Coroutine {
+    Func f;
+public:
+    typedef typename detail::return_type<Func>::result_type result_type;
+    Eval_r0(Func f) :f(f)
+    { }
+
+    bool operator()(void) {
+        co_begin();
+        f();
+        co_return(true);
+        co_end();
+    }
+};
+
+template<typename Func, typename A1>
+class Eval_r1 : Coroutine {
+    Func f;
+    A1 a1;
+public:
+    typedef typename detail::return_type<Func>::result_type result_type;
+    Eval_r1(Func f, const A1& a1) :f(f), a1(a1)
+    { }
+
+    bool operator()(void) {
+        co_begin();
+        f(effective_value(a1));
+        co_return(true);
+        co_end();
+    }
+};
+
+template<typename Func, typename A1, typename A2>
+class Eval_r2 : Coroutine {
+    Func f;
+    A1 a1; A2 a2;
+public:
+    typedef typename detail::return_type<Func>::result_type result_type;
+    Eval_r2(Func f, const A1& a1, const A2& a2) :f(f), a1(a1), a2(a2)
+    { }
+
+    bool operator()(void) {
+        co_begin();
+        f(effective_value(a1), effective_value(a2));
+        co_return(true);
+        co_end();
+    }
+};
+
+template<typename Func, typename A1, typename A2, typename A3>
+class Eval_r3 : Coroutine {
+    Func f;
+    A1 a1; A2 a2; A3 a3;
+public:
+    typedef typename detail::return_type<Func>::result_type result_type;
+    Eval_r3(Func f, const A1& a1, const A2& a2, const A3& a3) :f(f), a1(a1), a2(a2), a3(a3)
+    { }
+
+    bool operator()(void) {
+        co_begin();
+        f(effective_value(a1), effective_value(a2), effective_value(a3));
+        co_return(true);
+        co_end();
+    }
+};
+
+template<typename Func, typename A1, typename A2, typename A3, typename A4>
+class Eval_r4 : Coroutine {
+    Func f;
+    A1 a1; A2 a2; A3 a3; A4 a4;
+public:
+    typedef typename detail::return_type<Func>::result_type result_type;
+    Eval_r4(Func f, const A1& a1, const A2& a2, const A3& a3, const A4& a4) :f(f), a1(a1), a2(a2), a3(a3), a4(a4)
+    { }
+
+    bool operator()(void) {
+        co_begin();
+        f(effective_value(a1), effective_value(a2), effective_value(a3), effective_value(a4));
+        co_return(true);
+        co_end();
+    }
+};
+
+template<typename Func, typename A1, typename A2, typename A3, typename A4, typename A5>
+class Eval_r5 : Coroutine {
+    Func f;
+    A1 a1; A2 a2; A3 a3; A4 a4; A5 a5;
+public:
+    typedef typename detail::return_type<Func>::result_type result_type;
+    Eval_r5(Func f, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5) :f(f), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5)
+    { }
+
+    bool operator()(void) {
+        co_begin();
+        f(effective_value(a1), effective_value(a2), effective_value(a3), effective_value(a4), effective_value(a5));
+        co_return(true);
+        co_end();
+    }
+};
+
+template<typename Func, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
+class Eval_r6 : Coroutine {
+    Func f;
+    A1 a1; A2 a2; A3 a3; A4 a4; A5 a5; A6 a6;
+public:
+    typedef typename detail::return_type<Func>::result_type result_type;
+    Eval_r6(Func f, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6) :f(f), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5), a6(a6)
+    { }
+
+    bool operator()(void) {
+        co_begin();
+        f(effective_value(a1), effective_value(a2), effective_value(a3), effective_value(a4), effective_value(a5), effective_value(a6));
+        co_return(true);
+        co_end();
+    }
+};
+
+// nullary
+template<typename Func> inline
+Eval_r0<Func> eval(Func f) {
+    return Eval_r0<Func>(f);
+}
+
+template<typename R> inline
+Eval_r0<R(*)(void)> eval(R(* f)(void)) {
+    return Eval_r0<R(*)(void)>(f);
+}
+
+// unary
+template<typename Func, typename A1> inline
+Eval_r1<Func,A1> eval(Func f, const A1& a1_) {
+    return Eval_r1<Func,A1>(f,a1_);
+}
+
+template<typename R, typename P1, typename A1> inline
+Eval_r1<R(*)(P1),A1> eval(R(* f)(P1), const A1& a1_) {
+    return Eval_r1<R(*)(P1),A1>(f,a1_);
+}
+
+// binary
+template<typename Func, typename A1, typename A2> inline
+Eval_r2<Func,A1,A2> eval(Func f, const A1& a1_, const A2& a2_) {
+    return Eval_r2<Func,A1,A2>(f,a1_,a2_);
+}
+
+template<typename R, typename P1, typename P2, typename A1, typename A2> inline
+Eval_r2<R(*)(P1,P2),A1,A2> eval(R(* f)(P1,P2), const A1& a1_, const A2& a2_) {
+    return Eval_r2<R(*)(P1,P2),A1,A2>(f,a1_,a2_);
+}
+
+// ternary
+template<typename Func, typename A1, typename A2, typename A3> inline
+Eval_r3<Func,A1,A2,A3> eval(Func f, const A1& a1_, const A2& a2_, const A3& a3_) {
+    return Eval_r3<Func,A1,A2,A3>(f,a1_,a2_,a3_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename A1, typename A2, typename A3> inline
+Eval_r3<R(*)(P1,P2,P3),A1,A2,A3> eval(R(* f)(P1,P2,P3), const A1& a1_, const A2& a2_, const A3& a3_) {
+    return Eval_r3<R(*)(P1,P2,P3),A1,A2,A3>(f,a1_,a2_,a3_);
+}
+
+// quaternary
+template<typename Func, typename A1, typename A2, typename A3, typename A4> inline
+Eval_r4<Func,A1,A2,A3,A4> eval(Func f, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
+    return Eval_r4<Func,A1,A2,A3,A4>(f,a1_,a2_,a3_,a4_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename A1, typename A2, typename A3, typename A4> inline
+Eval_r4<R(*)(P1,P2,P3,P4),A1,A2,A3,A4> eval(R(* f)(P1,P2,P3,P4), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
+    return Eval_r4<R(*)(P1,P2,P3,P4),A1,A2,A3,A4>(f,a1_,a2_,a3_,a4_);
+}
+
+// quinary
+template<typename Func, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+Eval_r5<Func,A1,A2,A3,A4,A5> eval(Func f, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
+    return Eval_r5<Func,A1,A2,A3,A4,A5>(f,a1_,a2_,a3_,a4_,a5_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+Eval_r5<R(*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5> eval(R(* f)(P1,P2,P3,P4,P5), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
+    return Eval_r5<R(*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5>(f,a1_,a2_,a3_,a4_,a5_);
+}
+
+// sestary
+template<typename Func, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+Eval_r6<Func,A1,A2,A3,A4,A5,A6> eval(Func f, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
+    return Eval_r6<Func,A1,A2,A3,A4,A5,A6>(f,a1_,a2_,a3_,a4_,a5_,a6_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+Eval_r6<R(*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6> eval(R(* f)(P1,P2,P3,P4,P5,P6), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
+    return Eval_r6<R(*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6>(f,a1_,a2_,a3_,a4_,a5_,a6_);
+}
+
+//-------------------------------------------------
+// eval_mf() - Invoke the function/function object: Always succeeds once only
+//-------------------------------------------------
+template<typename Obj, typename MemFunc>
+class Eval_mf_r0 : Coroutine {
+    lref<Obj> obj_;
+	MemFunc mf;
+public:
+    Eval_mf_r0(lref<Obj> obj_, MemFunc mf) :obj_(obj_), mf(mf)
+    { }
+
+    bool operator()(void) {
+        co_begin();
+        ((*obj_).*mf)();
+        co_return(true);
+        co_end();
+    }
+};
+
+template<typename Obj, typename MemFunc, typename A1>
+class Eval_mf_r1 : Coroutine {
+    lref<Obj> obj_;
+	MemFunc mf;
+    A1 a1;
+public:
+    Eval_mf_r1(lref<Obj> obj_, MemFunc mf, const A1& a1) :obj_(obj_), mf(mf), a1(a1)
+    { }
+
+    bool operator()(void) {
+        co_begin();
+        ((*obj_).*mf)(effective_value(a1));
+        co_return(true);
+        co_end();
+    }
+};
+
+template<typename Obj, typename MemFunc, typename A1, typename A2>
+class Eval_mf_r2 : Coroutine {
+    lref<Obj> obj_;
+	MemFunc mf;
+    A1 a1; A2 a2;
+public:
+    Eval_mf_r2(lref<Obj> obj_, MemFunc mf, const A1& a1, const A2& a2) :obj_(obj_), mf(mf), a1(a1), a2(a2)
+    { }
+
+    bool operator()(void) {
+        co_begin();
+        ((*obj_).*mf)(effective_value(a1), effective_value(a2));
+        co_return(true);
+        co_end();
+    }
+};
+
+template<typename Obj, typename MemFunc, typename A1, typename A2, typename A3>
+class Eval_mf_r3 : Coroutine {
+    lref<Obj> obj_;
+	MemFunc mf;
+    A1 a1; A2 a2; A3 a3;
+public:
+    Eval_mf_r3(lref<Obj> obj_, MemFunc mf, const A1& a1, const A2& a2, const A3& a3) :obj_(obj_), mf(mf), a1(a1), a2(a2), a3(a3)
+    { }
+
+    bool operator()(void) {
+        co_begin();
+        ((*obj_).*mf)(effective_value(a1), effective_value(a2), effective_value(a3));
+        co_return(true);
+        co_end();
+    }
+};
+
+template<typename Obj, typename MemFunc, typename A1, typename A2, typename A3, typename A4>
+class Eval_mf_r4 : Coroutine {
+    lref<Obj> obj_;
+	MemFunc mf;
+    A1 a1; A2 a2; A3 a3; A4 a4;
+public:
+    Eval_mf_r4(lref<Obj> obj_, MemFunc mf, const A1& a1, const A2& a2, const A3& a3, const A4& a4) :obj_(obj_), mf(mf), a1(a1), a2(a2), a3(a3), a4(a4)
+    { }
+
+    bool operator()(void) {
+        co_begin();
+        ((*obj_).*mf)(effective_value(a1), effective_value(a2), effective_value(a3), effective_value(a4));
+        co_return(true);
+        co_end();
+    }
+};
+
+template<typename Obj, typename MemFunc, typename A1, typename A2, typename A3, typename A4, typename A5>
+class Eval_mf_r5 : Coroutine {
+    lref<Obj> obj_;
+	MemFunc mf;
+    A1 a1; A2 a2; A3 a3; A4 a4; A5 a5;
+public:
+    Eval_mf_r5(lref<Obj> obj_, MemFunc mf, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5) :obj_(obj_), mf(mf), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5)
+    { }
+
+    bool operator()(void) {
+        co_begin();
+        ((*obj_).*mf)(effective_value(a1), effective_value(a2), effective_value(a3), effective_value(a4), effective_value(a5));
+        co_return(true);
+        co_end();
+    }
+};
+
+template<typename Obj, typename MemFunc, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
+class Eval_mf_r6 : Coroutine {
+    lref<Obj> obj_;
+	MemFunc mf;
+    A1 a1; A2 a2; A3 a3; A4 a4; A5 a5; A6 a6;
+public:
+    Eval_mf_r6(lref<Obj> obj_, MemFunc mf, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6) :obj_(obj_), mf(mf), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5), a6(a6)
+    { }
+
+    bool operator()(void) {
+        co_begin();
+        ((*obj_).*mf)(effective_value(a1), effective_value(a2), effective_value(a3), effective_value(a4), effective_value(a5), effective_value(a6));
+        co_return(true);
+        co_end();
+    }
+};
+
+// Overloads for non-const member functions
+template<typename R, typename Obj> inline
+Eval_mf_r0<Obj,R(Obj::*)(void)> 
+eval_mf(lref<Obj>& obj_, R(Obj::*mf)(void) ) {
+    return Eval_mf_r0<Obj,R(Obj::*)(void)>(obj_,mf);
+}
+
+template<typename R, typename P1, typename Obj, typename A1> inline
+Eval_mf_r1<Obj,R(Obj::*)(P1),A1> 
+eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1), const A1& a1_) {
+    return Eval_mf_r1<Obj,R(Obj::*)(P1),A1>(obj_,mf,a1_);
+}
+
+template<typename R, typename P1, typename P2, typename Obj, typename A1, typename A2> inline
+Eval_mf_r2<Obj,R(Obj::*)(P1,P2),A1,A2> 
+eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2), const A1& a1_, const A2& a2_) {
+    return Eval_mf_r2<Obj,R(Obj::*)(P1,P2),A1,A2>(obj_,mf,a1_,a2_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename Obj, typename A1, typename A2, typename A3> inline
+Eval_mf_r3<Obj,R(Obj::*)(P1,P2,P3),A1,A2,A3> 
+eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3), const A1& a1_, const A2& a2_, const A3& a3_) {
+    return Eval_mf_r3<Obj,R(Obj::*)(P1,P2,P3),A1,A2,A3>(obj_,mf,a1_,a2_,a3_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename A1, typename A2, typename A3, typename A4> inline
+Eval_mf_r4<Obj,R(Obj::*)(P1,P2,P3,P4),A1,A2,A3,A4> 
+eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
+    return Eval_mf_r4<Obj,R(Obj::*)(P1,P2,P3,P4),A1,A2,A3,A4>(obj_,mf,a1_,a2_,a3_,a4_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+Eval_mf_r5<Obj,R(Obj::*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5> 
+eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
+    return Eval_mf_r5<Obj,R(Obj::*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5>(obj_,mf,a1_,a2_,a3_,a4_,a5_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+Eval_mf_r6<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6> 
+eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
+    return Eval_mf_r6<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6>(obj_,mf,a1_,a2_,a3_,a4_,a5_,a6_);
+}
+
+// Overloads for const member functions
+template<typename R, typename Obj> inline
+Eval_mf_r0<Obj,R(Obj::*)(void) const> 
+eval_mf(lref<Obj>& obj_, R(Obj::*mf)(void) const) {
+    return Eval_mf_r0<Obj,R(Obj::*)(void) const>(obj_,mf);
+}
+
+template<typename R, typename P1, typename Obj, typename A1> inline
+Eval_mf_r1<Obj,R(Obj::*)(P1) const,A1> 
+eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1) const, const A1& a1_) {
+    return Eval_mf_r1<Obj,R(Obj::*)(P1) const,A1>(obj_,mf,a1_);
+}
+
+template<typename R, typename P1, typename P2, typename Obj, typename A1, typename A2> inline
+Eval_mf_r2<Obj,R(Obj::*)(P1,P2) const,A1,A2> 
+eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2) const, const A1& a1_, const A2& a2_) {
+    return Eval_mf_r2<Obj,R(Obj::*)(P1,P2) const,A1,A2>(obj_,mf,a1_,a2_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename Obj, typename A1, typename A2, typename A3> inline
+Eval_mf_r3<Obj,R(Obj::*)(P1,P2,P3) const,A1,A2,A3> 
+eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3) const, const A1& a1_, const A2& a2_, const A3& a3_) {
+    return Eval_mf_r3<Obj,R(Obj::*)(P1,P2,P3) const,A1,A2,A3>(obj_,mf,a1_,a2_,a3_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename A1, typename A2, typename A3, typename A4> inline
+Eval_mf_r4<Obj,R(Obj::*)(P1,P2,P3,P4) const,A1,A2,A3,A4> 
+eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
+    return Eval_mf_r4<Obj,R(Obj::*)(P1,P2,P3,P4) const,A1,A2,A3,A4>(obj_,mf,a1_,a2_,a3_,a4_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+Eval_mf_r5<Obj,R(Obj::*)(P1,P2,P3,P4,P5) const,A1,A2,A3,A4,A5> 
+eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
+    return Eval_mf_r5<Obj,R(Obj::*)(P1,P2,P3,P4,P5) const,A1,A2,A3,A4,A5>(obj_,mf,a1_,a2_,a3_,a4_,a5_);
+}
+
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+Eval_mf_r6<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,A1,A2,A3,A4,A5,A6> 
+eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
+    return Eval_mf_r6<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,A1,A2,A3,A4,A5,A6>(obj_,mf,a1_,a2_,a3_,a4_,a5_,a6_);
+}
+
+
+//-------------------------------------------------
+// repeat(val_i,count_i,r) - repeat val_i, count_i times, into r
+//-------------------------------------------------
+
+template<typename T>
+struct Repeat_r : public Coroutine {
+	lref<T> val, val_i, r;
+	unsigned int count_i;
+	unsigned int i;
+	Repeat_r(const lref<T>& val_i, const unsigned int count_i, const lref<T>& r) : val(), val_i(val_i), r(r), count_i(count_i) { 
+	}
+
+	bool operator()(void) {
+		co_begin();
+		val = r;  // save
+		r = val_i;
+		for(i=count_i; i!=0; --i)
+			co_yield(true);
+		r = val;  // restore
+		co_end();
+	}
+};
+
+
+template<typename T>
+Repeat_r<T> repeat(lref<T>& val_i,unsigned int count_i, lref<T>& r) {
+	return Repeat_r<T>(val_i, count_i, r);
+}
+
+template<typename T>
+Repeat_r<T> repeat(T val_i, unsigned int count_i, lref<T>& r) {
+	return Repeat_r<T>(lref<T>(val_i), count_i, r);
+}
+
 
 } // namespace castor
 #endif
-
-
-

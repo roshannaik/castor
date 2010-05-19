@@ -7,6 +7,7 @@
 // const ref arguments in templates not very well supported in BCB
 #ifdef __BCPLUSPLUS__
 #define CREF  const &
+#define CASTOR_DISABLE_AND_OPTIMIZATION
 #else
 #define CREF
 #endif

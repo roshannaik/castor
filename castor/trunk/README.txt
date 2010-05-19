@@ -1,6 +1,6 @@
-Castor v1.0, Feb 11th 2008 : 
+Castor v1.1 pre beta, April 25th 2010 : 
 
-Copyright (C) 2008 Roshan Naik
+Copyright (C) 2010 Roshan Naik
 
 License
 ============================
@@ -38,6 +38,7 @@ Documentation
 ========================
 Please refer to the castor\docs directory for the following:
 
+  - "Whats new.txt" : Full list of the features introduced in Castor 1.1
   - Tutorial on Logic paradigm and Castor: CastorTutorial.pdf
 
   - Castor Reference Manual: CastorReference.pdf
@@ -48,11 +49,8 @@ Please refer to the castor\docs directory for the following:
 
 Supported compilers:
 ========================
-Microsoft Visual C++ 2005 and 2008 on Windows
-Borland C++ Builder 2007 on Windows
-GCC 4.1.0 and 4.1.1 on Unix
-HP aCC, A.06.15 (Mar 28 2007) on HP-UX
-
+Microsoft Visual C++ 2008 on Windows
+GCC 4.4.1 
 
 
 Compiling Castor test suite:
@@ -63,24 +61,19 @@ First cd to castor/test directory.
 
 Microsoft C++ (on Windows)
 --------------------------------------
-  To compile:   cl /I..\ /EHsc  test_castor.cpp
-  To Run    :   test_castor.exe
+From visual studio:
+  Open the solution file test\test_castor.sln
+  Ensure the Include path is set to the correct location of castor.h
 
 
-Borland C++ (on Windows)
---------------------------------------
-  To compile:   bcc32 -I..\ test_castor.cpp
+From command line:
+  To compile:   cl /I..\ /EHsc  *.cpp
   To Run    :   test_castor.exe
+
 
 
 GCC  (on Unix)
 --------------------------------------
-  To compile:   g++ -I../ test_castor.cpp -o test_castor
-  To Run    :   ./test_castor
-
-
-aCC  (on HP-UX)
---------------------------------------
-  To compile:   aCC -I../ test_castor.cpp -o test_castor
+  To compile:   g++ -I../ *.cpp -o test_castor
   To Run    :   ./test_castor
 

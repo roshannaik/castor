@@ -1,39 +1,20 @@
 // Castor : Logic Programming Library
 // Copyright © 2008 Roshan Naik (roshan@mpprogramming.com).
-// This software is goverened by the MIT license (http://www.opensource.org/licenses/mit-license.php).
+// This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
 #ifndef CASTOR_REFCOUNTEDPTR_H
 #define CASTOR_REFCOUNTEDPTR_H 1
 
-namespace castor { namespace detail {
+#include <algorithm>
+#include "helpers.h"
 
-struct InvalidDeref{};
-struct Underflow{};
+namespace castor {	
+	struct InvalidDeref{}; 
+	struct Underflow{};
+}
 
+namespace castor {	namespace detail {
 
-template <typename T>
-struct RemoveConst {
-    typedef T result_type;
-};
-
-template <typename T>
-struct RemoveConst<const T> {
-    typedef T result_type;
-};
-
-#ifdef __BCPLUSPLUS__
-template <typename T1, typename T2>
-struct SameType { bool static const result = false; };
-
-template <typename T>
-struct SameType<T,T> { bool static const result = false; };
-#else
-template <typename T1, typename T2>
-struct SameType { enum { result = false }; };
-
-template <typename T>
-struct SameType<T,T> { enum { result = true }; };
-#endif
 // IsConvertibleStrict<T1,T2>::result==true  if T1 is convertible to T2, and T1!=T2
 #ifdef __BCPLUSPLUS__
 namespace ICS_detail {
@@ -99,39 +80,41 @@ struct alloc_<T, false> {
     }
 };
 
-
 template<typename T>
 class RefCountedPtr {
 protected:
     T* ptr_;
-    unsigned long count_;
-    bool reset_, exactType_;
+	unsigned long count_;
+    bool reset_, exactType_, manage_;
 
     RefCountedPtr(const RefCountedPtr&);
     RefCountedPtr& operator =(const RefCountedPtr&);
 
     template<typename T2>
     static T* initPtr(const T2& value) {
-        return ::castor::detail::alloc_<T, IsDerivedStrict<T2,T>::result> ::exec(value);
-        //return new T2(value);
+        return detail::alloc_<T, IsDerivedStrict<T2,T>::result> ::exec(value); // return new T2(value);
     }
 public:
     typedef T pointee_type;
-    RefCountedPtr() : ptr_(0), count_(1), reset_(true), exactType_(false)
+    RefCountedPtr() : ptr_(0), count_(1), reset_(true), exactType_(false), manage_(true)
     { }
 
-    explicit RefCountedPtr(const T& value) : ptr_(new T(value)), count_(1), reset_(false), exactType_(true)
+    explicit RefCountedPtr(const T& value) : ptr_(new T(value)), count_(1), reset_(false), exactType_(true), manage_(true)
     { }
 
-    template<typename T2>
-    explicit RefCountedPtr(const T2& value) : ptr_(initPtr(value)), count_(1), reset_(false), exactType_(!IsDerivedStrict<T2,T>::result)
+	explicit RefCountedPtr(T* ptr, bool manage) : ptr_(ptr), count_(1), reset_(false), exactType_(true), manage_(manage)
+    { }
+
+	template<typename T2>
+    explicit RefCountedPtr(const T2& value) : ptr_(initPtr(value)), count_(1), reset_(false), exactType_(!IsDerivedStrict<T2,T>::result), manage_(true)
     { }
 
     ~RefCountedPtr() {
-       if(/*count_==0 && */ptr_) delete ptr_; // we need to take count_ into account if set_ptr calls inc()
+       if(ptr_ && manage_) 
+		   delete ptr_;
     }
 
-    // Here we avoid invoking 'new' if possible for efficiency reasons
+    // Here we avoid invoking 'new' as far as possible for efficiency reasons
     // The new value is assigned to an existing T object pointed to by ptr_
     // If ptr_==0 then we invoke new.
     // TODO: how well do set(T) and set(X) mix
@@ -139,20 +122,44 @@ public:
         if(exactType_)
             *ptr_ = value;
         else {
-            if(ptr_) delete ptr_;
-            ptr_= new T(value);
-        }            
+			T* temp = new T(value);
+            if(ptr_ && manage_) 
+				delete ptr_;
+            ptr_= temp;
+        }
         reset_=false;
         exactType_=true;
+		manage_=true;
     }
 
     template<typename T2>
     void set(const T2& value) {
-        if(ptr_)
+		T* temp = initPtr(value);
+        if(ptr_ && manage_)
             delete ptr_;
-        ptr_= initPtr(value);
+        ptr_= temp;
         reset_=false;
         exactType_=!IsDerivedStrict<T2,T>::result;
+		manage_=true;
+    }
+
+	void set_ptr(T* ptr, bool manage) {
+        if(ptr_ && manage_) 
+			delete ptr_;
+        ptr_= ptr;
+        reset_=false;
+        exactType_=true;
+		manage_=manage;
+	}
+
+	template<typename T2>
+    void set_ptr(T2* ptr, bool manage) {
+        if(ptr_ && manage_)
+			delete ptr_;
+        ptr_= ptr;
+        reset_=false;
+        exactType_=true;
+		manage_=manage;		
     }
 
     void reset() { // nothrow

@@ -1,6 +1,6 @@
 // Castor : Logic Programming Library
-// Copyright © 2008 Roshan Naik (roshan@mpprogramming.com).
-// This software is goverened by the MIT license (http://www.opensource.org/licenses/mit-license.php).
+// Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
+// This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
 #ifndef CASTOR_RECURSE_H
 #define CASTOR_RECURSE_H 1
@@ -13,8 +13,8 @@ namespace castor {
 
 template<typename Rel_0>
 struct Recurse0_r {
-	relation rTmp;
 	Rel_0 r;
+	relation rTmp;
 	bool initialized;
 
 	Recurse0_r (Rel_0 r) : r(r), rTmp(False()), initialized(false)
@@ -31,9 +31,9 @@ struct Recurse0_r {
 
 template<typename Rel_1, typename A1>
 struct Recurse1_r {
-	relation rTmp;
 	Rel_1 r;
 	lref<A1> a1;
+	relation rTmp;
 	bool initialized;
 
 	Recurse1_r (Rel_1 r, const lref<A1>& a1) : r(r), a1(a1), rTmp(False()), initialized(false)
@@ -50,9 +50,9 @@ struct Recurse1_r {
 
 template<typename Rel_2, typename A1,  typename A2>
 struct Recurse2_r {
-	relation rTmp;
 	Rel_2 r;
 	lref<A1> a1; lref<A2> a2;
+	relation rTmp;
 	bool initialized;
 
 	Recurse2_r (Rel_2 r, const lref<A1>& a1, const lref<A2>& a2) : r(r), a1(a1), a2(a2), rTmp(False()), initialized(false)
@@ -69,9 +69,9 @@ struct Recurse2_r {
 
 template<typename Rel_3, typename A1,  typename A2,  typename A3>
 struct Recurse3_r {
-	relation rTmp;
 	Rel_3 r;
 	lref<A1> a1; lref<A2> a2; lref<A3> a3;
+	relation rTmp;
 	bool initialized;
 
 	Recurse3_r (Rel_3 r, const lref<A1>& a1, const lref<A2>& a2, const lref<A3>& a3) : r(r), a1(a1), a2(a2), a3(a3), rTmp(False()), initialized(false)
@@ -89,9 +89,9 @@ struct Recurse3_r {
 
 template<typename Rel_4, typename A1,  typename A2,  typename A3,  typename A4>
 struct Recurse4_r {
-	relation rTmp;
 	Rel_4 r;
 	lref<A1> a1; lref<A2> a2; lref<A3> a3; lref<A4> a4;
+	relation rTmp;
 	bool initialized;
 
 	Recurse4_r (Rel_4 r, const lref<A1>& a1, const lref<A2>& a2, const lref<A3>& a3, const lref<A4>& a4) : r(r), a1(a1), a2(a2), a3(a3), a4(a4), rTmp(False()), initialized(false)
@@ -109,9 +109,9 @@ struct Recurse4_r {
 
 template<typename Rel_5, typename A1,  typename A2,  typename A3,  typename A4,  typename A5>
 struct Recurse5_r {
-	relation rTmp;
 	Rel_5 r;
 	lref<A1> a1; lref<A2> a2; lref<A3> a3; lref<A4> a4; lref<A5> a5;
+	relation rTmp;
 	bool initialized;
 
 	Recurse5_r (Rel_5 r, const lref<A1>& a1, const lref<A2>& a2, const lref<A3>& a3, const lref<A4>& a4, const lref<A5>& a5) : r(r), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5), rTmp(False()), initialized(false)
@@ -185,142 +185,142 @@ Recurse6_r<Rel_6,A1,A2,A3,A4,A5,A6> recurse(Rel_6 r, lref<A1>& a1, lref<A2>& a2,
 
 template<typename Obj, typename MemRel>
 struct RecurseMem0_r {
-	relation r;
-	Obj* obj;
-    MemRel mf;
-	bool initialized;
+  Obj* obj;
+  MemRel mf;
+  relation r;
+  bool initialized;
 
-    RecurseMem0_r(Obj* obj, MemRel mf) : obj(obj), mf(mf), r(False()), initialized(false)
-	{ }
+  RecurseMem0_r(Obj* obj, MemRel mf) : obj(obj), mf(mf), r(False()), initialized(false)
+  { }
 
-	bool operator()(void) {
-		if(!initialized) {
-			r = ( (obj->*mf)() );
-			initialized=true;
-		}
-		return r();
-	}
+  bool operator()(void) {
+    if(!initialized) {
+      r = ( (obj->*mf)() );
+      initialized=true;
+    }
+    return r();
+  }
 };
 
 template<typename Obj, typename MemRel, typename A1>
 struct RecurseMem1_r {
-	relation r;
-	Obj* obj;
-    MemRel mf;
-	lref<A1> a1;
-	bool initialized;
+  Obj* obj;
+  MemRel mf;
+  lref<A1> a1;
+  relation r;
+  bool initialized;
 
-    RecurseMem1_r(Obj* obj, MemRel mf, const lref<A1>& a1) : obj(obj), mf(mf), a1(a1), r(False()), initialized(false)
-	{ }
+  RecurseMem1_r(Obj* obj, MemRel mf, const lref<A1>& a1) : obj(obj), mf(mf), a1(a1), r(False()), initialized(false)
+  { }
 
-	bool operator()(void) {
-		if(!initialized) {
-			r = ((obj->*mf)(a1));
-			initialized=true;
-		}
-		return r();
-	}
+  bool operator()(void) {
+    if(!initialized) {
+      r = ((obj->*mf)(a1));
+      initialized=true;
+    }
+    return r();
+  }
 };
 
 template<typename Obj, typename MemRel, typename A1, typename A2>
 struct RecurseMem2_r {
-	relation r;
-	Obj* obj;
-    MemRel mf;
-	lref<A1> a1;	lref<A2> a2;
-	bool initialized;
+  Obj* obj;
+  MemRel mf;
+  lref<A1> a1;	lref<A2> a2;
+  relation r;
+  bool initialized;
 
-    RecurseMem2_r(Obj* obj, MemRel mf, const lref<A1>& a1, const lref<A2>& a2) : obj(obj), mf(mf), a1(a1), a2(a2), r(False()), initialized(false)
-	{ }
+  RecurseMem2_r(Obj* obj, MemRel mf, const lref<A1>& a1, const lref<A2>& a2) : obj(obj), mf(mf), a1(a1), a2(a2), r(False()), initialized(false)
+  { }
 
-	bool operator()(void) {
-		if(!initialized) {
-			r = ((obj->*mf)(a1,a2));
-			initialized=true;
-		}
-		return r();
-	}
+  bool operator()(void) {
+    if(!initialized) {
+      r = ((obj->*mf)(a1,a2));
+      initialized=true;
+    }
+    return r();
+  }
 };
 
 template<typename Obj, typename MemRel, typename A1, typename A2, typename A3>
 struct RecurseMem3_r {
-	relation r;
-	Obj* obj;
-    MemRel mf;
-	lref<A1> a1;	lref<A2> a2;
-	lref<A3> a3;
-	bool initialized;
+  Obj* obj;
+  MemRel mf;
+  lref<A1> a1;	lref<A2> a2;
+  lref<A3> a3;
+  relation r;
+  bool initialized;
 
-    RecurseMem3_r(Obj* obj, MemRel mf, const lref<A1>& a1, const lref<A2>& a2, const lref<A3>& a3) : obj(obj), mf(mf), a1(a1), a2(a2), a3(a3), r(False()), initialized(false)
-	{ }
+  RecurseMem3_r(Obj* obj, MemRel mf, const lref<A1>& a1, const lref<A2>& a2, const lref<A3>& a3) : obj(obj), mf(mf), a1(a1), a2(a2), a3(a3), r(False()), initialized(false)
+  { }
 
-	bool operator()(void) {
-		if(!initialized) {
-			r = ((obj->*mf)(a1,a2,a3));
-			initialized=true;
-		}
-		return r();
-	}
+  bool operator()(void) {
+    if(!initialized) {
+      r = ((obj->*mf)(a1,a2,a3));
+      initialized=true;
+    }
+    return r();
+  }
 };
 
 template<typename Obj, typename MemRel, typename A1, typename A2, typename A3, typename A4>
 struct RecurseMem4_r {
-	relation r;
-	Obj* obj;
-    MemRel mf;
-	lref<A1> a1;	lref<A2> a2;	lref<A3> a3;	lref<A4> a4;
-	bool initialized;
+  Obj* obj;
+  MemRel mf;
+  lref<A1> a1;	lref<A2> a2;	lref<A3> a3;	lref<A4> a4;
+  relation r;
+  bool initialized;
 
-    RecurseMem4_r(Obj* obj, MemRel mf, const lref<A1>& a1, const lref<A2>& a2, const lref<A3>& a3, const lref<A4>& a4) : obj(obj), mf(mf), a1(a1), a2(a2), a3(a3), a4(a4), r(False()), initialized(false)
-	{ }
+  RecurseMem4_r(Obj* obj, MemRel mf, const lref<A1>& a1, const lref<A2>& a2, const lref<A3>& a3, const lref<A4>& a4) : obj(obj), mf(mf), a1(a1), a2(a2), a3(a3), a4(a4), r(False()), initialized(false)
+  { }
 
-	bool operator()(void) {
-		if(!initialized) {
-			r = ((obj->*mf)(a1,a2,a3,a4));
-			initialized=true;
-		}
-		return r();
-	}
+  bool operator()(void) {
+    if(!initialized) {
+      r = ((obj->*mf)(a1,a2,a3,a4));
+      initialized=true;
+    }
+    return r();
+  }
 };
 
 template<typename Obj, typename MemRel, typename A1, typename A2, typename A3, typename A4, typename A5>
 struct RecurseMem5_r {
-	relation r;
-	Obj* obj;
-    MemRel mf;
-	lref<A1> a1;	lref<A2> a2;	lref<A3> a3;	lref<A4> a4;	lref<A5> a5;
-	bool initialized;
+  Obj* obj;
+  MemRel mf;
+  lref<A1> a1;	lref<A2> a2;	lref<A3> a3;	lref<A4> a4;	lref<A5> a5;
+  relation r;
+  bool initialized;
 
-    RecurseMem5_r(Obj* obj, MemRel mf, const lref<A1>& a1, const lref<A2>& a2, const lref<A3>& a3, const lref<A4>& a4, const lref<A5>& a5) : obj(obj), mf(mf), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5), r(False()), initialized(false)
-	{ }
+  RecurseMem5_r(Obj* obj, MemRel mf, const lref<A1>& a1, const lref<A2>& a2, const lref<A3>& a3, const lref<A4>& a4, const lref<A5>& a5) : obj(obj), mf(mf), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5), r(False()), initialized(false)
+  { }
 
-	bool operator()(void) {
-		if(!initialized) {
-			r = ((obj->*mf)(a1,a2,a3,a4,a5));
-			initialized=true;
-		}
-		return r();
-	}
+  bool operator()(void) {
+    if(!initialized) {
+      r = ((obj->*mf)(a1,a2,a3,a4,a5));
+      initialized=true;
+    }
+    return r();
+  }
 };
 
 template<typename Obj, typename MemRel, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
 struct RecurseMem6_r {
-	relation r;
-	Obj* obj;
-    MemRel mf;
-	lref<A1> a1;	lref<A2> a2;	lref<A3> a3;	lref<A4> a4;	lref<A5> a5;  lref<A6> a6;
-	bool initialized;
+  Obj* obj;
+  MemRel mf;
+  lref<A1> a1;	lref<A2> a2;	lref<A3> a3;	lref<A4> a4;	lref<A5> a5;  lref<A6> a6;
+  relation r;
+  bool initialized;
 
-    RecurseMem6_r(Obj* obj, MemRel mf, const lref<A1>& a1, const lref<A2>& a2, const lref<A3>& a3, const lref<A4>& a4, const lref<A5>& a5, const lref<A6>& a6) : obj(obj), mf(mf), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5), a6(6), r(False()), initialized(false)
-	{ }
+  RecurseMem6_r(Obj* obj, MemRel mf, const lref<A1>& a1, const lref<A2>& a2, const lref<A3>& a3, const lref<A4>& a4, const lref<A5>& a5, const lref<A6>& a6) : obj(obj), mf(mf), a1(a1), a2(a2), a3(a3), a4(a4), a5(a5), a6(6), r(False()), initialized(false)
+  { }
 
-	bool operator()(void) {
-		if(!initialized) {
-			r = ((obj->*mf)(a1,a2,a3,a4,a5,a6));
-			initialized=true;
-		}
-		return r();
-	}
+  bool operator()(void) {
+    if(!initialized) {
+      r = ((obj->*mf)(a1,a2,a3,a4,a5,a6));
+      initialized=true;
+    }
+    return r();
+  }
 };
 
 

@@ -14,3 +14,4 @@ Unsupported :
      derefence operator *
      address of operator 
      member access operator ->
+     assignment operators =,<<=,>>=,+=,-=,*=,\=
