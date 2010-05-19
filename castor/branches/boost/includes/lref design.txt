@@ -1,0 +1,185 @@
+Conversions
+---------------
+  lref<T>  -> ? lref<T const>
+          -> lref<BaseOfT>
+          -> lref<void> ?
+          -> lref<U> if T* can be implicitly converted to U*
+
+T should be Assignable and CopyConstructible
+Motivation to provide support in lref<T>::lref(T2&) where T2 is not derived from T but is convertible to T using T::(T2&) in order to 
+allow :
+  lref<string> ls = "castor"; 
+This would otherwise require 
+  lref<string> ls = string("castor"); 
+which is obnoxious and also involves construction of additional temporary. 
+However support for assignment of T2 to lref<T> is missing even if T2::operator T() exists. Explicit cast is needed to
+use assignment via this. For e.g:
+
+T2 t2;
+lref<T> t = (T)t2; // OR
+
+
+Members:
+---------------
+ typdef T element_type;
+
+ default constructor
+? explicit lref(Y* p)  // p can be 0, p is convertible to T*
+  lref(lref const&)
+  <Y> lref(lref<Y> & )
+
+  lref& operator = (lref const&)
+  <Y> lref& operator=(lref<Y> const &)
+
+  swap(lref&)
+
+  reset()
+  reset(Y*)
+
+ use_count()
+ unique()
+ get()
+ defined()  .... get()!=0
+ operator unspecified-bool-type () const   .... get()!=0
+
+
+ T* operator ->() const
+ T& operator *() const 
+
+
+
+Global functions
+---------------------------
+<T, U> bool operator==(lref const & a, lref<U> const & b); .... a.get() == b.get().
+<T,U> bool operator!=(lref const & a, lref<U> const & b); .... a.get() == b.get().
+<T, U> bool operator<(lref const & a, red<U> const & b); 
+swap(lref& , lref&)
+
+
+
+Notes:
+---------------------------
+- Capturing allocation, construction, deallocation, and destruction details
+  at the point of construction
+- lref<T>  <-> lref<const T>
+
+
+
+============================
+Current Implmentation 
+============================
+<T> struct RcP {
+    unsigned int count;
+    T* ptr;
+
+    RcP() : count(1), ptr(0) { }
+    RcP(T* pointer) : count(1), ptr(pointer) { }
+    ~RcP();
+
+    void inc();
+    unsigned int dec();
+
+    void setValue(const T& newValue) {
+        if(ptr!=0) throw InvalidState();
+        ptr=new T(newValue);
+    }
+
+    template<typename T> friend class lref;
+};
+
+
+
+<T> class lref {
+
+  RcP<NonConstT>* rcptr;
+
+public:
+
+  lref() : rcptr(new RcP<NonConstT>() )  { }
+
+  <U> lref(const U& value) : rcptr( new RcP<NonConstT>(new NonConstT(value)) ) { }
+
+  lref(const lref<ConstT>& rhs) : rcptr( incrementedRef(rhs.rcptr) )  { }
+
+  lref(const lref<NonConstT>& rhs) : rcptr( incrementedRef(rhs.rcptr) )  { }
+
+  ~lref()  { release();}
+
+  T& operator *() const { return *(rcptr->ptr); }
+
+  bool defined() const { return rcptr->ptr!=0; }
+
+  void set_ptr(T* ptrNewValue) { 
+      rcptr->inc(); // prevent deletion
+      rcptr->ptr= ptrNewValue;
+  }
+
+  void set(const T& newValue) {
+      rcptr->inc(); // prevent deletion
+      rcptr->setValue(newValue);
+  }
+
+  void reset() {
+      rcptr->dec();
+      rcptr->ptr=0;
+  }
+
+private:
+  RcP<NonConstT>* incrementedRef(RcP<NonConstT>* ptr) {
+      ptr->inc();
+      return ptr;
+  }
+
+  void release();
+
+  lref& operator=(const T&);
+  
+  friend class lref;
+}; 
+
+
+
+// Future
+? lref static_pointer_cast( lref<U> const &) 
+? lref dynamic_pointer_cast( lref<U> const & )
+? operator <<
+
+
+Conventions for specifying Param types
+
+1) Param Type for relations that take other relations as args
+----------------------------
+lref<>         : Simplest. Allows POT and lref args. Copy is made if arg is POT.
+lref<>&        : POT args are not allowed. Useful in cases where one needs to guarantee that the original 
+                 arg is passed eventually (and not a copy) which can happen if arg is POT and param is not
+const lref<> & : Preferred. Same as just lref<> but more efficient but a bit verbose.
+
+
+2) Param Type for relations that take funcs as args
+--------------------------------------------------------
+T        : Less efficient for everything but primitive types.
+T&       : Does not allow passing of rvalues. Prevents copies being passed eventually.
+const T& : Preferred. Same as T, but more efficient if arg is not primitive POT.
+           Copy is made if arg is POT.
+
+
+
+3) Overloads for *_mf relations:
+-------------------------------
+Two overloads are provided for each arity. One for const methods and the other for non const methods.
+
+template<typename L, typename R, typename P1, typename Obj, typename A1>
+Eq_mf_r1<L,Obj,R(Obj::*)(P1) const,A1> 
+eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1), const A1& a1_) ;
+
+
+template<typename L, typename R, typename P1, typename Obj, typename A1>
+Eq_mf_r1<L,Obj,R(Obj::*)(P1) const,A1> 
+eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1) const, const A1& a1_) ;
+
+
+This implies that 'const lref<Obj>' to the objects cannot be used. This is fine, since for suporting them
+we would have to use an overload with 'const lref<Obj>&'  which means a POT could be passed as argument
+leading to incorrect behavior (as its copy will be made). We workaround by converting const lref<Obj> to 
+lref<T> before use.
+
