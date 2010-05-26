@@ -15,5 +15,10 @@ import testing ;
 
 alias test_framework : $(BOOST_ROOT)/libs/test/build//boost_unit_test_framework ;
 
+run test_eq.cpp ;
+run test_eq_f.cpp ;
+run test_eq_mem.cpp ;
+run test_eq_mf.cpp ;
+run test_eq_seq.cpp ;
 run test_permute.cpp ;
 run test_shuffle.cpp ;
