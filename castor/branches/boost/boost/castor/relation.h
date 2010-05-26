@@ -6,8 +6,8 @@
 #define CASTOR_RELATION_H 1
 #include <memory>
 
-#include "workaround.h"
-#include "coroutine.h"
+#include <boost/castor/workaround.h>
+#include <boost/castor/coroutine.h>
 
 namespace castor {
 

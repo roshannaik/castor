@@ -5,9 +5,9 @@
 #if !defined CASTOR_OPS_H
 #define CASTOR_OPS_H 1
 
-#include "relation.h"
-#include "lref.h"
-#include "workaround.h"
+#include <boost/castor/relation.h>
+#include <boost/castor/lref.h>
+#include <boost/castor/workaround.h>
 
 namespace castor {
 #ifdef CASTOR_ALL_REGULAR_OPS

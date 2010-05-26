@@ -5,12 +5,14 @@
 #if !defined CASTOR_EQ_H
 #define CASTOR_EQ_H 1
 
-#include "coroutine.h"
-#include "lref.h"
-#include "ile.h"
-#include "relation.h"
-#include "helpers.h"
+#include <boost/castor/coroutine.h>
+#include <boost/castor/lref.h>
+#include <boost/castor/ile.h>
+#include <boost/castor/relation.h>
+#include <boost/castor/helpers.h>
+
 #include <cstring>
+
 namespace castor {
 
 template<typename L, typename R, typename Cmp=::castor::detail::None>

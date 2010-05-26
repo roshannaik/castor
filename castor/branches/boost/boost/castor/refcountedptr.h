@@ -5,8 +5,9 @@
 #ifndef CASTOR_REFCOUNTEDPTR_H
 #define CASTOR_REFCOUNTEDPTR_H 1
 
+#include <boost/castor/helpers.h>
+
 #include <algorithm>
-#include "helpers.h"
 
 namespace castor {	
 	struct InvalidDeref{}; 
