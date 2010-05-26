@@ -6,9 +6,10 @@
 #define CASTOR_COLLECTION_H 1
 
 //#include "coroutine.h"
-#include "relation.h"
-#include "lref.h"
-#include "utils.h"
+#include <boost/castor/relation.h>
+#include <boost/castor/lref.h>
+#include <boost/castor/utils.h>
+
 #include <algorithm>
 #include <vector>
 

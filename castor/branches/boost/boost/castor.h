@@ -6,20 +6,20 @@
 #if !defined CASTOR_H
 #define CASTOR_H 1
 
-#include "includes/coroutine.h"
-#include "includes/lref.h"
-#include "includes/relation.h"
-#include "includes/recurse.h"
-#include "includes/predicate.h"
-#include "includes/eq.h"
-#include "includes/ops.h"
-#include "includes/utils.h"
-#include "includes/cut.h"
-#include "includes/ile.h"
-#include "includes/named_iles.h"
-#include "includes/io.h"
-#include "includes/collection.h"
-#include "includes/tlr.h"
-#include "includes/higher_order.h"
+#include <boost/castor/coroutine.h>
+#include <boost/castor/lref.h>
+#include <boost/castor/relation.h>
+#include <boost/castor/recurse.h>
+#include <boost/castor/predicate.h>
+#include <boost/castor/eq.h>
+#include <boost/castor/ops.h>
+#include <boost/castor/utils.h>
+#include <boost/castor/cut.h>
+#include <boost/castor/ile.h>
+#include <boost/castor/named_iles.h>
+#include <boost/castor/io.h>
+#include <boost/castor/collection.h>
+#include <boost/castor/tlr.h>
+#include <boost/castor/higher_order.h>
 
 #endif

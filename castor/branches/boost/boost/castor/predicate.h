@@ -5,9 +5,9 @@
 #ifndef CASTOR_PREDICATE_H
 #define CASTOR_PREDICATE_H 1
 
-#include "relation.h"
-#include "helpers.h"
-#include "workaround.h"
+#include <boost/castor/relation.h>
+#include <boost/castor/helpers.h>
+#include <boost/castor/workaround.h>
 
 namespace castor {
 

@@ -5,10 +5,11 @@
 #if !defined CASTOR_AGGREGATES_H
 #define CASTOR_AGGREGATES_H 1
 
-#include "coroutine.h"
-#include "relation.h"
-#include "lref.h"
-#include "helpers.h"
+#include <boost/castor/coroutine.h>
+#include <boost/castor/relation.h>
+#include <boost/castor/lref.h>
+#include <boost/castor/helpers.h>
+
 #include <vector>
 #include <utility>
 #include <iterator>

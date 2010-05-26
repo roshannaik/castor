@@ -5,7 +5,7 @@
 #if !defined CASTOR_CUT_H
 #define CASTOR_CUT_H 1
 
-#include "relation.h"
+#include <boost/castor/relation.h>
 
 namespace castor {
 

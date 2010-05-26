@@ -5,7 +5,7 @@
 #if !defined CASTOR_HIGHER_ORDER_H
 #define CASTOR_HIGHER_ORDER_H 1
 
-#include "coroutine.h"
+#include <boost/castor/coroutine.h>
 
 namespace castor {
 

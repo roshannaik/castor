@@ -5,8 +5,8 @@
 #if !defined CASTOR_NAMED_ILES_H
 #define CASTOR_NAMED_ILES_H 1
 
-#include "ile.h"
-#include "helpers.h"
+#include <boost/castor/ile.h>
+#include <boost/castor/helpers.h>
 
 namespace castor {
 

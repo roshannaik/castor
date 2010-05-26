@@ -5,9 +5,9 @@
 #if !defined CASTOR_REF_H
 #define CASTOR_REF_H 1
 
-#include "config.h"
-#include "relation.h"
-#include "refcountedptr.h"
+#include <boost/castor/config.h>
+#include <boost/castor/relation.h>
+#include <boost/castor/refcountedptr.h>
 
 
 namespace castor {

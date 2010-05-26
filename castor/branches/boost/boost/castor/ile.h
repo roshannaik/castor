@@ -5,12 +5,12 @@
 #if !defined CASTOR_ILE_H
 #define CASTOR_ILE_H 1
 
-#include "relation.h"
-#include "lref.h"
-#include "ops.h"
-#include "cut.h"
-#include "workaround.h"
-#include "helpers.h"
+#include <boost/castor/relation.h>
+#include <boost/castor/lref.h>
+#include <boost/castor/ops.h>
+#include <boost/castor/cut.h>
+#include <boost/castor/workaround.h>
+#include <boost/castor/helpers.h>
 
 namespace castor {
 //-------------------------------------------------------------------------

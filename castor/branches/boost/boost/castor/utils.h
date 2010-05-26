@@ -5,11 +5,11 @@
 #if !defined CASTOR_UTILS_H
 #define CASTOR_UTILS_H 1
 
-#include "lref.h"
-#include "relation.h"
-#include "eq.h"
-#include "helpers.h"
-#include "functional.h"
+#include <boost/castor/lref.h>
+#include <boost/castor/relation.h>
+#include <boost/castor/eq.h>
+#include <boost/castor/helpers.h>
+#include <boost/castor/functional.h>
 
 #include <list>
 #include <deque>
