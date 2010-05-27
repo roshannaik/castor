@@ -15,10 +15,22 @@ import testing ;
 
 alias test_framework : $(BOOST_ROOT)/libs/test/build//boost_unit_test_framework ;
 
+compile compile_lref.cpp ;
+
+run test_and_or.cpp ;
+run test_conjunction.cpp ;
+run test_cut.cpp ;
+run test_disjunction.cpp ;
 run test_eq.cpp ;
 run test_eq_f.cpp ;
 run test_eq_mem.cpp ;
 run test_eq_mf.cpp ;
 run test_eq_seq.cpp ;
+run test_exclusive_disjunction.cpp ;
+run test_fast_and.cpp ;
+run test_lref.cpp ;
 run test_permute.cpp ;
+run test_recurse_mf.cpp ;
 run test_shuffle.cpp ;
+run test_true.cpp ;
+run test_xor.cpp ;
