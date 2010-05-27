@@ -34,3 +34,4 @@ run test_recurse_mf.cpp ;
 run test_shuffle.cpp ;
 run test_true.cpp ;
 run test_xor.cpp ;
+run test_zip.cpp ;
