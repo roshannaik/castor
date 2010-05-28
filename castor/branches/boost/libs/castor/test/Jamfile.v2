@@ -18,7 +18,11 @@ alias test_framework : $(BOOST_ROOT)/libs/test/build//boost_unit_test_framework 
 compile compile_lref.cpp ;
 
 run test_and_or.cpp ;
+run test_at.cpp ;
+run test_call.cpp ;
 run test_conjunction.cpp ;
+run test_create.cpp ;
+run test_create_with.cpp ;
 run test_cut.cpp ;
 run test_disjunction.cpp ;
 run test_eq.cpp ;
@@ -28,8 +32,14 @@ run test_eq_mf.cpp ;
 run test_eq_seq.cpp ;
 run test_exclusive_disjunction.cpp ;
 run test_fast_and.cpp ;
+run test_get.cpp ;
+run test_ile.cpp ;
+run test_ile_eq.cpp ;
 run test_lref.cpp ;
+run test_mcall.cpp ;
 run test_permute.cpp ;
+run test_postfix_unary_ops.cpp ;
+run test_prefix_unary_ops.cpp ;
 run test_recurse_mf.cpp ;
 run test_shuffle.cpp ;
 run test_true.cpp ;
