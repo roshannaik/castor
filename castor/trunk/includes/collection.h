@@ -11,6 +11,7 @@
 #include "utils.h"
 #include <algorithm>
 #include <vector>
+#include <functional>
 
 namespace castor {
 

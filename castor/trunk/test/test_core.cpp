@@ -65,29 +65,45 @@ void test_lref() {
 			throw "failed test_lref 2";
 		delete pa;
 	}
+    { // unmanaged to managed transition
+		A::i=0;
+        A a;
+        lref<A> r(&a, false);
+        r=a;
+		if(A::i!=2)
+			throw "failed test_lref 3";
+    }
+    { // managed to unmanaged transition
+		A::i=0;
+        lref<A> r(new A, true);
+        A a;
+        r.set_ptr(&a,false);
+		if(A::i!=1)
+			throw "failed test_lref 4";
+    }
 	{  // basic assignment
 		A::i=0;
 		{
 		lref<A> r; r.set_ptr(new A(),true);
 		if(A::i!=1)
-			throw "failed test_lref 3";
+			throw "failed test_lref 5";
 		}
 		if(A::i!=0)
-			throw "failed test_lref 3";
+			throw "failed test_lref 5";
 		{
 		lref<A> r; r.set_ptr(new A(),false);
 		if(A::i!=1)
-			throw "failed test_lref 3";
+			throw "failed test_lref 5";
 		}
 		if(A::i!=1)
-			throw "failed test_lref 3";
+			throw "failed test_lref 5";
 	}
 	{  // init and assignment
-	A::i=0;
-	lref<A> r(new A(),true);
-	r.set_ptr(new A(), true);
-	if(A::i!=1)
-		throw "failed test_lref 4";
+	    A::i=0;
+	    lref<A> r(new A(),true);
+	    r.set_ptr(new A(), true);
+	    if(A::i!=1)
+		    throw "failed test_lref 6";
 	}
 }
 
