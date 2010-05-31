@@ -2,8 +2,8 @@
 // Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
 // This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
-#if !defined CASTOR_AGGREGATES_H
-#define CASTOR_AGGREGATES_H 1
+#if !defined CASTOR_TLR_H
+#define CASTOR_TLR_H 1
 
 #include <boost/castor/coroutine.h>
 #include <boost/castor/relation.h>
@@ -187,7 +187,7 @@ struct MfPred2 {
 
 } // namespace detail
 
-template<typename T, typename Pred>
+template<class T, class Pred>
 struct OrderByBase : public Coroutine {
 	lref<T> obj;
 	typename std::vector<T>::iterator itr;
@@ -217,16 +217,17 @@ struct OrderByBase : public Coroutine {
 	}
 };
 
-template<typename T, typename MemFunc, typename Pred>
+//-------------------------------------------------
+// order_mf(obj,mf,p) TLR
+// throws InvalidArg() if obj is initialized at the time evaluation
+//-------------------------------------------------
+template<class T, class MemFunc, class Pred>
 struct OrderMf_tlr : public OrderByBase<T, detail::MfPred<T,MemFunc,Pred> > {
 	typedef OrderByBase<T, detail::MfPred<T,MemFunc,Pred> > BaseClass;
 	OrderMf_tlr(const lref<T>& obj, MemFunc mf, Pred p) : BaseClass(obj, detail::MfPred<T,MemFunc,Pred>(mf,p))
 	{}
 };
 
-// order_mf
-// For use with >>= operator
-// throws InvalidArg() if obj is initialized at the time evaluation
 template<typename T, typename MemFunc>  inline
 OrderMf_tlr<T,MemFunc,std::less<typename detail::return_type<MemFunc>::result_type> > 
 order_mf(lref<T>& obj, MemFunc f) {
@@ -234,11 +235,6 @@ order_mf(lref<T>& obj, MemFunc f) {
 	return OrderMf_tlr<T,MemFunc,std::less<R> >(obj,f,std::less<R>());
 }
 
-//-------------------------------------------------
-// order_mf(obj,mf,p)
-// For use with >>= operator
-// throws InvalidArg() if obj is initialized at the time evaluation
-//-------------------------------------------------
 template<typename T, typename MemFunc, typename Pred>  inline
 OrderMf_tlr<T,MemFunc,Pred> 
 order_mf(lref<T>& obj, MemFunc f, Pred p) {
@@ -246,9 +242,8 @@ order_mf(lref<T>& obj, MemFunc f, Pred p) {
 }
 
 
-
 namespace detail {
-template<typename T, typename Mem, typename BinaryPred>
+template<class T, class Mem, class BinaryPred>
 struct CompareMember {
 	Mem T::* mem;
 	BinaryPred p;
@@ -263,6 +258,11 @@ struct CompareMember {
 };
 } // namespace detail
 
+//-------------------------------------------------
+// order_mem
+// For use with >>= operator
+// throws InvalidArg() if obj is initialized at the time evaluation
+//-------------------------------------------------
 template<typename T, typename Mem, typename Pred>
 struct OrderMem_tlr : public OrderByBase<T,detail::CompareMember<T,Mem,Pred> > {
 	typedef OrderByBase<T,detail::CompareMember<T,Mem,Pred> > BaseClass;
@@ -270,28 +270,23 @@ struct OrderMem_tlr : public OrderByBase<T,detail::CompareMember<T,Mem,Pred> > {
 	{}
 };
 
-//-------------------------------------------------
-// order_mem
-// For use with >>= operator
-// throws InvalidArg() if obj is initialized at the time evaluation
-//-------------------------------------------------
 template<typename T, typename MemberT>  inline
 OrderMem_tlr<T,MemberT,std::less<MemberT> > 
 order_mem(lref<T>& obj, MemberT T::* mem) {
 	return OrderMem_tlr<T,MemberT,std::less<MemberT> >(obj,mem,std::less<MemberT>());
 }
 
-//-------------------------------------------------
-// order_mem
-// For use with >>= operator
-// throws InvalidArg() if obj is initialized at the time evaluation
-//-------------------------------------------------
 template<typename T, typename MemberT, typename Pred>  inline
 OrderMem_tlr<T,MemberT,Pred> 
 order_mem(lref<T>& obj, MemberT T::* mem, Pred cmp) {
 	return OrderMem_tlr<T,MemberT,Pred>(obj,mem,cmp);
 }
 
+//-------------------------------------------------
+// reverse(obj)
+// For use with >>= operator
+// throws InvalidArg() if obj is initialized at the time evaluation
+//-------------------------------------------------
 template<typename T>
 struct Reverse_tlr : public Coroutine {
 	lref<T> obj;
@@ -320,102 +315,10 @@ struct Reverse_tlr : public Coroutine {
 	}
 };
 
-//-------------------------------------------------
-// reverse(obj)
-// For use with >>= operator
-// throws InvalidArg() if obj is initialized at the time evaluation
-//-------------------------------------------------
 template<typename T>  inline
 Reverse_tlr<T> reverse(lref<T>& obj) {
 	return Reverse_tlr<T>(obj);
 }
-
-template<typename T, typename BinFunc>
-struct Reduce_tlr : public Coroutine {
-	lref<T> i, total;
-	BinFunc acc;
-
-	Reduce_tlr(const lref<T>& i, const BinFunc& acc) : i(i), acc(acc)
-	{}
-
-	bool operator() (relation& r) {
-		co_begin();
-		if(!r())
-			co_return(false);
-		for(total=i; r(); total.get()=acc(total.get(),*i) );
-		i=total;
-		co_yield(true);
-		i.reset();
-		co_end();
-	}
-};
-
-//-------------------------------------------------
-// reduce(i,binFunc)
-// For use with >>= operator
-// throws InvalidArg() if obj is initialized at the time evaluation
-// Concept: BinFunc is a functor taking two args:  (Sum&, T&)
-//-------------------------------------------------
-template<typename T, typename BinFunc> inline
-Reduce_tlr<T,BinFunc> reduce(lref<T>& i, BinFunc acc) {
-	return Reduce_tlr<T,BinFunc>(i,acc);
-}
-
-
-//-------------------------------------------------
-// sum(i)
-// For use with >>= operator
-// throws InvalidArg() if obj is initialized at the time evaluation
-//-------------------------------------------------
-template<typename T> inline
-Reduce_tlr<T,std::plus<T> > sum(lref<T>& i) {
-	return Reduce_tlr<T,std::plus<T> >(i, std::plus<T>());
-}
-
-
-template<typename T>
-struct Count_tlr : public Coroutine {
-	lref<T> n;
-
-	explicit Count_tlr(const lref<T>& n) : n(n)
-	{}
-
-	bool operator() (relation& r) {
-		co_begin();
-		if(n.defined())
-            throw InvalidArg();
-		n=0;
-        while(r())
-			++(n.get());
-		co_yield(true);
-		n.reset();
-		co_end();
-	}
-};
-
-
-//-------------------------------------------------
-// count(n) - n is number of times argument relation succeeded
-// For use with >>= operator
-// throws InvalidArg() if n is initialized at the time evaluation
-// Concept: T: is an integral type
-//-------------------------------------------------
-template<class T> inline
-Count_tlr<T> count(const lref<T>& n) {
-	return Count_tlr<T>(n);
-}
-
-////-------------------------------------------------
-//// count(n) - n is number of times argument relation succeeded
-//// For use with >>= operator
-//// throws InvalidArg() if obj is initialized at the time evaluation
-//// Concept: T: is an integral type
-////-------------------------------------------------
-//template<class T> inline
-//Count_tlr<T> count(const T& obj) {
-//	return Count_tlr<T>(obj);
-//}
-
 
 
 //-------------------------------------------------
@@ -1050,7 +953,6 @@ group_by(lref<Item>& i_, Sel keySelector, lref<group<K,V> >& g, KCmp keyCmp) {
 	ASSERT_SAME_TYPE(ret_type,K,"Group's key type does not match Selector's return type");
 	return GroupBy<Item,group<K,V>,K,V,FuncList<Sel,None>,KCmp>(i_,FuncList<Sel,None>(keySelector),g,keyCmp);
 }
-
 
 
 } // namespace castor

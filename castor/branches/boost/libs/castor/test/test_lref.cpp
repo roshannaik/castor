@@ -100,5 +100,19 @@ int test_main(int, char * [])
 	BOOST_CHECK(A::i == 1);
     }
 
+    { // unmanaged to managed transition
+		A::i=0;
+        A a;
+        lref<A> r(&a, false);
+        r=a;
+		BOOST_CHECK(A::i==2);
+    }
+    { // managed to unmanaged transition
+		A::i=0;
+        lref<A> r(new A, true);
+        A a;
+        r.set_ptr(&a,false);
+		BOOST_CHECK(A::i==1);
+    }
     return 0;
 }

@@ -21,5 +21,5 @@
 #include <boost/castor/collection.h>
 #include <boost/castor/tlr.h>
 #include <boost/castor/higher_order.h>
-
+#include <boost/castor/aggregate.h>
 #endif

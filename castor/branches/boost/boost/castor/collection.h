@@ -5,13 +5,14 @@
 #if !defined CASTOR_COLLECTION_H
 #define CASTOR_COLLECTION_H 1
 
-//#include "coroutine.h"
+#include <boost/castor/coroutine.h>
 #include <boost/castor/relation.h>
 #include <boost/castor/lref.h>
 #include <boost/castor/utils.h>
 
 #include <algorithm>
 #include <vector>
+#include <functional>
 
 namespace castor {
 
