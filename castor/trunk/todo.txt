@@ -1,6 +1,7 @@
   Todo
 ------------
 HIGH
+- Aggregates: count_of, reduce_of, average
 - ? writeAll for group<>
 - ritem should work on random access containers
 - All TLRs should be collection oriented also ?

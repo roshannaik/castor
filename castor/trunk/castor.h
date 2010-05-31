@@ -21,5 +21,6 @@
 #include "includes/collection.h"
 #include "includes/tlr.h"
 #include "includes/higher_order.h"
+#include "includes/aggregate.h"
 
 #endif
