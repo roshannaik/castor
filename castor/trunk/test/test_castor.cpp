@@ -28,6 +28,7 @@
 #include "test_collection.h"
 #include "test_tlr.h"
 #include "test_higher_order.h"
+#include "test_aggregate.h"
 
 using namespace std;
 using namespace castor;
@@ -41,7 +42,7 @@ int main()
   clock_t start = clock();
   runtests();
   cout << "\nTime taken " << (clock() - start) << "\n\n Testing Complete! \a";
-  //cin.ignore();
+  cin.ignore();
   return 0;
 }
 
@@ -665,15 +666,26 @@ void runtests() {
 	run_test( test_shuffle );
     run_test( test_permute );
 
-	// aggregates
+	// TLRs
 	run_test( test_order );
 	run_test( test_order_mf );
 	run_test( test_order_mem );
 	run_test( test_reverse );
+	run_test( test_group_by );
+
+    // aggregates
 	run_test( test_count );
+    run_test( test_max );
+    run_test( test_min );
 	run_test( test_sum );
 	run_test( test_reduce );
-	run_test( test_group_by );
+    run_test( test_average );
+
+    run_test( test_max_of );
+    run_test( test_min_of );
+    run_test( test_sum_of );
+    run_test( test_reduce_of );
+    run_test( test_average_of );
 
 	cout << "\nFailed: " << failCount << "\nPassed: " << passCount  << "\nTotal: " << testCount;
 }

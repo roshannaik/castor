@@ -59,20 +59,33 @@ New features:
   + ritem() -  To generate values from a sequence in reverse. The sequence must provide rbegin() and rend().
   + shuffle() - To generate a randomized sequence/string.
   + unique_mem(), unique_mf() - Similar to unique() but filtering is based on a data member or value returned by a method call.
-  + writeAll(), writeAllTo() : To print all elements in a sequence to cout or to a stream.
-  + write_mem(), writeTo_mem() : To print value of a data member to cout or a stream.
-  + zip() : Takes two relations as argument and evaluates them in an interleaved manner until one of them fails.
+  + writeAll(), writeAllTo() - To print all elements in a sequence to cout or to a stream.
+  + write_mem(), writeTo_mem() - To print value of a data member to cout or a stream.
+  + zip() - Takes two relations as argument and evaluates them in an interleaved manner until one of them fails.
 
-- New (TakeLeft) relations for use with operator >>= : 
-   + count() - For counting the number of items in a sequence. E.g. range(i,1,10) && predicate(i%2==0) >>= count(n)
+  + Aggregation Relations - 
+      - max_of(), min_of(), average_of() - To compute the max, min and average value in a container.
+      - sum_of() - Total of all values in a container. (Same as reduce_of with std::plus as functor)
+      - reduce_of() - For reducing a container into a value using a binary functor.
+      - size_of() - For computing the number of items in a container.
+        E.g. lref<vector<int> > vi = .. ; 
+             sum_of(vi, s);
+
+- New "TakeLeft Relations" (TLRs) for use on the right side of operator >>= . TLRs can only be used in generate mode.
+  The following TLRs have been introduced: 
+   + TLRs for Aggregation - 
+      - max(), min(), average() - Compute the max, min and average of a sequence of values.
+      - sum() - Sum of values in a sequence (same as reduce with std::plus as functor).
+      - reduce() - Reduce a sequence to a value by applying an operator (similar to std::accumulate).
+            E.g.:  range(j,1,10) >>= reduce(j, std::multiplies<int>()); // factorial of 10
+      - count() - Count the number of successful evaluations of another relation.
+            E.g. range(i,1,10) && predicate(i%2==0) >>= count(n);  // n is the number of evens in range (1,10)
+
    + order() - For producing a sorted sequence of objects.
    + order_mem() - For producing a sorted sequence of objects. Sort objects on a data member.
    + order_mf() - For producing a sorted sequence of objects. Sort based on value method call.
    + reverse() - For reversing a sequence of objects. E.g. range(i,1,10) >>= reverse(i)
-   + reduce() - For reducing a sequence to a value by applying a operator(similar to accumulate). 
-       E.g.:  range(j,1,10) >>= reduce(j, std::multiplies<int>()); // factorial of 10
-   + sum() - For summing the values in a sequence. E.g. range(i,1,10) >>= sum(i)
-   + group_by() - For grouping objects based on some criteria. Allows nested grouping. e.g
+   + group_by() - For grouping objects based on some criteria. Allows nested grouping. e.g.
         E.g.: 
         // Group strings by first char & then by length
         
@@ -102,9 +115,9 @@ Deprecated:
 In order to use the following deprecated facilites a #define CASTOR_ENABLE_DEPRECATED is required.
 - The Named ILE Create::With() is now deprecated. Prefer using the named ILE create().
 - OneSolution relation is now deprecated. Use class Coroutine instead.
+- size() relation. Use size_of() instead. All aggregate functions now have _of suffix now.
 
-
-Potential Incompatibilites:
+Potential Incompatibilities:
 ---------------------------
 - item() relation now yields an lref<> that references the actual element in the container/sequence 
   instead of a copy.
