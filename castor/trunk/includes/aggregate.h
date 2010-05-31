@@ -339,17 +339,16 @@ min_of(lref<Cont>& cont_, const lref<typename Cont::value_type>& m, Cmp cmp) {
 //   Adder: is a binary functor which returns a T and takes two args of type T
 //   Divider: is a binary functor which returns a T and takes args: (T, size_t)
 //-------------------------------------------------
-template<class T, class Adder=std::plus<T>, class Divider=std::divides<T> >
+template<class T, class Adder=std::plus<T> >
 struct Average_tlr : public Coroutine {
 	lref<T> i, total;
 	Adder adder;
-    Divider divider;
-    size_t count;
 
-	Average_tlr( const lref<T>& i, Adder adder = std::plus<T>(), Divider divider = std::divides<T>()) : i(i), adder(adder), divider(divider), count(0)
+	Average_tlr( const lref<T>& i, Adder adder = std::plus<T>()) : i(i), adder(adder)
 	{}
 
 	bool operator() (relation& r) {
+        size_t count=0;
 		co_begin();
 		if(i.defined())
 			throw InvalidArg();
@@ -357,7 +356,7 @@ struct Average_tlr : public Coroutine {
 			co_return(false);
 		for(total=i; r(); ++count )
             total.get()=adder(total.get(),*i);
-		i=divider(*total,count);
+		i= *total / count;
 		co_yield(true);
 		i.reset();
 		co_end();
@@ -372,11 +371,6 @@ Average_tlr<T> average(lref<T>& i) {
 template<class T, class Adder> inline
 Average_tlr<T,Adder> average(lref<T>& i, Adder adder) {
 	return Average_tlr<T,Adder>(i,adder);
-}
-
-template<class T, class Adder, class Divider> inline
-Average_tlr<T,Adder,Divider> average(lref<T>& i, Adder adder, Divider divider) {
-	return Average_tlr<T,Adder,Divider>(i,adder,divider);
 }
 
 
@@ -402,7 +396,7 @@ public:
             co_return(false);
 
         if(a.defined()) {
-            co_yield(*a== std::accumulate(++cont->begin(), cont->end(), *cont->begin(), adder) ) / cont->size() );
+            co_yield(*a== std::accumulate(++cont->begin(), cont->end(), *cont->begin(), adder) / cont->size() );
         } else {
             a = std::accumulate(++cont->begin(), cont->end(), *cont->begin(), adder) / cont->size();
             co_yield(true);
@@ -426,13 +420,6 @@ average_of(lref<Cont>& cont_, const lref<typename Cont::value_type>& a, Adder ad
     return AvgOf_r<Cont,Adder>(cont_,a,adder);
 }
 
-// average_of(continer,m) - avg of values in container is a
-template<class Cont, class Adder, class Divider> inline
-AvgOf_r<Cont,Adder,Divider> 
-average_of(lref<Cont>& cont_, const lref<typename Cont::value_type>& a, Adder adder, Divider divider) {
-    return AvgOf_r<Cont,Adder,Divider>(cont_,a,adder,divider);
-}
-
 
 //--------------------------------------------------------
 //  Size: s is the size of the collection coll
@@ -443,7 +430,7 @@ class SizeOf_r : public Coroutine {
     lref<typename Cont::size_type> sz;
     lref<Cont> cont_;
 public:
-    Size_r(const lref<Cont>& cont_, const lref<typename Cont::size_type>& sz) : sz(sz), cont_(cont_)
+    SizeOf_r(const lref<Cont>& cont_, const lref<typename Cont::size_type>& sz) : sz(sz), cont_(cont_)
     { }
 
     bool operator() (void) {
@@ -458,16 +445,16 @@ public:
 };
 // Concept: Cont provides member function size and member typedef size_type
 template<typename Cont> inline
-Size_r<Cont> size_of(lref<Cont>& cont_, lref<typename Cont::size_type> sz) {
-    return Size_r<Cont>(cont_, sz);
+SizeOf_r<Cont> size_of(lref<Cont>& cont_, lref<typename Cont::size_type> sz) {
+    return SizeOf_r<Cont>(cont_, sz);
 }
 
 #ifdef CASTOR_ENABLE_DEPRECATED
 // **  DEPRECATED ** : use size_of
 // Concept: Cont provides member function size & member typedef size_type
 template<typename Cont> inline
-Size_r<Cont> size(lref<Cont>& cont_, lref<typename Cont::size_type> sz) {
-    return Size_r<Cont>(cont_, sz);
+SizeOf_r<Cont> size(lref<Cont>& cont_, lref<typename Cont::size_type> sz) {
+    return SizeOf_r<Cont>(cont_, sz);
 }
 #endif // CASTOR_ENABLE_DEPRECATED
 

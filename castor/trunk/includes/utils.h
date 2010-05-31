@@ -1017,33 +1017,6 @@ Sequence_r<Seq> sequence(lref<Seq>& seq) {
     return Sequence_r<Seq>(seq);
 }
 
-//--------------------------------------------------------
-//  Size: s is the size of the collection coll
-//--------------------------------------------------------
-
-template<typename Cont>
-class Size_r : public Coroutine {
-    lref<typename Cont::size_type> sz;
-    lref<Cont> cont_;
-public:
-    Size_r(const lref<Cont>& cont_, const lref<typename Cont::size_type>& sz) : sz(sz), cont_(cont_)
-    { }
-
-    bool operator() (void) {
-      co_begin();
-      if(sz.defined())
-        co_return( *sz==cont_->size() );
-      sz=cont_->size();
-      co_yield(true);
-      sz.reset();
-      co_end();
-    }
-};
-// Concept: Cont provides member function size and member typedef size_type
-template<typename Cont> inline
-Size_r<Cont> size(lref<Cont>& cont_, lref<typename Cont::size_type> sz) {
-    return Size_r<Cont>(cont_, sz);
-}
 
 //--------------------------------------------------------
 //  Merge : m is the sorted merge of the two sorted sequences l, r
