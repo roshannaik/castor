@@ -68,3 +68,21 @@ Document:
 				throw "failed test_call 3";
 		}
 
+---------------------
+     Boostification
+---------------------
+ - Boostifying the documentation
+ - Boost build 
+ - Boost.Config
+ - Renaming .h files to .hpp, (moving some .h files into detail directory)
+ - Ability to #include more granular headers instead of castor.h (need to delay this to the end I feel)
+ - Replacing tabs with spaces (towards the end?)
+ - ALL files need a (MIT?) license and copyright.
+ - Directory layout and file names/extensions (only after 1.1 release)
+ - Example programs
+ - Integrate into boost build system
+ - Documentation in Boost format
+ - Tutorial : incorporate suggestions from Zach, Ali and others.
+ - Namespace refactoring
+ - Naming conventions
+ - No Tabs
