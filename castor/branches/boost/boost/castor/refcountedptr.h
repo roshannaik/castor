@@ -120,8 +120,12 @@ public:
     // If ptr_==0 then we invoke new.
     // TODO: how well do set(T) and set(X) mix
     void set(const T& value) {
-        if(exactType_)
-            *ptr_ = value;
+        if(exactType_) {
+            if(manage_)
+                *ptr_ = value;
+            else
+                ptr_ = new T(value);
+        }
         else {
 			T* temp = new T(value);
             if(ptr_ && manage_) 
