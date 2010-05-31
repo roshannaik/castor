@@ -216,6 +216,10 @@ struct OrderByBase : public Coroutine {
 	}
 };
 
+//-------------------------------------------------
+// order_mf(obj,mf,p) TLR
+// throws InvalidArg() if obj is initialized at the time evaluation
+//-------------------------------------------------
 template<class T, class MemFunc, class Pred>
 struct OrderMf_tlr : public OrderByBase<T, detail::MfPred<T,MemFunc,Pred> > {
 	typedef OrderByBase<T, detail::MfPred<T,MemFunc,Pred> > BaseClass;
@@ -223,24 +227,18 @@ struct OrderMf_tlr : public OrderByBase<T, detail::MfPred<T,MemFunc,Pred> > {
 	{}
 };
 
-// order_mf  TLR
-// throws InvalidArg() if obj is initialized at the time evaluation
-template<class T, class R>  inline
-OrderMf_tlr<T,R(Obj::*)(void),std::less<R> > 
-order_mf(lref<T>& obj, R(Obj::* mf)(void)) {
-	return OrderMf_tlr<T,R(Obj::*)(void),std::less<R> >(obj,mf,std::less<R>());
+template<typename T, typename MemFunc>  inline
+OrderMf_tlr<T,MemFunc,std::less<typename detail::return_type<MemFunc>::result_type> > 
+order_mf(lref<T>& obj, MemFunc f) {
+	typedef typename detail::return_type<MemFunc>::result_type R;
+	return OrderMf_tlr<T,MemFunc,std::less<R> >(obj,f,std::less<R>());
 }
 
-//-------------------------------------------------
-// order_mf(obj,mf,p) TLR
-// throws InvalidArg() if obj is initialized at the time evaluation
-//-------------------------------------------------
-template<class T, class R, class Pred>  inline
-OrderMf_tlr<T,R(Obj::*)(void),Pred> 
-order_mf(lref<T>& obj, R(Obj::*mf)(void), Pred cmp) {
-	return OrderMf_tlr<T,R(Obj::*)(void),Pred>(obj,mf,cmp);
+template<typename T, typename MemFunc, typename Pred>  inline
+OrderMf_tlr<T,MemFunc,Pred> 
+order_mf(lref<T>& obj, MemFunc f, Pred p) {
+	return OrderMf_tlr<T,MemFunc,Pred>(obj,f,p);
 }
-
 
 
 namespace detail {
@@ -259,6 +257,11 @@ struct CompareMember {
 };
 } // namespace detail
 
+//-------------------------------------------------
+// order_mem
+// For use with >>= operator
+// throws InvalidArg() if obj is initialized at the time evaluation
+//-------------------------------------------------
 template<typename T, typename Mem, typename Pred>
 struct OrderMem_tlr : public OrderByBase<T,detail::CompareMember<T,Mem,Pred> > {
 	typedef OrderByBase<T,detail::CompareMember<T,Mem,Pred> > BaseClass;
@@ -266,28 +269,23 @@ struct OrderMem_tlr : public OrderByBase<T,detail::CompareMember<T,Mem,Pred> > {
 	{}
 };
 
-//-------------------------------------------------
-// order_mem
-// For use with >>= operator
-// throws InvalidArg() if obj is initialized at the time evaluation
-//-------------------------------------------------
 template<typename T, typename MemberT>  inline
 OrderMem_tlr<T,MemberT,std::less<MemberT> > 
 order_mem(lref<T>& obj, MemberT T::* mem) {
 	return OrderMem_tlr<T,MemberT,std::less<MemberT> >(obj,mem,std::less<MemberT>());
 }
 
-//-------------------------------------------------
-// order_mem
-// For use with >>= operator
-// throws InvalidArg() if obj is initialized at the time evaluation
-//-------------------------------------------------
 template<typename T, typename MemberT, typename Pred>  inline
 OrderMem_tlr<T,MemberT,Pred> 
 order_mem(lref<T>& obj, MemberT T::* mem, Pred cmp) {
 	return OrderMem_tlr<T,MemberT,Pred>(obj,mem,cmp);
 }
 
+//-------------------------------------------------
+// reverse(obj)
+// For use with >>= operator
+// throws InvalidArg() if obj is initialized at the time evaluation
+//-------------------------------------------------
 template<typename T>
 struct Reverse_tlr : public Coroutine {
 	lref<T> obj;
@@ -316,11 +314,6 @@ struct Reverse_tlr : public Coroutine {
 	}
 };
 
-//-------------------------------------------------
-// reverse(obj)
-// For use with >>= operator
-// throws InvalidArg() if obj is initialized at the time evaluation
-//-------------------------------------------------
 template<typename T>  inline
 Reverse_tlr<T> reverse(lref<T>& obj) {
 	return Reverse_tlr<T>(obj);

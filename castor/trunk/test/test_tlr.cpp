@@ -62,7 +62,7 @@ void test_order_mf() {
 		vector<string> sorted_values(svalues,svalues+3);
 
 		lref<string> v;
-		relation r = item(v, values, values+3) >>= order_mf(v, &string::length, greater<int>() );
+		relation r = item(v, values, values+3) >>= order_mf(v, &string::length, greater<size_t>() );
 		for(int i=0; r(); ++i) {
 			if(sorted_values.at(i)!=*v)
 				throw "failed test_order_mf 2";

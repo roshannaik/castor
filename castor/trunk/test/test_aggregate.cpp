@@ -35,12 +35,6 @@ struct integer_mult {
     }
 };
 
-struct integer_div {
-    integer operator()(const integer& lhs, const integer& rhs) const {
-        return integer(lhs.i / rhs.i);
-    }
-};
-
 }
 
 void test_count() {
@@ -220,7 +214,7 @@ void test_average() {
         integer ints[] = {1,2,3,4,5};
         lref<vector<integer> > integers = vector<integer>(ints,ints+5);
         lref<integer> a;
-        relation r = item(a,integers) >>= average(a,integer_add(),integer_div()) ;
+        relation r = item(a,integers) >>= average(a,integer_add()) ;
         if(!r())
             throw "failed test_average 3";
         if(a->i!=3)
@@ -500,50 +494,40 @@ void test_average_of() {
         if(a->i!=3)
             throw "failed test_average_of 2";
     }
-    { // gen - with adder & divider
-        integer ints[] = {1,2,3,4,5};
-        lref<vector<integer> > nums = vector<integer>(ints,ints+5);
-        lref<integer> a;
-        relation r = average_of(nums,a,integer_add(),integer_div()) ;
-        if(!r())
-            throw "failed test_average_of 3";
-        if(a->i!=3)
-            throw "failed test_average_of 3";
-    }
     {// test
         relation r = average_of(vi,3);
         if(!r())
-            throw "failed test_average_of 4";
+            throw "failed test_average_of 3";
  
         // failure test
         r =  average_of(vi,10) ;
         if(r())
-            throw "failed test_average_of 4";
+            throw "failed test_average_of 3";
     }
     {// empty container
         lref<int> s;
         lref<vector<int> > v2 = vector<int>();
         relation r =  average_of(v2,s) ;
         if(r())
-            throw "failed test_average_of 5";
+            throw "failed test_average_of 4";
         if(s.defined())
-            throw "failed test_average_of 5";
+            throw "failed test_average_of 4";
     }
     {// with group_by
         lref<int> i,a;
         lref<group<bool,int> > g;
         relation r =  ( range(i,1,10) >>= group_by(i,isEven,g) ) && average_of(g,a) ;
         if(!r())
-            throw "failed test_average_of 6";
+            throw "failed test_average_of 5";
         if(*a!=5)
-            throw "failed test_average_of 6";
+            throw "failed test_average_of 5";
         if(!r())
-            throw "failed test_average_of 6";
+            throw "failed test_average_of 5";
         if(*a!=6)
-            throw "failed test_average_of 6";
+            throw "failed test_average_of 5";
         if(r())
-            throw "failed test_average_of 6";
+            throw "failed test_average_of 5";
         if(a.defined())
-            throw "failed test_average_of 6";
+            throw "failed test_average_of 5";
     }
 }
