@@ -7,10 +7,6 @@
 
 using namespace castor;
 
-//--------------------------------------------------------
-//  Tests  : basic lref test for compilation errors
-//--------------------------------------------------------
-
 struct Base {
     virtual ~Base() {}
 };
@@ -33,7 +29,6 @@ int test_main(int, char * [])
 {
     {
 	lref<std::string> r2 = "123";
-        // these only check for compiler errors
 	lref<std::string> rs; lref<const char*> rc = "world";
 	rs = "hello";
 
