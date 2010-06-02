@@ -1,18 +1,29 @@
-#if !defined TEST_CASTOR_AGGREGATE_H
-#define TEST_CASTOR_AGGREGATE_H 1
+struct integer {
+    int i;
 
-void test_count();
+    integer(int i) : i(i) {}
 
-void test_sum();
-void test_reduce();
-void test_max();
-void test_min();
-void test_average();
+    bool operator==(const integer& rhs) const {
+        return i == rhs.i;
+    }
 
-void test_max_of();
-void test_min_of();
-void test_sum_of();
-void test_reduce_of();
-void test_average_of();
+    integer operator/ (const integer& rhs) const {
+        return i / rhs.i;
+    }
+};
 
-#endif
+struct integer_add {
+    integer operator()(const integer& lhs, const integer& rhs) const {
+        return integer(lhs.i + rhs.i);
+    }
+};
+
+struct integer_mult {
+    integer operator()(const integer& lhs, const integer& rhs) const {
+        return integer(lhs.i * rhs.i);
+    }
+};
+
+bool isEven(int i) {
+    return i % 2 == 0;
+}
