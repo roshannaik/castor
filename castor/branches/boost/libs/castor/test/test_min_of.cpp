@@ -32,9 +32,7 @@ int test_main(int, char * [])
         BOOST_CHECK(m.defined());
  
         // failure test
-        // TODO: this should accept the string literal "Prolog" as its second
-        // argument, but doesn't for GCC 4.4.3
-        r = min_of(v, lref<std::string>("Prolog"));
+        r = min_of(v, "Prolog");
 
         BOOST_CHECK(!r());
     }
@@ -62,9 +60,7 @@ int test_main(int, char * [])
     }
 
     { // test - with cmp
-        // TODO: this should accept the string literal "castor" as its second
-        // argument, but doesn't for GCC 4.4.3
-        relation r = min_of(v, lref<std::string>("castor"), std::greater<std::string>());
+        relation r = min_of(v, "castor", std::greater<std::string>());
 
         BOOST_CHECK(r());
     }

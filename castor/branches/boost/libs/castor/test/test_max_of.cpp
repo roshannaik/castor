@@ -32,9 +32,7 @@ int test_main(int, char * [])
         BOOST_CHECK(m.defined());
  
         // failure test
-        // TODO: this should accept the string literal "Prolog" as its second
-        // argument, but doesn't for GCC 4.4.3
-        r = max_of(v, lref<std::string>("Prolog"));
+        r = max_of(v, "Prolog");
 
         BOOST_CHECK(!r());
     }
@@ -62,9 +60,7 @@ int test_main(int, char * [])
     }
 
     { // test - with cmp
-        // TODO: this should accept the string literal "C#" as its second
-        // argument, but doesn't for GCC 4.4.3
-        relation r = max_of(v, lref<std::string>("C#"), std::greater<std::string>());
+        relation r = max_of(v, "C#", std::greater<std::string>());
 
         BOOST_CHECK(r());
     }
