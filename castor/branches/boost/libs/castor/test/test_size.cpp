@@ -2,7 +2,8 @@
 
 #include <boost/castor.h>
 
-#include <boost/test/minimal.hpp>
+#include <boost/test/test_exec_monitor.hpp>
+#include <boost/test/floating_point_comparison.hpp>
 
 #include <vector>
 
@@ -28,11 +29,8 @@ int test_main(int, char * [])
         lref<std::vector<int>::size_type> s2;
         lref<std::vector<int> > coll2;
         relation r2 = size(coll2, s2);
-        int passed2 = false;
-        try { r2(); }
-        catch (...) { passed2 = true; }
 
-        BOOST_CHECK(passed2);
+        BOOST_CHECK_THROW(r2(), InvalidDeref);
     }
 
     { // compare

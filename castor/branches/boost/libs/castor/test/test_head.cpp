@@ -1,6 +1,7 @@
 #include <boost/castor.h>
 
-#include <boost/test/minimal.hpp>
+#include <boost/test/test_exec_monitor.hpp>
+#include <boost/test/floating_point_comparison.hpp>
 
 
 using namespace castor;
@@ -62,11 +63,8 @@ int test_main(int, char * [])
         lref<int> hm;
         lref<std::vector<int> >vm;
         relation rm =  head(vm, hm);
-        int passed = false;
-        try { rm(); }
-        catch (...) { passed = true; }
 
-        BOOST_CHECK(passed);
+        BOOST_CHECK_THROW(rm(), InvalidDeref);
     }
 
     return 0;
