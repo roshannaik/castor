@@ -35,16 +35,12 @@ int test_main(int, char * [])
     }
 
     { // basic - test
-        // TODO: this should accept the int literal 15 as its second argument,
-        // but doesn't for GCC 4.4.3
-        relation r = sum_of(vi, lref<int>(15));
+        relation r = sum_of(vi, 15);
 
         BOOST_CHECK(r());
  
         // failure test
-        // TODO: this should accept the int literal 10 as its second argument,
-        // but doesn't for GCC 4.4.3
-        r = sum_of(vi, lref<int>(10));
+        r = sum_of(vi, 10);
 
         BOOST_CHECK(!r());
     }

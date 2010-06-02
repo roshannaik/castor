@@ -33,16 +33,12 @@ int test_main(int, char * [])
     }
 
     { // test
-        // TODO: this should accept the int literal 3 as its second argument,
-        // but doesn't for GCC 4.4.3
-        relation r = average_of(vi, lref<int>(3));
+        relation r = average_of(vi, 3);
 
         BOOST_CHECK(r());
  
         // failure test
-        // TODO: this should accept the int literal 10 as its second argument,
-        // but doesn't for GCC 4.4.3
-        r = average_of(vi, lref<int>(10));
+        r = average_of(vi, 10);
 
         BOOST_CHECK(!r());
     }
