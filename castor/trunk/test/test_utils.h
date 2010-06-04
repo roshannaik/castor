@@ -17,7 +17,6 @@ void test_insert();
 void test_insert_seq();
 void test_inc_dec();
 void test_sequence();
-void test_size();
 void test_range();
 void test_range_with_step();
 void test_range_dec();

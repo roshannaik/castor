@@ -2,6 +2,8 @@
 #define TEST_CASTOR_AGGREGATE_H 1
 
 void test_count();
+void test_size();
+void test_size_of();
 
 void test_sum();
 void test_reduce();
