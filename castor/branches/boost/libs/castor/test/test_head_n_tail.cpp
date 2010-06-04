@@ -1,5 +1,3 @@
-#define CASTOR_ENABLE_DEPRECATED // TODO: Remove the need for this (it's due to reliance on deprecated size<>()).
-
 #include <boost/castor.h>
 
 #include <boost/test/minimal.hpp>
