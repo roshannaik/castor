@@ -138,7 +138,7 @@ UnDefined_r<T> undefined(lref<T>& r_) {
 }
 
 //-------------------------------------------------------------------------
-// empty/not_empty : To check if collection is empty or generate empty collection
+// empty: To check if collection is empty or generate empty collection
 //------------------------------------------------------------------------
 // Tests for empty collection OR generates empty collection
 template<typename Cont> inline
@@ -149,21 +149,24 @@ relation empty( lref<Cont>& c ) {
 // this overload supports allows calls to empty without explicit template type arguments
 // when c is not a lref.
 template<typename Cont> inline 
-relation empty(const Cont& c) {
+Boolean empty(const Cont& c) {
     return Boolean( c.size()==0 );
 }
 
+//-------------------------------------------------------------------------
+// not_empty: To check if collection is empty
+//------------------------------------------------------------------------
 
 template<typename Cont> inline
 relation not_empty(lref<Cont>& c_) {
     lref<typename Cont::size_type> sz;
-    return size(c_, sz) && predicate(sz!=(size_t)0);
+    return size_of(c_, sz) && predicate(sz!=(size_t)0);
 }
 
 // this overload allows calls to not_empty without explicit template type arguments
 // when c is not a lref.
 template<typename Cont> inline 
-relation not_empty(const Cont& c) {
+Boolean not_empty(const Cont& c) {
     return Boolean(c.size()!=0 );
 }
 
@@ -643,7 +646,7 @@ public:
 template<typename Seq, typename HeadSeq> inline
 relation head_n(lref<Seq>& seq_, lref<typename HeadSeq::size_type> n, lref<HeadSeq>& h) {
     lref<typename Seq::size_type> sz;
-    return size(seq_,sz) && range<typename Seq::size_type>(n,0,sz) && Head_n_r<Seq, HeadSeq>(seq_, n, h);
+    return size_of(seq_,sz) && range<typename Seq::size_type>(n,0,sz) && Head_n_r<Seq, HeadSeq>(seq_, n, h);
 }
 
 //Concepts: Collection should have a constructor taking (T* begin, T* end)
@@ -715,7 +718,7 @@ public:
 template<typename Seq, typename TailSeq> inline
 relation tail_n(lref<Seq>& seq_, lref<typename TailSeq::size_type> n, lref<TailSeq>& t) {
     lref<typename Seq::size_type> sz;
-    return size(seq_,sz) && range<typename Seq::size_type>(n,0,sz) && Tail_N_r<Seq,TailSeq>(seq_, n, t);
+    return size_of(seq_,sz) && range<typename Seq::size_type>(n,0,sz) && Tail_N_r<Seq,TailSeq>(seq_, n, t);
 }
 
 
@@ -727,7 +730,7 @@ relation head_tail(lref<Seq>& seq_, lref<typename TailSeq::value_type> h, lref<T
 template<typename Seq, typename HeadSeq> inline
 relation head_n_tail(lref<Seq>& seq_, lref<typename HeadSeq::size_type> n, lref<HeadSeq>& h, lref<HeadSeq>& t) {
     lref<typename Seq::size_type> sz, tailSize;
-    return head_n(seq_, n, h) && size(seq_,sz) && eq_f(tailSize,sz-n) && tail_n(seq_, tailSize, t);
+    return head_n(seq_, n, h) && size_of(seq_,sz) && eq_f(tailSize,sz-n) && tail_n(seq_, tailSize, t);
 }
 
 // inserts a value into a collection
