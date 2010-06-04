@@ -596,9 +596,6 @@ void runtests() {
 
     //sequence()
     run_test( test_sequence );
-
-    // size()
-    run_test( test_size );
     
     // runFA<Nfa>()
     run_test( test_FA );
@@ -675,6 +672,8 @@ void runtests() {
 
     // aggregates
 	run_test( test_count );
+    run_test( test_size );
+    run_test( test_size_of );
     run_test( test_max );
     run_test( test_min );
 	run_test( test_sum );

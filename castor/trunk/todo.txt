@@ -1,6 +1,8 @@
   Todo
 ------------
 HIGH
+- item with lookup-func argument
+- joins
 - ? writeAll for group<>
 - ritem should work on random access containers
 + All TLRs should be collection oriented also ?
@@ -56,7 +58,6 @@ LATER
 
 Document:
     - Ref Manual - how to write named ILEs
-	- All TLRs - fail immdly if out param is initialized
 	- Coroutines should not have const and reference data members
 	- local variables wont work without exta {} 
 ?	- normally passing local POT variables to relations is disastrous unless the members of the POT are all lrefs.
@@ -68,3 +69,18 @@ Document:
 				throw "failed test_call 3";
 		}
 
+---------------------
+     Boostification
+---------------------
+ - Boostifying the documentation
+ - Boost build 
+ - Boost.Config
+ - Renaming .h files to .hpp, (moving some .h files into detail directory)
+ - Ability to #include more granular headers instead of castor.h (need to delay this to the end I feel)
+ - Replacing tabs with spaces (towards the end?)
+ - ALL files need a (MIT?) license and copyright.
+ - Example programs
+ - Tutorial : incorporate suggestions from Zach, Ali and others.
+ - Namespace refactoring
+ - Naming conventions
+ - No Tabs

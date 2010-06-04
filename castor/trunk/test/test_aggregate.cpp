@@ -65,6 +65,98 @@ void test_count() {
 	}
 }
 
+// Test: Size of collections
+void test_size() {
+#ifdef CASTOR_ENABLE_DEPRECATED
+    {
+    // generate
+    lref<vector<int>::size_type> s;
+    lref</*const*/ vector<int> > coll = vector<int> ();
+    relation r=size(coll,s);
+    int i=0;
+    for(; r(); ++i) {
+        if(i>0 || *s!=0)
+            throw "failed test_size 1";
+    }
+    if(i!=1)
+        throw "failed test_size 1";
+    }
+    {
+    // generate
+    lref<vector<int>::size_type> s2;
+    lref</*const*/ vector<int> > coll2;
+    relation r2=size(coll2,s2);
+    int passed2=false;
+    try { r2(); }
+    catch (...) { passed2=true; }
+    if(!passed2)
+        throw "failed test_size 2";
+    }
+    {
+    // compare
+    lref</*const*/ vector<int> > coll3 = vector<int> ();
+#if  defined(__BCPLUSPLUS__) || defined(__GNUG__)
+    relation r3=size<vector<int> >(coll3,0);
+#else
+    relation r3=size(coll3,0);
+#endif
+    int j=0;
+    for(; r3(); ++j) {
+        if(j>0)
+            throw "failed test_size 3";
+    }
+    if(j!=1)
+        throw "failed test_size 3";
+    }
+#endif // #ifdef CASTOR_ENABLE_DEPRECATED
+}
+
+
+// Test: Size of collections
+void test_size_of() {
+    {
+    // generate
+    lref<vector<int>::size_type> s;
+    lref</*const*/ vector<int> > coll = vector<int> ();
+    relation r=size_of(coll,s);
+    int i=0;
+    for(; r(); ++i) {
+        if(i>0 || *s!=0)
+            throw "failed test_size_of 1";
+    }
+    if(i!=1)
+        throw "failed test_size_of 1";
+    }
+    {
+    // generate
+    lref<vector<int>::size_type> s2;
+    lref</*const*/ vector<int> > coll2;
+    relation r2=size_of(coll2,s2);
+    int passed2=false;
+    try { r2(); }
+    catch (...) { passed2=true; }
+    if(!passed2)
+        throw "failed test_size_of 2";
+    }
+    {
+    // compare
+    lref</*const*/ vector<int> > coll3 = vector<int> ();
+#if  defined(__BCPLUSPLUS__) || defined(__GNUG__)
+    relation r3=size_of<vector<int> >(coll3,0);
+#else
+    relation r3=size_of(coll3,0);
+#endif
+    int j=0;
+    for(; r3(); ++j) {
+        if(j>0)
+            throw "failed test_size_of 3";
+    }
+    if(j!=1)
+        throw "failed test_size_of 3";
+    }
+}
+
+
 void test_sum() {
 	{
 		lref<int> j;

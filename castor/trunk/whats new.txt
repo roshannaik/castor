@@ -115,7 +115,7 @@ Deprecated:
 In order to use the following deprecated facilites a #define CASTOR_ENABLE_DEPRECATED is required.
 - The Named ILE Create::With() is now deprecated. Prefer using the named ILE create().
 - OneSolution relation is now deprecated. Use class Coroutine instead.
-- size() relation. Use size_of() instead. All aggregate functions now have _of suffix now.
+- size() relation. Use size_of() instead. All (non TLR) aggregate relations now have _of suffix.
 
 Potential Incompatibilities:
 ---------------------------
