@@ -12,6 +12,7 @@ using namespace castor;
 
 int test_main(int, char * [])
 {
+#ifdef CASTOR_ENABLE_DEPRECATED
     { // generate
         lref<std::vector<int>::size_type> s;
         lref<std::vector<int> > coll = std::vector<int> ();
@@ -49,5 +50,6 @@ int test_main(int, char * [])
         BOOST_CHECK(j == 1);
     }
 
+#endif // #ifdef CASTOR_ENABLE_DEPRECATED
     return 0;
 }
