@@ -150,7 +150,7 @@ relation empty( lref<Cont>& c ) {
 // when c is not a lref.
 template<typename Cont> inline 
 Boolean empty(const Cont& c) {
-    return Boolean( c.size()==0 );
+    return Boolean( c.empty() );
 }
 
 //-------------------------------------------------------------------------
@@ -167,7 +167,7 @@ relation not_empty(lref<Cont>& c_) {
 // when c is not a lref.
 template<typename Cont> inline 
 Boolean not_empty(const Cont& c) {
-    return Boolean(c.size()!=0 );
+    return Boolean(!c.empty() );
 }
 
 //--------------------------------------------------------
