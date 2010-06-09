@@ -1,7 +1,8 @@
   Todo
 ------------
 HIGH
-- item with lookup-func argument
+- item() overloads for set & multiset.
+- const iterator support for item
 - joins
 - ? writeAll for group<>
 - ritem should work on random access containers
@@ -84,3 +85,4 @@ Document:
  - Namespace refactoring
  - Naming conventions
  - No Tabs
+ - unique() using hash set

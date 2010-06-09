@@ -1390,19 +1390,12 @@ void test_item_set() {
     }
     {  // gen mode - std::set
     lref<int> i;
-#ifdef __GNUG__
-    relation r = item_set<set<int> >(i, si);
-#else
     relation r = item_set(i,si);
-#endif
     int j=0;
     while(r())
         ++j;
     if(j!=si->size())
-        throw "failed test_item_set 3";
-    }
-    {
-        throw "need to test item_set with map";
+        throw "failed test_item_set 4";
     }
 }
 

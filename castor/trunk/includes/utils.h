@@ -159,8 +159,7 @@ Boolean empty(const Cont& c) {
 
 template<typename Cont> inline
 relation not_empty(lref<Cont>& c_) {
-    lref<typename Cont::size_type> sz;
-    return size_of(c_, sz) && predicate(sz!=(size_t)0);
+    return eq_mf<bool>(false, c_, &Cont::empty);
 }
 
 // this overload allows calls to not_empty without explicit template type arguments
