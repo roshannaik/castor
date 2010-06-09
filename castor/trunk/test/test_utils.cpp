@@ -1,6 +1,8 @@
 #include <castor.h>
 #include <iostream>
 #include <vector>
+#include <set>
+#include <map>
 
 using namespace castor;
 using namespace std;
@@ -1344,9 +1346,134 @@ void test_item() {
     }
 }
 
-void test_ritem() {
+void test_item_set() {
+    int ai[] = {1,2,3,4,2};
+    lref<multiset<int> > mi = multiset<int>(ai+0, ai+5);
+    lref<set<int> > si = set<int>(ai+0, ai+5);
+    { // test mode - std::multiset
+#ifdef __GNUG__
+    relation r = item_set<multiset<int> >(2, mi);
+#else
+    relation r = item_set(2,mi);
+#endif
+    int j=0;
+    while(r())
+        ++j;
+    if(j!=2)
+        throw "failed test_item_set 1";
+
+    if(item_set(-1,mi)())
+        throw "failed test_item_set 1";
+    }
+    { // test mode - std::set
+    lref<int> i=2;
+    relation r = item_set(i,si);
+    int j=0;
+    while(r())
+        ++j;
+    if(j!=1)
+        throw "failed test_item_set 2";
+
+    if(item_set(-1,si)())
+        throw "failed test_item_set 2";
+    }
+    {  // gen mode - std::multiset
+    if(mi->size()==si->size())  // require duplicates in mi
+        throw "failed test_item_set 3";
+    lref<int> i;
+    relation r = item_set(i,mi);
+    int j=0;
+    while(r())
+        ++j;
+    if(j!=mi->size())
+        throw "failed test_item_set 3";
+    }
+    {  // gen mode - std::set
+    lref<int> i;
+#ifdef __GNUG__
+    relation r = item_set<set<int> >(i, si);
+#else
+    relation r = item_set(i,si);
+#endif
+    int j=0;
+    while(r())
+        ++j;
+    if(j!=si->size())
+        throw "failed test_item_set 3";
+    }
     {
-    //1- lookup mode - with duplicates
+        throw "need to test item_set with map";
+    }
+}
+
+void test_item_map() {
+    lref<multimap<char,int> > mm = multimap<char,int>();
+    mm->insert ( make_pair('a',100) );
+    mm->insert ( make_pair('z',150) ); 
+    mm->insert ( make_pair('b',75) );
+    mm->insert ( make_pair('c',100) );
+    mm->insert ( make_pair('z',400) );
+    mm->insert ( make_pair('c',100) );
+    lref<map<char,int> > m = map<char,int>(mm->begin(), mm->end());
+
+    { // lookup key & obj - multimap
+        relation r = item_map('c',100,mm);
+        int count=0;
+        while(r())
+            ++count;
+        if(count!=2)
+            throw "failed test_item_map 1";
+        
+        r = item_map('z',400,mm);
+        count=0;
+        while(r())
+            ++count;
+        if(count!=1)
+            throw "failed test_item_map 1";
+    }
+    { // gen key & obj - multimap
+        lref<const char> k;
+        lref<int> v;
+        relation r = item_map(k,v,mm);
+        int count=0;
+        while(r())
+            ++count;
+        if(count!=mm->size())
+            throw "failed test_item_map 2";
+    }
+    { // lookup key, gen obj - multimap
+        lref<const char> k='z';
+        lref<int> v;
+        relation r = item_map(k,v,mm);
+        int count=0;
+        while(r())
+            ++count;
+        if(count!=2)
+            throw "failed test_item_map 3";
+    }
+    { // gen key, lookup obj - multimap
+        lref<const char> k;
+        relation r = item_map(k,100,mm);
+        int count=0;
+        if(!r())
+            throw "failed test_item_map 4";
+        if(*k!='a')
+            throw "failed test_item_map 4";
+        if(!r())
+            throw "failed test_item_map 4";
+        if(*k!='c')
+            throw "failed test_item_map 4";
+        if(!r())
+            throw "failed test_item_map 4";
+        if(*k!='c')
+            throw "failed test_item_map 4";
+        if(r())
+            throw "failed test_item_map 4";
+    }
+}
+
+void test_ritem() {
+    {//1- lookup mode - with duplicates
     int ai[] = {1,2,3,4,2};
     lref<vector<int> > vi = vector<int>(ai+0, ai+5);
 #ifdef __GNUG__
@@ -1373,6 +1500,7 @@ void test_ritem() {
         throw "failed test_ritem 2";
     }
 }
+
 void test_getValueCont() {
     {// going from from list<lref<int> > to vector<int>
     list<lref<int> > lri;

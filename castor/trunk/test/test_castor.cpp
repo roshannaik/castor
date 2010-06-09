@@ -622,6 +622,8 @@ void runtests() {
     run_test( test_range_dec_with_step );
 
     run_test( test_item );
+    run_test( test_item_set );
+    run_test( test_item_map );
     run_test( test_ritem );
 
     run_test( test_getValueCont );
