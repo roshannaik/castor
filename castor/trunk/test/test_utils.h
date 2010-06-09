@@ -22,6 +22,8 @@ void test_range_with_step();
 void test_range_dec();
 void test_range_dec_with_step();
 void test_item();
+void test_item_set();
+void test_item_map();
 void test_ritem();
 void test_getValueCont();
 void test_defined();

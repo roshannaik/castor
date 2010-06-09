@@ -346,7 +346,7 @@ public:
 };
 
 
-template<typename Itr>
+template<typename Itr> inline
 Item_r<Itr> item(lref<typename detail::Pointee<Itr>::result_type> obj, Itr begin_, Itr end_) {
     return Item_r<Itr>(begin_, end_, obj);
 }
@@ -381,11 +381,120 @@ public:
 };
 
 
-template<typename Cont>
+template<typename Cont>  inline
 ItemCont_r<Cont> item(lref<typename Cont::value_type> obj, lref<Cont>& cont_) {
     return ItemCont_r<Cont>(obj, cont_);
 }
 
+//--------------------------------------------------------
+//  Relation item_set
+//--------------------------------------------------------
+template<class SetT>
+class ItemSet_r : public Coroutine {
+    typedef typename SetT::value_type value_type;
+    lref<value_type> obj;
+    lref<SetT> cont;
+    typedef typename SetT::iterator iter;
+    std::pair<iter,iter> results;
+public:
+    ItemSet_r(const lref<value_type>& obj, const lref<SetT>& cont_) : obj(obj), cont(cont_)
+    { }
+
+    bool operator () (void) {
+      co_begin();
+      if(obj.defined()) {
+        for(results=cont->equal_range(obj.get()); results.first!=results.second; ++results.first)
+            co_yield(true);
+        co_return(false);
+      }
+      results.first = cont->begin();
+      results.second = cont->end();
+      for ( ; results.first!=results.second; ++results.first) {
+        obj.set_ptr(&*results.first,false);
+        co_yield(true);
+      }
+      obj.reset();
+      co_end();
+    }
+};
+
+// SetT : is an asociative container where SetT::key_type is same as SetT::value_type
+template<typename SetT>  inline
+ItemSet_r<SetT> 
+item_set(lref<typename SetT::value_type> obj, lref<SetT>& cont_) {
+    return ItemSet_r<SetT>(obj, cont_);
+}
+
+
+//--------------------------------------------------------
+//  Relation item_map
+//--------------------------------------------------------
+template<class MapT>
+class ItemMap_r : public Coroutine {
+    typedef typename MapT::key_type key_type;
+    typedef typename MapT::mapped_type mapped_type;
+    //typedef typename MapT::value_type value_type;
+    lref<const key_type> key;
+    lref<mapped_type> obj;
+    lref<MapT> cont;
+    typedef typename MapT::iterator iter;
+    std::pair<iter,iter> results;
+public:
+    ItemMap_r(lref<const key_type> key, lref<mapped_type> obj, const lref<MapT>& cont_) : key(key), obj(obj), cont(cont_)
+    { }
+
+    bool operator () (void) {
+      co_begin();
+      if(key.defined()) {
+        results=cont->equal_range(key.get());
+        if(obj.defined()) {
+            for( ; results.first!=results.second; ++results.first) { // lookup key & obj
+                if(obj.get()==results.first->second)
+                    co_yield(true);
+            }
+            co_return(false);
+        } // if( obj.defined() )
+
+        for(; results.first!=results.second; ++results.first) { // lookup key, gen obj
+            obj.set_ptr(&results.first->second,false);
+            co_yield(true);
+        }
+        obj.reset();
+        co_return(false);
+      }// if( key.defined() )
+
+      if(obj.defined()) { // && !key.defined()
+          for(results.first=cont->begin(); results.first!=cont->end() ; ++results.first) { // gen key, lookup obj
+            key.set_ptr(&results.first->first,false);
+            if(obj.get()==results.first->second)
+                co_yield(true);
+          }
+          key.reset();
+          co_return(false);
+      }
+      results.first = cont->begin();
+      results.second = cont->end();
+      for ( ; results.first!=results.second; ++results.first) {  // gen key & obj
+        key.set_ptr(&results.first->first,false);
+        obj.set_ptr(&results.first->second,false);
+        co_yield(true);
+      }
+      key.reset();
+      obj.reset();
+      co_end();
+    }
+};
+
+// MapT : is an asociative container where MapT::value_type is pair<const MapT::key_type,MapT::mapped_type>
+template<typename MapT> inline
+ItemMap_r<MapT>
+item_map(lref<const typename MapT::key_type> key, lref<typename MapT::mapped_type> obj, lref<MapT>& cont_) {
+    return ItemMap_r<MapT>(key, obj, cont_);
+}
+
+//--------------------------------------------------------
+//  Relation ritem
+//--------------------------------------------------------
 template<class Cont>
 class ItemRCont_r : public Coroutine {
     typedef typename Cont::value_type value_type;
@@ -419,7 +528,7 @@ ItemRCont_r<Cont> ritem(lref<typename Cont::value_type> obj, lref<Cont>& cont_) 
     return ItemRCont_r<Cont>(obj, cont_);
 }
 
-//-------------------------------------------------------------------------
+//------------------------------------------------------------------------
 // Relations unique, unique_f, unique_mem, unique_mf
 //------------------------------------------------------------------------
 

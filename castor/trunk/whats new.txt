@@ -1,5 +1,5 @@
 ===================================================
-   Whats new in Castor 1.1 pre beta (Aug 25 2010)
+   Whats new in Castor 1.1 beta (Aug 25 2010)
 ===================================================
 
 Enhancements to lref:
@@ -29,12 +29,12 @@ Enhancements to ILE (closure/lambda facility):
 - ILE expressions now support use of "string literals".
     E.g. - lref<string> ls="castor"; predicate(ls=="castor");
          - eval(ref(cout) << "hello" << " world" )();  // cout << "hello" << " world";
-         - string s;
-           stringstream strm; 
+         - stringstream strm; 
            eval(ref<ostream>(strm) << "hello")();   // return type of operator << is ostream& and not stringstream&
-         - eval(ref<istream>(strm)) >> ref(s))();   // return type of operator >> is istream& and not stringstream&
+         - string s;
+           eval(ref<istream>(strm)) >> ref(s))();   // return type of operator >> is istream& and not stringstream&
 
-- Speed improvements for ILE expressions. Close to the speed of custom function objects.
+- Speed improvements for ILE expressions. Closer to the speed of custom function objects.
 
 New features:
 -------------
@@ -52,11 +52,13 @@ New features:
 - New relations: 
   + eq_mem() - for unifying with (non static) data members.
   + eval() and eval_mf() - To execute a function or member function. Return value (if any) is discarded.
+  + item_map() - for lookup & enumeration of keys/values in associative containers where key and value are not the same(e.g. std::map, std::multimap).
+  + item_set() - for lookup & enumeration of objects in associative containers where key and value is the same(e.g. std::set, std::multiset).
   + pause() - To pause execution. Prints a message and waits for a key press by calling cin.ignore(). Helpful as a debugging aid.
   + pause_f() - Similar to pause(), but prints result of a function call instead of a string message.
   + permute() -  To generate permutations of a sequnce/string.
   + range_dec() - To iterate over a range in decreasing order.
-  + ritem() -  To generate values from a sequence in reverse. The sequence must provide rbegin() and rend().
+  + ritem() -  To lookup & enumerate values from a sequence in reverse. The sequence must provide rbegin() and rend().
   + shuffle() - To generate a randomized sequence/string.
   + unique_mem(), unique_mf() - Similar to unique() but filtering is based on a data member or value returned by a method call.
   + writeAll(), writeAllTo() - To print all elements in a sequence to cout or to a stream.
