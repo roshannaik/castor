@@ -1,5 +1,4 @@
 #include <boost/castor.h>
-
 #include <boost/test/minimal.hpp>
 
 
@@ -155,6 +154,32 @@ int test_main(int, char * [])
             ++j;
 
         BOOST_CHECK(j == 0);
+    }
+
+    { // 12 - compile time checks for overloads : item(i,std::set<>)  & item(i,std::multiset<>)
+        lref<std::set<int> > s;
+        lref<std::multiset<int> > ms;
+        lref<int> i;
+        ItemSet_r<std::set<int> > r1 = item(i,s);        // ensure the call is forwarded to item_set
+        ItemSet_r<std::multiset<int> > r2 = item(i,ms);  // ensure the call is forwarded to item_set
+    }
+    {  //13 - basic tests for overload - item(i,std::set<>)  & item(i,std::multiset<>)
+        lref<int> i;
+        int ai[] = {1,2,3,4,2};
+        lref<std::set<int> > si = std::set<int>(ai+0, ai+5);
+        lref<std::multiset<int> > mi = std::multiset<int>(ai+0, ai+5);
+
+        relation r = item(i,si);
+        int j=0;
+        while(r())
+            ++j;
+        BOOST_CHECK(j==si->size());
+
+        r = item(i,mi);
+        j=0;
+        while(r())
+            ++j;
+        BOOST_CHECK(j==mi->size());
     }
 
     return 0;

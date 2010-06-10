@@ -63,6 +63,8 @@ run test_insert.cpp ;
 run test_insert_seq.cpp ;
 run test_io.cpp ;
 run test_item.cpp ;
+run test_item_set.cpp ;
+run test_item_map.cpp ;
 run test_lref.cpp ;
 run test_max.cpp ;
 run test_max_of.cpp ;
