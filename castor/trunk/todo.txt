@@ -1,7 +1,6 @@
   Todo
 ------------
 HIGH
-- item() overloads for set & multiset.
 - const iterator support for item
 - joins
 - ? writeAll for group<>

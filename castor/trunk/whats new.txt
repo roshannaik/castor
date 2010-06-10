@@ -1,5 +1,5 @@
-===================================================
-   Whats new in Castor 1.1 beta (Aug 25 2010)
+ ===================================================
+   Whats new in Castor 1.1 beta ($date)
 ===================================================
 
 Enhancements to lref:
@@ -41,13 +41,14 @@ New features:
 - Class Coroutine and macros co_begin, co_end, co_return & co_yield that support coroutine style programming
   Helpful for defining relations imperatively. See section 3.2 in tutorial.
 - New overloads for the following relations that take function pointer or member function pointer as
-  argument. These overloads allow passing an *overloaded* function (or method) to these
-  relations without requiring explicit overload disambiguation. Also arguments to be forwarded can be 
+  argument. These accept a pointer to an *overloaded* function (or method) to without requiring 
+  explicit overload disambiguation. Also arguments to be forwarded can be 
   POTs or lrefs :
   + Additional/updated overloads for eq_f, eq_mf, predicate_f & predicate_mf.
   + Signatures for eq_f and predicate_f modified (new signatures continue to be backward compatible).
-  + Additional constructor for relation True that takes an integral argument denoting how many times to succeed.
-
+- Additional constructor for relation True that takes an integral argument denoting how many times to succeed.
+- Additional overloads for item : item(lref<T>,lref<std::set<T>>) and item(lref<T>,lref<std::multiset<T>>). These
+  enable faster lookups on values if container is a set or a multiset (uses the container's equal_range() method).
 
 - New relations: 
   + eq_mem() - for unifying with (non static) data members.
@@ -128,7 +129,7 @@ Potential Incompatibilities:
 
 Bug fixes:
 ----------
-- head_n and tail_n now fails instead of throwing exception if n>seq_.size()
+- head_n and tail_n now fail instead of throwing exception when n>seq_.size()
 - UnifyL  ... had a const member relation preventing copy construction
 - Data member Read_r<T>::in is now a pointer instead of a reference to allow assignment of Read_r.
 - Added #include<cstring.h> in eq.h. (Thanks to David Côme)
