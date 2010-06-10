@@ -61,18 +61,18 @@ struct Pause_r<T*> : Coroutine {
 	}
 };
 
-template<typename T> inline
+template<class T> inline
 Pause_r<T> pause(lref<T>& s) {
 	return Pause_r<T>(s);
 }
 
-template<typename T> inline
+template<class T> inline
 Pause_r<T> pause(const T& s) {
 	return Pause_r<T>(lref<T>(s) );
 }
 
 // handles "string" and L"widestring" arguments
-template<typename T> inline
+template<class T> inline
 Pause_r<T*> pause(T* s) {
 	return Pause_r<T*>(s);
 }
@@ -95,7 +95,7 @@ struct PauseF_r : Coroutine {
 	}
 };
 
-template<typename Func> inline
+template<class Func> inline
 PauseF_r<Func> pause_f(Func f) {
 	return PauseF_r<Func>(f);
 }
@@ -105,7 +105,7 @@ PauseF_r<Func> pause_f(Func f) {
 //      Equivalent to Prolog's metalogical predicates nonvar() and var()
 //-------------------------------------------------------------------------
 
-template<typename T>
+template<class T>
 struct Defined_r : public TestOnlyRelation<Defined_r<T> >{
     lref<T> r_;
     Defined_r(const lref<T>& r_) : r_(r_)
@@ -116,12 +116,12 @@ struct Defined_r : public TestOnlyRelation<Defined_r<T> >{
     }
 };
 
-template<typename T> inline  
+template<class T> inline  
 Defined_r<T> defined(lref<T>& r_) {
     return Defined_r<T>(r_);
 }
 
-template<typename T>
+template<class T>
 struct UnDefined_r : public TestOnlyRelation<UnDefined_r<T> > {
     lref<T> r_;
     UnDefined_r(const lref<T>& r_) : r_(r_)
@@ -132,7 +132,7 @@ struct UnDefined_r : public TestOnlyRelation<UnDefined_r<T> > {
     }
 };
 
-template<typename T> inline
+template<class T> inline
 UnDefined_r<T> undefined(lref<T>& r_) {
     return UnDefined_r<T>(r_);
 }
@@ -141,14 +141,14 @@ UnDefined_r<T> undefined(lref<T>& r_) {
 // empty: To check if collection is empty or generate empty collection
 //------------------------------------------------------------------------
 // Tests for empty collection OR generates empty collection
-template<typename Cont> inline
+template<class Cont> inline
 relation empty( lref<Cont>& c ) {
     return eq(c,Cont());
 }
 
 // this overload supports allows calls to empty without explicit template type arguments
 // when c is not a lref.
-template<typename Cont> inline 
+template<class Cont> inline 
 Boolean empty(const Cont& c) {
     return Boolean( c.empty() );
 }
@@ -157,14 +157,14 @@ Boolean empty(const Cont& c) {
 // not_empty: To check if collection is empty
 //------------------------------------------------------------------------
 
-template<typename Cont> inline
+template<class Cont> inline
 relation not_empty(lref<Cont>& c_) {
     return eq_mf<bool>(false, c_, &Cont::empty);
 }
 
 // this overload allows calls to not_empty without explicit template type arguments
 // when c is not a lref.
-template<typename Cont> inline 
+template<class Cont> inline 
 Boolean not_empty(const Cont& c) {
     return Boolean(!c.empty() );
 }
@@ -175,7 +175,7 @@ Boolean not_empty(const Cont& c) {
 // Concepts : T<T, T==T 
 //          : T is default constructable
 
-template<typename T>
+template<class T>
 class Range_r : public Coroutine {
     lref<T> val, min_, max_;
 public:
@@ -196,12 +196,12 @@ public:
 };
 
 // Concepts : T<T , T==T and prefix ++
-template<typename T> inline
+template<class T> inline
 Range_r<T> range(lref<T> val, lref<T> min_, lref<T> max_) {
     return Range_r<T>(val, min_, max_);
 }
 
-template<typename T> inline
+template<class T> inline
 Range_r<T> range(lref<T> val, T min_, T max_) {
     return Range_r<T>(val, min_, max_);
 }
@@ -209,7 +209,7 @@ Range_r<T> range(lref<T> val, T min_, T max_) {
 //--------------------------------------------------------
 //  Relation range (with step)
 //--------------------------------------------------------
-template<typename T>
+template<class T>
 class Range_Step_r : public Coroutine {
     lref<T> val, min_, max_, step_;
 public:
@@ -231,12 +231,12 @@ public:
 };
 
 // Concepts : T supports +=, < and ==
-template<typename T> inline
+template<class T> inline
 Range_Step_r<T> range(lref<T> val, lref<T> min_, lref<T> max_, lref<T> step_) {
     return Range_Step_r<T>(val, min_, max_, step_);
 }
 
-template<typename T> inline
+template<class T> inline
 Range_Step_r<T> range(lref<T> val, T min_, T max_, T step_) {
     return Range_Step_r<T>(val, min_, max_, step_);
 }
@@ -246,7 +246,7 @@ Range_Step_r<T> range(lref<T> val, T min_, T max_, T step_) {
 //--------------------------------------------------------
 // Concepts : T>T, T==T 
 
-template<typename T>
+template<class T>
 class RangeDec_r : public Coroutine {
     lref<T> val, min_, max_;
 public:
@@ -267,12 +267,12 @@ public:
 };
 
 // Concepts : T<T , T==T and prefix --
-template<typename T> inline
+template<class T> inline
 RangeDec_r<T> range_dec(lref<T> val, lref<T> max_, lref<T> min_) {
     return RangeDec_r<T>(val, min_, max_);
 }
 
-template<typename T> inline
+template<class T> inline
 RangeDec_r<T> range_dec(lref<T> val, T max_, T min_) {
     return RangeDec_r<T>(val, min_, max_);
 }
@@ -280,7 +280,7 @@ RangeDec_r<T> range_dec(lref<T> val, T max_, T min_) {
 //--------------------------------------------------------
 //  Relation range_dec (with step)
 //--------------------------------------------------------
-template<typename T>
+template<class T>
 class RangeDec_Step_r : public Coroutine {
     lref<T> val, min_, max_, step_;
 public:
@@ -302,14 +302,54 @@ public:
 };
 
 // Concepts : T supports -=, < and ==
-template<typename T> inline
+template<class T> inline
 RangeDec_Step_r<T> range_dec(lref<T> val, lref<T> max_, lref<T> min_, lref<T> step_) {
     return RangeDec_Step_r<T>(val, min_, max_, step_);
 }
 
-template<typename T> inline
+template<class T> inline
 RangeDec_Step_r<T> range_dec(lref<T> val, T max_, T min_, T step_) {
     return RangeDec_Step_r<T>(val, min_, max_, step_);
+}
+
+
+//--------------------------------------------------------
+//  Relation item_set
+//--------------------------------------------------------
+template<class SetT>
+class ItemSet_r : public Coroutine {
+    typedef typename SetT::value_type value_type;
+    lref<value_type> obj;
+    lref<SetT> cont;
+    typedef typename SetT::iterator iter;
+    std::pair<iter,iter> results;
+public:
+    ItemSet_r(const lref<value_type>& obj, const lref<SetT>& cont_) : obj(obj), cont(cont_)
+    { }
+
+    bool operator () (void) {
+      co_begin();
+      if(obj.defined()) {
+        for(results=cont->equal_range(obj.get()); results.first!=results.second; ++results.first)
+            co_yield(true);
+        co_return(false);
+      }
+      results.first = cont->begin();
+      results.second = cont->end();
+      for ( ; results.first!=results.second; ++results.first) {
+        obj.set_ptr(&*results.first,false);
+        co_yield(true);
+      }
+      obj.reset();
+      co_end();
+    }
+};
+
+// SetT : is an asociative container where SetT::key_type is same as SetT::value_type
+template<class SetT>  inline
+ItemSet_r<SetT> 
+item_set(lref<typename SetT::value_type> obj, lref<SetT>& cont_) {
+    return ItemSet_r<SetT>(obj, cont_);
 }
 
 
@@ -345,7 +385,7 @@ public:
 };
 
 
-template<typename Itr> inline
+template<class Itr> inline
 Item_r<Itr> item(lref<typename detail::Pointee<Itr>::result_type> obj, Itr begin_, Itr end_) {
     return Item_r<Itr>(begin_, end_, obj);
 }
@@ -380,50 +420,20 @@ public:
 };
 
 
-template<typename Cont>  inline
+template<class Cont>  inline
 ItemCont_r<Cont> item(lref<typename Cont::value_type> obj, lref<Cont>& cont_) {
     return ItemCont_r<Cont>(obj, cont_);
 }
 
-//--------------------------------------------------------
-//  Relation item_set
-//--------------------------------------------------------
-template<class SetT>
-class ItemSet_r : public Coroutine {
-    typedef typename SetT::value_type value_type;
-    lref<value_type> obj;
-    lref<SetT> cont;
-    typedef typename SetT::iterator iter;
-    std::pair<iter,iter> results;
-public:
-    ItemSet_r(const lref<value_type>& obj, const lref<SetT>& cont_) : obj(obj), cont(cont_)
-    { }
-
-    bool operator () (void) {
-      co_begin();
-      if(obj.defined()) {
-        for(results=cont->equal_range(obj.get()); results.first!=results.second; ++results.first)
-            co_yield(true);
-        co_return(false);
-      }
-      results.first = cont->begin();
-      results.second = cont->end();
-      for ( ; results.first!=results.second; ++results.first) {
-        obj.set_ptr(&*results.first,false);
-        co_yield(true);
-      }
-      obj.reset();
-      co_end();
-    }
-};
-
-// SetT : is an asociative container where SetT::key_type is same as SetT::value_type
-template<typename SetT>  inline
-ItemSet_r<SetT> 
-item_set(lref<typename SetT::value_type> obj, lref<SetT>& cont_) {
-    return ItemSet_r<SetT>(obj, cont_);
+template<class T>  inline
+ItemSet_r<std::set<T> > item(lref<typename std::set<T>::value_type> obj, lref<std::set<T> >& cont_) {
+    return item_set(obj,cont_);
 }
 
+template<class T>  inline
+ItemSet_r<std::multiset<T> > item(lref<typename std::multiset<T>::value_type> obj, lref<std::multiset<T> >& cont_) {
+    return item_set(obj,cont_);
+}
 
 //--------------------------------------------------------
 //  Relation item_map
@@ -485,7 +495,7 @@ public:
 };
 
 // MapT : is an asociative container where MapT::value_type is pair<const MapT::key_type,MapT::mapped_type>
-template<typename MapT> inline
+template<class MapT> inline
 ItemMap_r<MapT>
 item_map(lref<const typename MapT::key_type> key, lref<typename MapT::mapped_type> obj, lref<MapT>& cont_) {
     return ItemMap_r<MapT>(key, obj, cont_);
@@ -522,7 +532,7 @@ public:
     }
 };
 
-template<typename Cont> inline
+template<class Cont> inline
 ItemRCont_r<Cont> ritem(lref<typename Cont::value_type> obj, lref<Cont>& cont_) {
     return ItemRCont_r<Cont>(obj, cont_);
 }
@@ -531,7 +541,7 @@ ItemRCont_r<Cont> ritem(lref<typename Cont::value_type> obj, lref<Cont>& cont_) 
 // Relations unique, unique_f, unique_mem, unique_mf
 //------------------------------------------------------------------------
 
-template<typename T>
+template<class T>
 class Unique_r : public Coroutine {
     lref<T> item_;
 	lref<std::set<T> > items;
@@ -546,14 +556,14 @@ public:
     }
 };
 
-template<typename T> inline
+template<class T> inline
 Unique_r<T> unique(lref<T> item_) {
     return Unique_r<T>(item_);
 }
 
 
 // FuncObj = Nullary function object that has member typedef result_type
-template<typename Func>
+template<class Func>
 class Unique_f_r : public Coroutine {
     //typedef typename detail::return_type<Func>::result_type item_type;
     typedef typename Func::result_type item_type;
@@ -571,13 +581,13 @@ public:
 };
 
 // FuncObj = Nullary function object that has member typedef result_type
-template<typename FuncObj> inline
+template<class FuncObj> inline
 Unique_f_r<FuncObj> unique_f(FuncObj f) {
     return Unique_f_r<FuncObj>(f);
 }
 
 
-template<typename Obj, typename MemberT>
+template<class Obj, class MemberT>
 class UniqueMem_r : public Coroutine {
 	lref<Obj> obj_;
 	MemberT Obj::* mem;
@@ -593,13 +603,13 @@ public:
 	}
 };
 
-template<typename Obj, typename MemberT> inline
+template<class Obj, class MemberT> inline
 UniqueMem_r<Obj, MemberT> unique_mem(lref<Obj>& obj_, MemberT Obj::* mem) {
 	return UniqueMem_r<Obj, MemberT>(obj_, mem);
 }
 
 
-template<typename R, typename MFunc, typename Obj>
+template<class R, class MFunc, class Obj>
 class UniqueMf_r : Coroutine {
     lref<Obj> obj_;
     MFunc mf;
@@ -616,13 +626,13 @@ public:
 };
 
 // Overloads for non-const member functions
-template<typename R, typename Obj> inline
+template<class R, class Obj> inline
 UniqueMf_r<R,R(Obj::*)(void), Obj>
 unique_mf(lref<Obj>& obj_, R(Obj::*mf)(void) ) {
     return UniqueMf_r<R,R(Obj::*)(void), Obj>(obj_,mf);
 }
 
-template<typename R, typename Obj> inline
+template<class R, class Obj> inline
 UniqueMf_r<R,R(Obj::*)(void) const, Obj>
 unique_mf(lref<Obj>& obj_, R(Obj::*mf)(void) const) {
     return UniqueMf_r<R,R(Obj::*)(void) const, Obj>(obj_,mf);
@@ -645,7 +655,7 @@ namespace detail {
     }
 } // namespace detail
 
-template<typename Itr> inline
+template<class Itr> inline
 relation dereference(lref<Itr> pointer_, lref<typename detail::Pointee<Itr>::result_type> pointee) {
   typedef typename detail::Pointee<Itr>::result_type T;
   return eq_f(pointee, detail::bind<T>(detail::deref_ptr<Itr>, pointer_));
@@ -653,17 +663,17 @@ relation dereference(lref<Itr> pointer_, lref<typename detail::Pointee<Itr>::res
 
 
 // Requires T to support prefix ++
-template<typename T> inline
+template<class T> inline
 relation next(lref<T> curr_, lref<T> n) {
     lref<T> temp;
     return eq(curr_,temp) && eq_f(n,++temp);
 }
 
-template<typename T> inline
+template<class T> inline
 relation next(T curr_, lref<T> n) {
 	return eq(n,++curr_);
 }
-template<typename T> inline
+template<class T> inline
 relation next(T curr_, const T& n) {
 	if(n==++curr_)
 		return True();
@@ -672,16 +682,16 @@ relation next(T curr_, const T& n) {
 
 
 // Requires T to support prefix --
-template<typename T> inline
+template<class T> inline
 relation prev(lref<T> curr_, lref<T> p) {
     lref<T> temp;
     return eq(curr_,temp) && eq_f(p,--temp);
 }
-template<typename T> inline
+template<class T> inline
 relation prev(T curr_, lref<T> p) {
     return   eq(p,--curr_);
 }
-template<typename T> inline
+template<class T> inline
 relation prev(T curr_, const T& p) {
     if(p==--curr_)
         return True();
@@ -691,7 +701,7 @@ relation prev(T curr_, const T& p) {
 //-------------------------------------------------------------
 // head/tail/head_tail : For operating on Collections
 //-------------------------------------------------------------
-template<typename Seq>
+template<class Seq>
 class Head_r : public Coroutine {
     typedef typename Seq::value_type T;
     lref<Seq> seq_;
@@ -713,7 +723,7 @@ public:
     }
 };
 
-template<typename Seq> inline
+template<class Seq> inline
 Head_r<Seq> head(lref<Seq>& seq_, lref<typename Seq::value_type> h) {
     return Head_r<Seq>(seq_,h);
 }
@@ -721,7 +731,7 @@ Head_r<Seq> head(lref<Seq>& seq_, lref<typename Seq::value_type> h) {
 //------------------------------------------------------------------
 //   Head : h consists of 1st n (n>0) items in the collection
 //------------------------------------------------------------------
-template<typename Seq, typename HeadSeq>
+template<class Seq, class HeadSeq>
 class Head_n_r : public Coroutine {
     lref<Seq> seq_;
     lref<typename HeadSeq::size_type> n_;
@@ -751,7 +761,7 @@ public:
 };
 
 
-template<typename Seq, typename HeadSeq> inline
+template<class Seq, class HeadSeq> inline
 relation head_n(lref<Seq>& seq_, lref<typename HeadSeq::size_type> n, lref<HeadSeq>& h) {
     lref<typename Seq::size_type> sz;
     return size_of(seq_,sz) && range<typename Seq::size_type>(n,0,sz) && Head_n_r<Seq, HeadSeq>(seq_, n, h);
@@ -759,7 +769,7 @@ relation head_n(lref<Seq>& seq_, lref<typename HeadSeq::size_type> n, lref<HeadS
 
 //Concepts: Collection should have a constructor taking (T* begin, T* end)
 //          Collection should comparable using operator==
-template<typename Seq, typename TailSeq>
+template<class Seq, class TailSeq>
 class Tail_r : public Coroutine {
     lref<Seq> seq_;
     lref<TailSeq> t;
@@ -785,7 +795,7 @@ public:
 };
 
 
-template<typename Seq, typename TailSeq> inline
+template<class Seq, class TailSeq> inline
 Tail_r<Seq,TailSeq> tail(lref<Seq>& seq_, lref<TailSeq>& t) {
     return Tail_r<Seq,TailSeq>(seq_,t);
 }
@@ -793,7 +803,7 @@ Tail_r<Seq,TailSeq> tail(lref<Seq>& seq_, lref<TailSeq>& t) {
 //------------------------------------------------------------------
 //   Tail : 
 //------------------------------------------------------------------
-template<typename Seq, typename TailSeq=Seq>
+template<class Seq, class TailSeq=Seq>
 class Tail_N_r : public Coroutine {
     lref<Seq> seq_;
     lref<typename TailSeq::size_type> n_;
@@ -823,26 +833,26 @@ public:
 };
 
 
-template<typename Seq, typename TailSeq> inline
+template<class Seq, class TailSeq> inline
 relation tail_n(lref<Seq>& seq_, lref<typename TailSeq::size_type> n, lref<TailSeq>& t) {
     lref<typename Seq::size_type> sz;
     return size_of(seq_,sz) && range<typename Seq::size_type>(n,0,sz) && Tail_N_r<Seq,TailSeq>(seq_, n, t);
 }
 
 
-template<typename Seq, typename TailSeq> inline
+template<class Seq, class TailSeq> inline
 relation head_tail(lref<Seq>& seq_, lref<typename TailSeq::value_type> h, lref<TailSeq>& t) {
     return head(seq_,h) && tail(seq_, t);
 }
 
-template<typename Seq, typename HeadSeq> inline
+template<class Seq, class HeadSeq> inline
 relation head_n_tail(lref<Seq>& seq_, lref<typename HeadSeq::size_type> n, lref<HeadSeq>& h, lref<HeadSeq>& t) {
     lref<typename Seq::size_type> sz, tailSize;
     return head_n(seq_, n, h) && size_of(seq_,sz) && eq_f(tailSize,sz-n) && tail_n(seq_, tailSize, t);
 }
 
 // inserts a value into a collection
-template<typename Seq>
+template<class Seq>
 relation insert(lref<typename Seq::value_type> value_, lref<typename Seq::iterator> b_, lref<typename Seq::iterator> e_, lref<Seq>& insertedSeq) {
 	lref<typename Seq::value_type> v;
 	lref<typename Seq::iterator> n;
@@ -858,7 +868,7 @@ relation insert(lref<typename Seq::value_type> value_, lref<typename Seq::iterat
 }
 
 // inserts a sequence into a sequence
-template<typename Seq>
+template<class Seq>
 relation insert_seq(lref<typename Seq::iterator> valuesB_, lref<typename Seq::iterator> valuesE_, lref<typename Seq::iterator> b_, lref<typename Seq::iterator> e_, lref<Seq>& insertedSeq) {
 	lref<typename Seq::value_type> v;
 	lref<typename Seq::iterator> n;
@@ -877,7 +887,7 @@ relation insert_seq(lref<typename Seq::iterator> valuesB_, lref<typename Seq::it
 //  increment/decrement relations
 //----------------------------------------------------------------------
 
-template<typename T>
+template<class T>
 class Inc_r : public Coroutine {
     lref<T> obj;
     lref<T> oldValue;
@@ -895,13 +905,13 @@ public:
     }
 };
 
-template<typename T> inline
+template<class T> inline
 Inc_r<T> inc(lref<T>& value_) {
     return Inc_r<T>(value_);
 }
 
 
-template<typename T>
+template<class T>
 class Dec_r : public Coroutine {
     lref<T> obj;
     lref<T> oldValue;
@@ -919,7 +929,7 @@ public:
     }
 };
 
-template<typename T>  inline
+template<class T>  inline
 Dec_r<T> dec(lref<T>& value_) {
     return Dec_r<T>(value_);
 }
@@ -928,7 +938,7 @@ Dec_r<T> dec(lref<T>& value_) {
 // Convert a CollectionA<lref<T> > to CollectionB<T>
 //     : Expects all items in collOfRef to be defined()... will throw is any one is undefined()
 //----------------------------------------------------------------------
-template<typename ContOfT, typename ContOfLrefT>
+template<class ContOfT, class ContOfLrefT>
 ContOfT getValueCont(const ContOfLrefT& seq) {
     ContOfT result;
     for(typename ContOfLrefT::const_iterator i = seq.begin(); i!=seq.end(); ++i)
@@ -946,7 +956,7 @@ ContOfT getValueCont(const ContOfLrefT& seq) {
 //
 //     Seq::value_type : CopyConstructible, Assignable, Comparable
 //
-template<typename Seq>
+template<class Seq>
 class Sequence_r {
     typedef typename Seq::value_type T;
     typedef lref<typename Seq::iterator> LrefIter;
@@ -977,7 +987,7 @@ public:
     //    return *this;
     //}
 
-    template<typename ConvertibleToT>
+    template<class ConvertibleToT>
     Sequence_r& operator() (const ConvertibleToT& item) { // appending new item into the collection
         r_Values.push_back(item);
         history.push_back(VALUE);
@@ -991,13 +1001,13 @@ public:
     }
 
     //
-    //template<typename Iter>
+    //template<class Iter>
     //Sequence_r& operator() (Iter start, Iter end) { // appending new items from an arbitrary iterator delimited sequence into the collection
     //    detail::IfElse<is_lref<Iter>::result, push_lref_pair, push_values<Iter> >::type::apply(start, end, *this);
     //    return *this;
     //} 
 
-    //template<typename Seq>
+    //template<class Seq>
     //Sequence_r& operator() (const lref<typename Seq::iterator>& start
     //                       , const lref<typename Seq::iterator>& end) { // appending new items from an arbitrary iterator delimited sequence
     //    for(typename Seq::iterator i = *start ; i!=*end; ++i) {
@@ -1013,7 +1023,7 @@ public:
         return *this;
     }
     
-    template<typename Iter>
+    template<class Iter>
     Sequence_r& operator() (Iter start, Iter end) {
         for(;start!=end; ++start) {
             r_Values.push_back(*start);
@@ -1123,7 +1133,7 @@ private:
 
 };
 
-template<typename Seq> inline
+template<class Seq> inline
 Sequence_r<Seq> sequence(lref<Seq>& seq) {
     return Sequence_r<Seq>(seq);
 }
@@ -1162,7 +1172,7 @@ relation merge(lref<Seq>& l_, lref<Seq>& r_, lref<Seq>& m) {
 //--------------------------------------------------------
 //  begin relation : For working with iterators
 //--------------------------------------------------------
-template<typename Cont>
+template<class Cont>
 class Begin_r : public Coroutine {
     typedef typename Cont::iterator Iter;
     lref<Cont> cont_;
@@ -1184,7 +1194,7 @@ public:
 
 // 1st argument disallows a raw vector to be passed as argument... since passing 
 // a raw vector to a lref causes the lref to make a copy of the vector.
-template<typename Cont> inline
+template<class Cont> inline
 Begin_r<Cont> begin(lref<Cont>& cont_, const lref<typename Cont::iterator>& iter) {
     return Begin_r<Cont>(cont_, iter);
 }
@@ -1192,7 +1202,7 @@ Begin_r<Cont> begin(lref<Cont>& cont_, const lref<typename Cont::iterator>& iter
 //--------------------------------------------------------
 //  end relation : For working with iterators 
 //--------------------------------------------------------
-template<typename Cont>
+template<class Cont>
 class End_r : public Coroutine {
     typedef typename Cont::iterator IterT;
     lref<Cont> cont_;
@@ -1212,7 +1222,7 @@ public:
     }
 };
 
-template<typename Cont> inline
+template<class Cont> inline
 End_r<Cont> end(lref<Cont>& cont_, const lref<typename Cont::iterator>& iter) {
     return End_r<Cont>(cont_, iter);
 }
@@ -1221,7 +1231,7 @@ End_r<Cont> end(lref<Cont>& cont_, const lref<typename Cont::iterator>& iter) {
 //--------------------------------------------------------
 //  begin relation : For working with reverse iterators
 //--------------------------------------------------------
-template<typename Cont>
+template<class Cont>
 class RBegin_r : public Coroutine {
     typedef typename Cont::reverse_iterator Iter;
     lref<Cont> cont_;
@@ -1243,7 +1253,7 @@ public:
 
 // 1st argument disallows a raw vector to be passed as argument... since passing 
 // a raw vector to a lref causes the lref to make a copy of the vector.
-template<typename Cont> inline
+template<class Cont> inline
 RBegin_r<Cont> rbegin(lref<Cont>& cont_, const lref<typename Cont::reverse_iterator>& iter) {
     return RBegin_r<Cont>(cont_, iter);
 }
@@ -1251,7 +1261,7 @@ RBegin_r<Cont> rbegin(lref<Cont>& cont_, const lref<typename Cont::reverse_itera
 //--------------------------------------------------------
 //  rend relation : For working with reverse iterators 
 //--------------------------------------------------------
-template<typename Cont>
+template<class Cont>
 class REnd_r : public Coroutine {
     typedef typename Cont::reverse_iterator IterT;
     lref<Cont> cont_;
@@ -1271,7 +1281,7 @@ public:
     }
 };
 
-template<typename Cont> inline
+template<class Cont> inline
 REnd_r<Cont> rend(lref<Cont>& cont_, const lref<typename Cont::reverse_iterator>& iter) {
     return REnd_r<Cont>(cont_, iter);
 }
@@ -1281,7 +1291,7 @@ REnd_r<Cont> rend(lref<Cont>& cont_, const lref<typename Cont::reverse_iterator>
 //-------------------------------------------------
 // eval() - Invoke the function/function object: Succeeds only once
 //-------------------------------------------------
-template<typename Func>
+template<class Func>
 class Eval_r0 : Coroutine {
     Func f;
 public:
@@ -1297,7 +1307,7 @@ public:
     }
 };
 
-template<typename Func, typename A1>
+template<class Func, class A1>
 class Eval_r1 : Coroutine {
     Func f;
     A1 a1;
@@ -1314,7 +1324,7 @@ public:
     }
 };
 
-template<typename Func, typename A1, typename A2>
+template<class Func, class A1, class A2>
 class Eval_r2 : Coroutine {
     Func f;
     A1 a1; A2 a2;
@@ -1331,7 +1341,7 @@ public:
     }
 };
 
-template<typename Func, typename A1, typename A2, typename A3>
+template<class Func, class A1, class A2, class A3>
 class Eval_r3 : Coroutine {
     Func f;
     A1 a1; A2 a2; A3 a3;
@@ -1348,7 +1358,7 @@ public:
     }
 };
 
-template<typename Func, typename A1, typename A2, typename A3, typename A4>
+template<class Func, class A1, class A2, class A3, class A4>
 class Eval_r4 : Coroutine {
     Func f;
     A1 a1; A2 a2; A3 a3; A4 a4;
@@ -1365,7 +1375,7 @@ public:
     }
 };
 
-template<typename Func, typename A1, typename A2, typename A3, typename A4, typename A5>
+template<class Func, class A1, class A2, class A3, class A4, class A5>
 class Eval_r5 : Coroutine {
     Func f;
     A1 a1; A2 a2; A3 a3; A4 a4; A5 a5;
@@ -1382,7 +1392,7 @@ public:
     }
 };
 
-template<typename Func, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
+template<class Func, class A1, class A2, class A3, class A4, class A5, class A6>
 class Eval_r6 : Coroutine {
     Func f;
     A1 a1; A2 a2; A3 a3; A4 a4; A5 a5; A6 a6;
@@ -1400,78 +1410,78 @@ public:
 };
 
 // nullary
-template<typename Func> inline
+template<class Func> inline
 Eval_r0<Func> eval(Func f) {
     return Eval_r0<Func>(f);
 }
 
-template<typename R> inline
+template<class R> inline
 Eval_r0<R(*)(void)> eval(R(* f)(void)) {
     return Eval_r0<R(*)(void)>(f);
 }
 
 // unary
-template<typename Func, typename A1> inline
+template<class Func, class A1> inline
 Eval_r1<Func,A1> eval(Func f, const A1& a1_) {
     return Eval_r1<Func,A1>(f,a1_);
 }
 
-template<typename R, typename P1, typename A1> inline
+template<class R, class P1, class A1> inline
 Eval_r1<R(*)(P1),A1> eval(R(* f)(P1), const A1& a1_) {
     return Eval_r1<R(*)(P1),A1>(f,a1_);
 }
 
 // binary
-template<typename Func, typename A1, typename A2> inline
+template<class Func, class A1, class A2> inline
 Eval_r2<Func,A1,A2> eval(Func f, const A1& a1_, const A2& a2_) {
     return Eval_r2<Func,A1,A2>(f,a1_,a2_);
 }
 
-template<typename R, typename P1, typename P2, typename A1, typename A2> inline
+template<class R, class P1, class P2, class A1, class A2> inline
 Eval_r2<R(*)(P1,P2),A1,A2> eval(R(* f)(P1,P2), const A1& a1_, const A2& a2_) {
     return Eval_r2<R(*)(P1,P2),A1,A2>(f,a1_,a2_);
 }
 
 // ternary
-template<typename Func, typename A1, typename A2, typename A3> inline
+template<class Func, class A1, class A2, class A3> inline
 Eval_r3<Func,A1,A2,A3> eval(Func f, const A1& a1_, const A2& a2_, const A3& a3_) {
     return Eval_r3<Func,A1,A2,A3>(f,a1_,a2_,a3_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename A1, typename A2, typename A3> inline
+template<class R, class P1, class P2, class P3, class A1, class A2, class A3> inline
 Eval_r3<R(*)(P1,P2,P3),A1,A2,A3> eval(R(* f)(P1,P2,P3), const A1& a1_, const A2& a2_, const A3& a3_) {
     return Eval_r3<R(*)(P1,P2,P3),A1,A2,A3>(f,a1_,a2_,a3_);
 }
 
 // quaternary
-template<typename Func, typename A1, typename A2, typename A3, typename A4> inline
+template<class Func, class A1, class A2, class A3, class A4> inline
 Eval_r4<Func,A1,A2,A3,A4> eval(Func f, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
     return Eval_r4<Func,A1,A2,A3,A4>(f,a1_,a2_,a3_,a4_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename A1, typename A2, typename A3, typename A4> inline
+template<class R, class P1, class P2, class P3, class P4, class A1, class A2, class A3, class A4> inline
 Eval_r4<R(*)(P1,P2,P3,P4),A1,A2,A3,A4> eval(R(* f)(P1,P2,P3,P4), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
     return Eval_r4<R(*)(P1,P2,P3,P4),A1,A2,A3,A4>(f,a1_,a2_,a3_,a4_);
 }
 
 // quinary
-template<typename Func, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+template<class Func, class A1, class A2, class A3, class A4, class A5> inline
 Eval_r5<Func,A1,A2,A3,A4,A5> eval(Func f, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
     return Eval_r5<Func,A1,A2,A3,A4,A5>(f,a1_,a2_,a3_,a4_,a5_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+template<class R, class P1, class P2, class P3, class P4, class P5, class A1, class A2, class A3, class A4, class A5> inline
 Eval_r5<R(*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5> eval(R(* f)(P1,P2,P3,P4,P5), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
     return Eval_r5<R(*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5>(f,a1_,a2_,a3_,a4_,a5_);
 }
 
 // sestary
-template<typename Func, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+template<class Func, class A1, class A2, class A3, class A4, class A5, class A6> inline
 Eval_r6<Func,A1,A2,A3,A4,A5,A6> eval(Func f, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
     return Eval_r6<Func,A1,A2,A3,A4,A5,A6>(f,a1_,a2_,a3_,a4_,a5_,a6_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+template<class R, class P1, class P2, class P3, class P4, class P5, class P6, class A1, class A2, class A3, class A4, class A5, class A6> inline
 Eval_r6<R(*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6> eval(R(* f)(P1,P2,P3,P4,P5,P6), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
     return Eval_r6<R(*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6>(f,a1_,a2_,a3_,a4_,a5_,a6_);
 }
@@ -1479,7 +1489,7 @@ Eval_r6<R(*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6> eval(R(* f)(P1,P2,P3,P4,P5,P6
 //-------------------------------------------------
 // eval_mf() - Invoke the function/function object: Always succeeds once only
 //-------------------------------------------------
-template<typename Obj, typename MemFunc>
+template<class Obj, class MemFunc>
 class Eval_mf_r0 : Coroutine {
     lref<Obj> obj_;
 	MemFunc mf;
@@ -1495,7 +1505,7 @@ public:
     }
 };
 
-template<typename Obj, typename MemFunc, typename A1>
+template<class Obj, class MemFunc, class A1>
 class Eval_mf_r1 : Coroutine {
     lref<Obj> obj_;
 	MemFunc mf;
@@ -1512,7 +1522,7 @@ public:
     }
 };
 
-template<typename Obj, typename MemFunc, typename A1, typename A2>
+template<class Obj, class MemFunc, class A1, class A2>
 class Eval_mf_r2 : Coroutine {
     lref<Obj> obj_;
 	MemFunc mf;
@@ -1529,7 +1539,7 @@ public:
     }
 };
 
-template<typename Obj, typename MemFunc, typename A1, typename A2, typename A3>
+template<class Obj, class MemFunc, class A1, class A2, class A3>
 class Eval_mf_r3 : Coroutine {
     lref<Obj> obj_;
 	MemFunc mf;
@@ -1546,7 +1556,7 @@ public:
     }
 };
 
-template<typename Obj, typename MemFunc, typename A1, typename A2, typename A3, typename A4>
+template<class Obj, class MemFunc, class A1, class A2, class A3, class A4>
 class Eval_mf_r4 : Coroutine {
     lref<Obj> obj_;
 	MemFunc mf;
@@ -1563,7 +1573,7 @@ public:
     }
 };
 
-template<typename Obj, typename MemFunc, typename A1, typename A2, typename A3, typename A4, typename A5>
+template<class Obj, class MemFunc, class A1, class A2, class A3, class A4, class A5>
 class Eval_mf_r5 : Coroutine {
     lref<Obj> obj_;
 	MemFunc mf;
@@ -1580,7 +1590,7 @@ public:
     }
 };
 
-template<typename Obj, typename MemFunc, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
+template<class Obj, class MemFunc, class A1, class A2, class A3, class A4, class A5, class A6>
 class Eval_mf_r6 : Coroutine {
     lref<Obj> obj_;
 	MemFunc mf;
@@ -1598,86 +1608,86 @@ public:
 };
 
 // Overloads for non-const member functions
-template<typename R, typename Obj> inline
+template<class R, class Obj> inline
 Eval_mf_r0<Obj,R(Obj::*)(void)> 
 eval_mf(lref<Obj>& obj_, R(Obj::*mf)(void) ) {
     return Eval_mf_r0<Obj,R(Obj::*)(void)>(obj_,mf);
 }
 
-template<typename R, typename P1, typename Obj, typename A1> inline
+template<class R, class P1, class Obj, class A1> inline
 Eval_mf_r1<Obj,R(Obj::*)(P1),A1> 
 eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1), const A1& a1_) {
     return Eval_mf_r1<Obj,R(Obj::*)(P1),A1>(obj_,mf,a1_);
 }
 
-template<typename R, typename P1, typename P2, typename Obj, typename A1, typename A2> inline
+template<class R, class P1, class P2, class Obj, class A1, class A2> inline
 Eval_mf_r2<Obj,R(Obj::*)(P1,P2),A1,A2> 
 eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2), const A1& a1_, const A2& a2_) {
     return Eval_mf_r2<Obj,R(Obj::*)(P1,P2),A1,A2>(obj_,mf,a1_,a2_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename Obj, typename A1, typename A2, typename A3> inline
+template<class R, class P1, class P2, class P3, class Obj, class A1, class A2, class A3> inline
 Eval_mf_r3<Obj,R(Obj::*)(P1,P2,P3),A1,A2,A3> 
 eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3), const A1& a1_, const A2& a2_, const A3& a3_) {
     return Eval_mf_r3<Obj,R(Obj::*)(P1,P2,P3),A1,A2,A3>(obj_,mf,a1_,a2_,a3_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename A1, typename A2, typename A3, typename A4> inline
+template<class R, class P1, class P2, class P3, class P4, class Obj, class A1, class A2, class A3, class A4> inline
 Eval_mf_r4<Obj,R(Obj::*)(P1,P2,P3,P4),A1,A2,A3,A4> 
 eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
     return Eval_mf_r4<Obj,R(Obj::*)(P1,P2,P3,P4),A1,A2,A3,A4>(obj_,mf,a1_,a2_,a3_,a4_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+template<class R, class P1, class P2, class P3, class P4, class P5, class Obj, class A1, class A2, class A3, class A4, class A5> inline
 Eval_mf_r5<Obj,R(Obj::*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5> 
 eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
     return Eval_mf_r5<Obj,R(Obj::*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5>(obj_,mf,a1_,a2_,a3_,a4_,a5_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+template<class R, class P1, class P2, class P3, class P4, class P5, class P6, class Obj, class A1, class A2, class A3, class A4, class A5, class A6> inline
 Eval_mf_r6<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6> 
 eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
     return Eval_mf_r6<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6>(obj_,mf,a1_,a2_,a3_,a4_,a5_,a6_);
 }
 
 // Overloads for const member functions
-template<typename R, typename Obj> inline
+template<class R, class Obj> inline
 Eval_mf_r0<Obj,R(Obj::*)(void) const> 
 eval_mf(lref<Obj>& obj_, R(Obj::*mf)(void) const) {
     return Eval_mf_r0<Obj,R(Obj::*)(void) const>(obj_,mf);
 }
 
-template<typename R, typename P1, typename Obj, typename A1> inline
+template<class R, class P1, class Obj, class A1> inline
 Eval_mf_r1<Obj,R(Obj::*)(P1) const,A1> 
 eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1) const, const A1& a1_) {
     return Eval_mf_r1<Obj,R(Obj::*)(P1) const,A1>(obj_,mf,a1_);
 }
 
-template<typename R, typename P1, typename P2, typename Obj, typename A1, typename A2> inline
+template<class R, class P1, class P2, class Obj, class A1, class A2> inline
 Eval_mf_r2<Obj,R(Obj::*)(P1,P2) const,A1,A2> 
 eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2) const, const A1& a1_, const A2& a2_) {
     return Eval_mf_r2<Obj,R(Obj::*)(P1,P2) const,A1,A2>(obj_,mf,a1_,a2_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename Obj, typename A1, typename A2, typename A3> inline
+template<class R, class P1, class P2, class P3, class Obj, class A1, class A2, class A3> inline
 Eval_mf_r3<Obj,R(Obj::*)(P1,P2,P3) const,A1,A2,A3> 
 eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3) const, const A1& a1_, const A2& a2_, const A3& a3_) {
     return Eval_mf_r3<Obj,R(Obj::*)(P1,P2,P3) const,A1,A2,A3>(obj_,mf,a1_,a2_,a3_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename A1, typename A2, typename A3, typename A4> inline
+template<class R, class P1, class P2, class P3, class P4, class Obj, class A1, class A2, class A3, class A4> inline
 Eval_mf_r4<Obj,R(Obj::*)(P1,P2,P3,P4) const,A1,A2,A3,A4> 
 eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
     return Eval_mf_r4<Obj,R(Obj::*)(P1,P2,P3,P4) const,A1,A2,A3,A4>(obj_,mf,a1_,a2_,a3_,a4_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+template<class R, class P1, class P2, class P3, class P4, class P5, class Obj, class A1, class A2, class A3, class A4, class A5> inline
 Eval_mf_r5<Obj,R(Obj::*)(P1,P2,P3,P4,P5) const,A1,A2,A3,A4,A5> 
 eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
     return Eval_mf_r5<Obj,R(Obj::*)(P1,P2,P3,P4,P5) const,A1,A2,A3,A4,A5>(obj_,mf,a1_,a2_,a3_,a4_,a5_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+template<class R, class P1, class P2, class P3, class P4, class P5, class P6, class Obj, class A1, class A2, class A3, class A4, class A5, class A6> inline
 Eval_mf_r6<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,A1,A2,A3,A4,A5,A6> 
 eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
     return Eval_mf_r6<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,A1,A2,A3,A4,A5,A6>(obj_,mf,a1_,a2_,a3_,a4_,a5_,a6_);
@@ -1688,7 +1698,7 @@ eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6) const, const A1& a1_, c
 // repeat(val_i,count_i,r) - repeat val_i, count_i times, into r
 //-------------------------------------------------
 
-template<typename T>
+template<class T>
 struct Repeat_r : public Coroutine {
 	lref<T> val, val_i, r;
 	unsigned int count_i;
@@ -1708,12 +1718,12 @@ struct Repeat_r : public Coroutine {
 };
 
 
-template<typename T>
+template<class T>
 Repeat_r<T> repeat(lref<T>& val_i,unsigned int count_i, lref<T>& r) {
 	return Repeat_r<T>(val_i, count_i, r);
 }
 
-template<typename T>
+template<class T>
 Repeat_r<T> repeat(T val_i, unsigned int count_i, lref<T>& r) {
 	return Repeat_r<T>(lref<T>(val_i), count_i, r);
 }

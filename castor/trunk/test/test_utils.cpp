@@ -1344,6 +1344,34 @@ void test_item() {
     if(j!=0)
         throw "failed test_item 11";
     }
+    {//12 - compile time checks for overloads : item(i,std::set<>)  & item(i,std::multiset<>)
+        lref<set<int> > s;
+        lref<multiset<int> > ms;
+        lref<int> i;
+        ItemSet_r<set<int> > r1 = item(i,s);        // ensure the call is forwarded to item_set
+        ItemSet_r<multiset<int> > r2 = item(i,ms);  // ensure the call is forwarded to item_set
+    }
+    {  //13 - basic tests for overload - item(i,std::set<>)  & item(i,std::multiset<>)
+    lref<int> i;
+    int ai[] = {1,2,3,4,2};
+    lref<set<int> > si = set<int>(ai+0, ai+5);
+    lref<multiset<int> > mi = multiset<int>(ai+0, ai+5);
+
+    relation r = item(i,si);
+    int j=0;
+    while(r())
+        ++j;
+    if(j!=si->size())
+        throw "failed test_item 13";
+
+    r = item(i,mi);
+    j=0;
+    while(r())
+        ++j;
+    if(j!=mi->size())
+        throw "failed test_item 13";
+
+    }
 }
 
 void test_item_set() {
@@ -1447,7 +1475,6 @@ void test_item_map() {
     { // gen key, lookup obj - multimap
         lref<const char> k;
         relation r = item_map(k,100,mm);
-        int count=0;
         if(!r())
             throw "failed test_item_map 4";
         if(*k!='a')
