@@ -59,6 +59,13 @@ int test_main(int, char * [])
 
         BOOST_CHECK(total == 140);
     }
+    { // with const Obj- explicit template args
+        lref<const pair<int,string> > p = pair<int,string>(1,"Roshan");
+        relation r = eq_mem<int,const pair<int,string> >(1, p,&pair<int,string>::first);
+	    int i=0;
+	    for(; r(); ++i);
+	    BOOST_CHECK(i==1);
+    }
 
     return 0;
 }

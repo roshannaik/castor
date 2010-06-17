@@ -45,6 +45,16 @@ int test_main(int, char * [])
 
         BOOST_CHECK(!r() && !c.defined() && !ps.defined());
     }
-
+	{ // gen mode - const container, const_iterator
+	    lref<int> c;
+	    const string s = "hello";
+        lref<const string> ls(&s,false);
+        lref<string> sh;
+	    relation r = shuffle(s.begin(), s.end(), sh); //const_iterator
+	    BOOST_CHECK(r());
+        sh.reset();
+        r = shuffle(ls,sh);  // const container
+	    BOOST_CHECK(r());
+	}
     return 0;
 }

@@ -111,7 +111,7 @@ int test_main(int, char * [])
         BOOST_CHECK(!obj.defined());
     }
 
-    { // 9 - iterate using
+    { // 9 - iterate over container
 
         int ai[] = {1, 2, 3, 4, 5};
         lref<std::vector<int> > vi = std::vector<int>(ai + 0, ai + 5);
@@ -181,6 +181,15 @@ int test_main(int, char * [])
             ++j;
         BOOST_CHECK(j==mi->size());
     }
-
+    //{ // const container and const_iterator
+    //    int arr[] = {1,2,3,4};
+    //    lref<const vector<int> > v = vector<int>(arr,arr+4);
+    //    lref<const int> i;
+    //    BOOST_CHECK(!item(i,v)());
+    //
+    //    vector<int>::const_iterator b = v->begin(), e = v->end();
+    //    lref<const int> j;
+    //    BOOST_CHECK(!item(j,b, e)());
+    // }
     return 0;
 }

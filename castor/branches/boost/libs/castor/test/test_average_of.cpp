@@ -64,6 +64,15 @@ int test_main(int, char * [])
         BOOST_CHECK(!r());
         BOOST_CHECK(!a.defined());
     }
+    {// gen - with const container
+        lref<const vector<int> > cv = vector<int>(nums,nums+5);
+        lref<int> a;
+        relation r = average_of(cv,a);
+        BOOST_CHECK(r());
+        BOOST_CHECK(*a==3);
+        BOOST_CHECK(!r());
+        BOOST_CHECK(!a.defined());
+    }      
 
     return 0;
 }

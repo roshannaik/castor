@@ -93,7 +93,7 @@ int test_main(int, char * [])
     }
 
     { // write to stream using iterators
-	std::stringstream sstrm;
+        std::stringstream sstrm;
         std::vector<std::string> vs (as, as + 4);
 
         BOOST_CHECK(writeAllTo(sstrm, vs.begin(), vs.end(), "")());
@@ -106,8 +106,8 @@ int test_main(int, char * [])
     }	
 
     { // write container to stream
-	std::stringstream sstrm;
-        lref<std::vector<std::string> > vls = std::vector<std::string>(as, as + 4);
+        std::stringstream sstrm;
+        lref<const std::vector<std::string> > vls = std::vector<std::string>(as, as + 4);
 
         BOOST_CHECK(writeAllTo(sstrm, vls, "")());
 
@@ -134,19 +134,19 @@ int test_main(int, char * [])
     }
 
     { // write value of computing an ILE to stream
-	std::stringstream sstrm;
-	lref<num> i=3;
-	writeTo_f(sstrm, i + i * i)();
+        std::stringstream sstrm;
+        lref<num> i=3;
+        writeTo_f(sstrm, i + i * i)();
 
-	BOOST_CHECK(sstrm.str() == "12");
+        BOOST_CHECK(sstrm.str() == "12");
     }
 
     { // write value of computing a func
-	std::stringstream sstrm;
-	lref<num> i=3;
-	writeTo_f(sstrm, &num::static_compute, i, 3, i)();
+        std::stringstream sstrm;
+        lref<num> i=3;
+        writeTo_f(sstrm, &num::static_compute, i, 3, i)();
 
-	BOOST_CHECK(sstrm.str() == "4");
+        BOOST_CHECK(sstrm.str() == "4");
     }
 
     {
