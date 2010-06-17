@@ -9,16 +9,16 @@
 #include <boost/castor/relation.h>
 #include <boost/castor/lref.h>
 #include <boost/castor/utils.h>
-
 #include <algorithm>
 #include <vector>
 #include <functional>
+#include <iterator>
 
 namespace castor {
 
 namespace detail {
-template<typename InItr>
-bool equal_heap(InItr first_b, InItr first_e, InItr second_b, InItr second_e) {
+template<typename RandItr>
+bool equal_heap(RandItr first_b, RandItr first_e, RandItr second_b, RandItr second_e) {
 	if( std::distance(first_b, first_e) != std::distance(second_b, second_e) )
 		return false;
 	while(first_b!=first_e) {
@@ -32,41 +32,22 @@ bool equal_heap(InItr first_b, InItr first_e, InItr second_b, InItr second_e) {
 	return true;
 }
 
-template<typename InItr, typename Pred>
-bool equal_heap(InItr first_b, InItr first_e, InItr second_b, InItr second_e, Pred cmp) {
-	if( std::distance(first_b, first_e) != std::distance(second_b, second_e) )
+// Cmp : less than ordering 
+template<class InItr, class InItr2, class Cmp>
+bool equal_bags(InItr first_b, InItr first_e, InItr2 second_b, InItr2 second_e, Cmp cmp = std::less<typename std::iterator_traits<InItr>::value_type>() ) {
+    std::iterator_traits<InItr>::difference_type s1 = std::distance(first_b,first_e), s2 = std::distance(second_b,second_e);
+	if(s1!=s2)
 		return false;
-	while(first_b!=first_e) {
-		if(!cmp(*first_b,*second_b))
-			return false;
-		std::pop_heap(first_b,first_e,cmp);
-		std::pop_heap(second_b,second_e,cmp);
-		--first_e; 
-		--second_e;
-	}
-	return true;
-}
+    typedef typename std::iterator_traits<InItr>::value_type value_type;
+    typedef typename std::iterator_traits<InItr2>::value_type value_type2;
+	std::vector<value_type>  tmp1(s1);
+	std::vector<value_type2>  tmp2(s2);
+    tmp1.insert(tmp1.begin(),first_b, first_e);
+    tmp2.insert(tmp2.begin(),second_b, second_e);
 
-template<typename InItr> 
-bool equal_bags(InItr first_b, InItr first_e, InItr second_b, InItr second_e) {
-	typedef typename std::iterator_traits<typename effective_type<InItr>::result_type>::value_type value_type;
-	std::vector<value_type>  tmp1(first_b, first_e), tmp2(second_b, second_e);
-	if(tmp1.size()!=tmp2.size())
-		return false;
-	std::make_heap(tmp1.begin(),tmp1.end());
-	std::make_heap(tmp2.begin(),tmp2.end());
-	return equal_heap(tmp1.begin(),tmp1.end(),tmp2.begin(),tmp2.end());
-}
-
-template<typename InItr, typename Pred>
-bool equal_bags(InItr first_b, InItr first_e, InItr second_b, InItr second_e, Pred cmp) {
-	typedef typename std::iterator_traits<typename effective_type<InItr>::result_type>::value_type value_type;
-	std::vector<value_type>  tmp1(first_b, first_e), tmp2(second_b, second_e);
-	if(tmp1.size()!=tmp2.size())
-		return false;
-	std::make_heap(tmp1.begin(),tmp1.end(), cmp);
+    std::make_heap(tmp1.begin(),tmp1.end(), cmp);
 	std::make_heap(tmp2.begin(),tmp2.end(), cmp);
-	return equal_heap(tmp1.begin(),tmp1.end(),tmp2.begin(),tmp2.end(), cmp);
+	return equal_heap(tmp1.begin(),tmp1.end(),tmp2.begin(),tmp2.end());
 }
 
 } // namespace detail
@@ -74,23 +55,23 @@ bool equal_bags(InItr first_b, InItr first_e, InItr second_b, InItr second_e, Pr
 //-------------------------------------------------
 // shuffle(seq_i,shuf) - shuffling (randomize) sequence seq_i, yields shuf
 //-------------------------------------------------
-template<typename Cont, typename InItr>
+template<class InItr, class RandSeq>
 class Shuffle_r : public Coroutine {
 	typedef typename std::iterator_traits<typename effective_type<InItr>::result_type>::value_type value_type;
 	InItr begin_i, end_i;
-	lref<Cont> shuf;
+	lref<RandSeq> shuf;
 
 public:
-	Shuffle_r(InItr begin_i, InItr end_i, const lref<Cont>& shuf) : begin_i(begin_i), end_i(end_i), shuf(shuf) 
+	Shuffle_r(InItr begin_i, InItr end_i, const lref<RandSeq>& shuf) : begin_i(begin_i), end_i(end_i), shuf(shuf) 
 	{ }
 
 	bool operator()(void) {
 		co_begin();
-		if(shuf.defined())
-			co_return( detail::equal_bags(effective_value(begin_i), effective_value(end_i), shuf->begin(), shuf->end()) );
 		if(effective_value(begin_i)==effective_value(end_i))
-			co_return(false);
-		shuf.set_ptr(new Cont(effective_value(begin_i),effective_value(end_i)), true);
+            co_return(false);
+		if(shuf.defined())
+            co_return( detail::equal_bags(effective_value(begin_i), effective_value(end_i), shuf->begin(), shuf->end(), std::less<value_type>() ) );
+        shuf.set_ptr(new RandSeq(effective_value(begin_i),effective_value(end_i) ), true);
 		while (true) {
 			std::random_shuffle(shuf->begin(), shuf->end());
 			co_yield(true);
@@ -100,78 +81,83 @@ public:
 	}
 };
 
-template<typename Cont, typename InItr>
-Shuffle_r<Cont,InItr> shuffle(const InItr& begin_i, const InItr& end_i, const lref<Cont>& shuf) {
-	return Shuffle_r<Cont,InItr>(begin_i,end_i,shuf);
+template<class InItr, class RandSeq> inline
+Shuffle_r<InItr,RandSeq> shuffle(const InItr& begin_i, const InItr& end_i, const lref<RandSeq>& shuf) {
+	return Shuffle_r<InItr,RandSeq>(begin_i,end_i,shuf);
 }
 
 
-template<typename Seq>
-relation shuffle(lref<Seq>& seq_i, const lref<Seq>& shuf) {
-	lref<typename Seq::iterator> b,e;
+template<class Cont, class RandSeq> inline
+relation shuffle(lref<Cont>& seq_i, const lref<RandSeq>& shuf) {
+	lref<typename Cont::const_iterator> b,e;
 	return begin(seq_i,b) && end(seq_i,e) && shuffle(b,e,shuf);
 }
 
 
 //-------------------------------------------------
-// permute(seq_i, p_seq) - permuting seq_i, yields p_seq
+// permutation(.., p_seq) - permutation of input sequence is p_seq (uses std::less as the ordering contraint)
 //-------------------------------------------------
-template<typename Seq>
-struct Permute_r : public Coroutine {
-	lref<Seq> seq_i, p_seq;
-	Permute_r(const lref<Seq>& seq_i, const lref<Seq>& p_seq) : seq_i(seq_i), p_seq(p_seq)
-	{ }	
+template<class FwdItr, class RandSeq, class Cmp = std::less<typename RandSeq::value_type> >
+struct Permutation_r : public Coroutine {
+	typedef typename std::iterator_traits<typename effective_type<FwdItr>::result_type>::value_type value_type;
+	FwdItr begin_i, end_i;
+	lref<RandSeq> p_seq;
+	Cmp cmp;
+public:
+	Permutation_r(FwdItr begin_i, FwdItr end_i, const lref<RandSeq>& p_seq, Cmp cmp=Cmp() ) : begin_i(begin_i), end_i(end_i), p_seq(p_seq), cmp(cmp)
+	{ }
 
-	bool operator()(void) {
+    bool operator()(void) {
 		co_begin();
-		if(p_seq.defined()) {
-			co_return( detail::equal_bags( seq_i->begin(), seq_i->end(), p_seq->begin(), p_seq->end() ) );
-		}
-		p_seq=seq_i;
-		while ( std::next_permutation(p_seq->begin(), p_seq->end()) )
+
+        if(effective_value(begin_i)==effective_value(end_i))
+			co_return(false);
+
+        if(p_seq.defined())
+            co_return( detail::equal_bags(effective_value(begin_i), effective_value(end_i), p_seq->begin(), p_seq->end(), std::less<value_type>() ) );
+
+        p_seq.set_ptr(new RandSeq(effective_value(begin_i),effective_value(end_i) ), true);
+		while ( std::next_permutation(p_seq->begin(), p_seq->end(), cmp) )  // gen all next permutations
 			co_yield(true);
-		p_seq=seq_i;
+		p_seq->clear();
+        p_seq->insert(p_seq->begin(), effective_value(begin_i),effective_value(end_i));    // reload
 		co_yield(true);
-		while ( std::prev_permutation(p_seq->begin(), p_seq->end()) )
+		while ( std::prev_permutation(p_seq->begin(), p_seq->end(), cmp) )  // gen all prev permutations
 			co_yield(true);
 		p_seq.reset();
 		co_end();
 	}
 };
 
-template<typename Seq, typename Pred = std::less<typename Seq::value_type> >
-struct PermutePred_r : public Coroutine {
-	lref<Seq> seq_i, p_seq;
-	Pred cmp;
-
-	PermutePred_r(const lref<Seq>& seq_i, const lref<Seq>& p_seq, Pred cmp) : seq_i(seq_i), p_seq(p_seq), cmp(cmp)
-	{ }	
-
-	bool operator()(void) {
-		co_begin();
-		if(p_seq.defined()) {
-			co_return( detail::equal_bags( seq_i->begin(), seq_i->end(), p_seq->begin(), p_seq->end(), cmp ) );
-		}
-		p_seq=seq_i;
-		while ( std::next_permutation(p_seq->begin(), p_seq->end(), cmp) )
-			co_yield(true);
-		p_seq=seq_i;
-		co_yield(true);
-		while ( std::prev_permutation(p_seq->begin(), p_seq->end(), cmp) )
-			co_yield(true);
-		p_seq.reset();
-		co_end();
-	}
-};
-
-template<typename Seq>
-Permute_r<Seq> permute(lref<Seq>& seq_i, const lref<Seq>& p_seq) {
-	return Permute_r<Seq>(seq_i,p_seq);
+template<class FwdItr, class RandSeq> inline
+Permutation_r<FwdItr,RandSeq>
+permutation(const FwdItr& begin_i, const FwdItr& end_i, lref<RandSeq>& p_seq) {
+	return Permutation_r<FwdItr,RandSeq>(begin_i,end_i,p_seq);
 }
 
-template<typename Seq, typename Pred>
-PermutePred_r<Seq,Pred> permute(lref<Seq>& seq_i, const lref<Seq>& p_seq, Pred cmp) {
-	return PermutePred_r<Seq,Pred>(seq_i,p_seq,cmp);
+template<class Cont, class RandSeq> inline
+relation permutation(lref<Cont>& seq_i, lref<RandSeq>& p_seq) {
+	lref<typename Cont::const_iterator> b,e;
+	return begin(seq_i,b) && end(seq_i,e) && permutation(b,e,p_seq);
+}
+
+//-------------------------------------------------
+// permutation_cmp(.., p_seq) - permutation of input sequence using 'order' constraint is p_seq
+// note: This relations could not be called simply permutation due to overload resolution 
+//       ambiguities with above relations
+//-------------------------------------------------
+
+template<class FwdItr, class RandSeq, class Cmp> inline
+Permutation_r<FwdItr,RandSeq,Cmp> 
+permutation_cmp(const FwdItr& begin_i, const FwdItr& end_i, lref<RandSeq>& p_seq, Cmp order) {
+	return Permutation_r<FwdItr,RandSeq,Cmp>(begin_i, end_i, p_seq, order);
+}
+
+
+template<class Cont, class RandSeq, class Cmp> inline
+relation permutation_cmp(lref<Cont>& seq_i, lref<RandSeq>& p_seq, Cmp order) {
+	lref<typename Cont::const_iterator> b,e;
+	return begin(seq_i,b) && end(seq_i,e) && permutation_cmp(b,e,p_seq,order);
 }
 
 

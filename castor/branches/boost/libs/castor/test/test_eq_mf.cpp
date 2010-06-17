@@ -73,19 +73,19 @@ int test_main(int, char * [])
         i.reset();
 
         // const method
-        BOOST_CHECK((eq_mf<int, int, int, int, Functor6>(i, f, &Functor6::cmethod, 1, 1)() && *i == 2));
+        BOOST_CHECK((eq_mf<int, Functor6>(i, f, &Functor6::cmethod, 1, 1)() && *i == 2));
 
         // const Obj, const method
 #ifndef __GNUG__
         lref<const Functor6> fc = Functor6();
-        BOOST_CHECK(eq_mf<int, int, int, int, const Functor6>(i, fc, &Functor6::cmethod, 1, 1)() && *i == 2);
+        BOOST_CHECK(eq_mf<int, const Functor6>(i, fc, &Functor6::cmethod, 1, 1)() && *i == 2);
 #endif
 
 	// const lref, const method -- turn the const lref into plain lref and then use it
         const lref<Functor6> cf = Functor6();
         f = cf;
 
-        BOOST_CHECK((eq_mf<int, int, int, int, Functor6>(i, f, &Functor6::cmethod, 1, 1)() && *i == 2));
+        BOOST_CHECK((eq_mf<int, Functor6>(i, f, &Functor6::cmethod, 1, 1)() && *i == 2));
 
         i = 0;
 

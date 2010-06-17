@@ -65,5 +65,15 @@ int test_main(int, char * [])
         BOOST_CHECK(r());
     }
 
+    {// basic - gen - with const container
+        lref<string> m;
+        lref<vector<string> > cv = vector<string>(arr, arr+4);
+
+        relation r =  min_of(cv,m) ;
+        BOOST_CHECK(r());
+        BOOST_CHECK(*m=="C#");
+        BOOST_CHECK(!r());
+        BOOST_CHECK(!m.defined());
+    }
     return 0;
 }

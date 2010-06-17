@@ -36,7 +36,7 @@ int test_main(int, char * [])
 
     { // tail of empty list
         lref<std::vector<int> > tk;
-        lref<std::vector<int> >vk = std::vector<int>();
+        lref<const std::vector<int> >vk = std::vector<int>();
         relation r3 =  tail(vk, tk);
 
         BOOST_CHECK(!r3());

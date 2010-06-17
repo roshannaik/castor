@@ -227,7 +227,8 @@ template<typename Itr>
 struct Pointee<lref<Itr> > {
     typedef typename Itr::value_type result_type;
 };
-}
+
+}  // namespace detail
 } // namespace castor
 
 #endif

@@ -148,13 +148,6 @@ sum_of(lref<Cont>& cont_, const lref<typename Cont::value_type>& s) {
 	return ReduceOf_r<Cont>(cont_, s);
 }
 
-// sum_of(continer,s) - sum (using operator +) of values in container = s
-template<class Cont> inline
-ReduceOf_r<Cont> 
-sum_of(lref<Cont>& cont_, const typename Cont::value_type& s) {
-	return ReduceOf_r<Cont>(cont_, lref<typename Cont::value_type>(s));
-}
-
 
 //-------------------------------------------------
 // max(n) - largest n
@@ -225,7 +218,7 @@ public:
         if(m.defined())
           co_return( m.get()== * std::max_element(cont->begin(), cont->end(), cmp) );
 
-        m.set_ptr(&*(std::max_element(cont->begin(), cont->end(), cmp)),false);
+        m= *std::max_element(cont->begin(), cont->end(), cmp);
 	    co_yield(true);
 		m.reset();
   		co_end();
@@ -244,20 +237,6 @@ template<class Cont, class Cmp> inline
 MaxOf_r<Cont,Cmp> 
 max_of(lref<Cont>& cont_, const lref<typename Cont::value_type>& m, Cmp cmp) {
 	return MaxOf_r<Cont,Cmp>(cont_,m,cmp);
-}
-
-// max_of(continer,m) - max value in container is m
-template<class Cont> inline
-MaxOf_r<Cont, std::less<typename Cont::value_type> > 
-max_of(lref<Cont>& cont_, const typename Cont::value_type& m) {
-	return MaxOf_r<Cont, std::less<typename Cont::value_type> >(cont_, lref<typename Cont::value_type>(m), std::less<typename Cont::value_type> ());
-}
-
-// max_of(continer,m) - max value in container is m
-template<class Cont, class Cmp> inline
-MaxOf_r<Cont,Cmp> 
-max_of(lref<Cont>& cont_, const typename Cont::value_type& m, Cmp cmp) {
-	return MaxOf_r<Cont,Cmp>(cont_,lref<typename Cont::value_type>(m),cmp);
 }
 
 
@@ -329,7 +308,7 @@ public:
         if(m.defined())
           co_return( m.get()== * std::min_element(cont->begin(), cont->end(), cmp) );
 
-        m.set_ptr(&*(std::min_element(cont->begin(), cont->end(), cmp)),false);
+        m=*std::min_element(cont->begin(), cont->end(), cmp);
 	    co_yield(true);
 		m.reset();
   		co_end();
@@ -348,20 +327,6 @@ template<class Cont, class Cmp> inline
 MinOf_r<Cont,Cmp> 
 min_of(lref<Cont>& cont_, const lref<typename Cont::value_type>& m, Cmp cmp) {
 	return MinOf_r<Cont,Cmp>(cont_,m,cmp);
-}
-
-// min_of(continer,m) - min value in container is m
-template<class Cont> inline
-MinOf_r<Cont> 
-min_of(lref<Cont>& cont_, const typename Cont::value_type& m) {
-	return MinOf_r<Cont>(cont_, lref<typename Cont::value_type>(m));
-}
-
-// min_of(continer,m) - min value in container is m
-template<class Cont, class Cmp> inline
-MinOf_r<Cont,Cmp> 
-min_of(lref<Cont>& cont_, const typename Cont::value_type& m, Cmp cmp) {
-	return MinOf_r<Cont,Cmp>(cont_,lref<typename Cont::value_type>(m),cmp);
 }
 
 
@@ -453,20 +418,6 @@ template<class Cont, class Adder> inline
 AvgOf_r<Cont,Adder> 
 average_of(lref<Cont>& cont_, const lref<typename Cont::value_type>& a, Adder adder) {
     return AvgOf_r<Cont,Adder>(cont_,a,adder);
-}
-
-// average_of(continer,m) - max value in container is a
-template<class Cont> inline
-AvgOf_r<Cont> 
-average_of(lref<Cont>& cont_, const typename Cont::value_type& a) {
-    return AvgOf_r<Cont>(cont_, lref<typename Cont::value_type>(a));
-}
-
-// average_of(continer,m) - avg of values in container is a
-template<class Cont, class Adder> inline
-AvgOf_r<Cont,Adder> 
-average_of(lref<Cont>& cont_, const typename Cont::value_type& a, Adder adder) {
-    return AvgOf_r<Cont,Adder>(cont_,lref<typename Cont::value_type>(a),adder);
 }
 
 

@@ -12,7 +12,7 @@ int test_main(int, char * [])
 {
     { // generate
         lref<std::vector<int>::size_type> s;
-        lref<std::vector<int> > coll = std::vector<int> ();
+        lref<const std::vector<int> > coll = std::vector<int> ();
         relation r = size_of(coll, s);
         int i = 0;
 
