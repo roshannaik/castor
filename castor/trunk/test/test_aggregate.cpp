@@ -117,7 +117,7 @@ void test_size_of() {
     {
     // generate
     lref<vector<int>::size_type> s;
-    lref</*const*/ vector<int> > coll = vector<int> ();
+    lref<const vector<int> > coll = vector<int> ();
     relation r=size_of(coll,s);
     int i=0;
     for(; r(); ++i) {
@@ -130,7 +130,7 @@ void test_size_of() {
     {
     // generate
     lref<vector<int>::size_type> s2;
-    lref</*const*/ vector<int> > coll2;
+    lref<vector<int> > coll2;
     relation r2=size_of(coll2,s2);
     int passed2=false;
     try { r2(); }
@@ -394,6 +394,20 @@ void test_max_of() {
         if(!r())
             throw "failed test_max_of 5";
     }
+    {// basic - gen - with const container
+        lref<string> m;
+        lref<const vector<string> > cv = vector<string>(arr, arr+4);
+
+        relation r =  max_of(cv,m) ;
+        if(!r())
+            throw "failed test_max_of 6";
+        if(*m!="castor")
+            throw "failed test_max_of 6";
+        if(r())
+            throw "failed test_max_of 6";
+        if(m.defined())
+            throw "failed test_max_of 6";
+    }
 }
 
 void test_min_of() {
@@ -459,6 +473,20 @@ void test_min_of() {
         relation r =  min_of(v,"castor", std::greater<string>() ) ;
         if(!r())
             throw "failed test_min_of 5";
+    }
+    {// basic - gen - with const container
+        lref<string> m;
+        lref<vector<string> > cv = vector<string>(arr, arr+4);
+
+        relation r =  min_of(cv,m) ;
+        if(!r())
+            throw "failed test_min_of 6";
+        if(*m!="C#")
+            throw "failed test_min_of 6";
+        if(r())
+            throw "failed test_min_of 6";
+        if(m.defined())
+            throw "failed test_min_of 6";
     }
 }
 
@@ -621,5 +649,19 @@ void test_average_of() {
             throw "failed test_average_of 5";
         if(a.defined())
             throw "failed test_average_of 5";
+    }
+    {// gen - with const container
+       lref<const vector<int> > cv = vector<int>(nums,nums+5);
+        lref<int> a;
+        relation r = average_of(cv,a);
+        if(!r())
+            throw "failed test_average_of 6";
+        if(*a!=3)
+            throw "failed test_average_of 6";
+        if(r())
+            throw "failed test_average_of 6";
+        if(a.defined())
+            throw "failed test_average_of 6";
+
     }
 }

@@ -214,10 +214,10 @@ void test_eq_seq() {
     int i=0;
     for(; r(); ++i) {
         if(i>0 || (*vi).at(0)!=1 || (*vi).at(1)!=2 || (*vi).at(2)!=3 )
-            throw "failed test_eq_coll 1";
+            throw "failed test_eq_seq 1";
     }
     if(i!=1 || vi.defined())
-	    throw "failed test_eq_coll 1";
+	    throw "failed test_eq_seq 1";
     }
     {// compare using custom comparator
     const int ai[] = {1,2,3};
@@ -225,7 +225,7 @@ void test_eq_seq() {
 
     relation r = eq_seq(vi, ai, ai+3, &cmpi);
 	if(!r())
-        throw "failed test_eq_coll 2";
+        throw "failed test_eq_seq 2";
     }
     {
     const int bi[] = {1,2,3};
@@ -235,7 +235,7 @@ void test_eq_seq() {
 	int j=0;
 	for(; r2(); ++j);
 	if(j!=1 || !vj.defined())
-		throw "failed test_eq_coll 3";
+		throw "failed test_eq_seq 3";
     }
     {
     const int di[] = {1,2,3};
@@ -245,7 +245,18 @@ void test_eq_seq() {
 	int k=0;
 	for(; r3(); ++k);
 	if(k!=0 || !vk.defined())
-		throw "failed test_eq_coll 4";
+		throw "failed test_eq_seq 4";
+    }
+    { // with const_iterator
+    const int di[] = {1,2,3};
+    lref<vector<int> > vk = vector<int>(di, di+3);
+    const vector<int> cv(di, di+3);
+    int ei[] = {3,2,3};
+    relation r3 = eq_seq(vk, cv.begin(), cv.end());
+	int k=0;
+	for(; r3(); ++k);
+	if(k!=1 || !vk.defined())
+		throw "failed test_eq_seq 5";
     }
 }
 
@@ -434,18 +445,18 @@ void test_eq_mf() {
         throw "failed test_eq_mf 3";
     i.reset();
     // const method
-    if(!eq_mf<int,int,int,int,Functor6>(i,f,&Functor6::cmethod,1,1)() || *i!=2 )
+    if(!eq_mf<int,Functor6>(i,f,&Functor6::cmethod,1,1)() || *i!=2 )
         throw "failed test_eq_mf 3";
     // const Obj, const method
 #ifndef __GNUG__
     lref<const Functor6> fc= Functor6();
-    if(!eq_mf<int,int,int,int,const Functor6>(i,fc,&Functor6::cmethod,1,1)() || *i!=2 )
+    if(!eq_mf<int,const Functor6>(i,fc,&Functor6::cmethod,1,1)() || *i!=2 )
         throw "failed test_eq_mf 3";
 #endif
 	// const lref, const method -- turn the const lref into plain lref and then use it
     const lref<Functor6> cf= Functor6();
     f = cf;
-    if(!eq_mf<int,int,int,int,Functor6>(i,f,&Functor6::cmethod,1,1)() || *i!=2 )
+    if(!eq_mf<int,Functor6>(i,f,&Functor6::cmethod,1,1)() || *i!=2 )
         throw "failed test_eq_mf 3";
     i=0;
     if( eq_mf(i,f,&Functor6::method,1,1,1,i2,1,ci2)() )
@@ -498,6 +509,14 @@ void test_eq_mem() {
       total+=*salary;
     if(total!=140)
         throw "failed test_eq_mem 3";
+    }
+    { // with const Obj- explicit template args
+    lref<const pair<int,string> > p = pair<int,string>(1,"Roshan");
+    relation r = eq_mem<int,const pair<int,string> >(1, p,&pair<int,string>::first);
+	int i=0;
+	for(; r(); ++i);
+	if(i!=1)
+		throw "failed test_eq_mem 4";
     }
 }
 

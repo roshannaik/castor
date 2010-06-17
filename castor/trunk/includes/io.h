@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <string>
+#include "helpers.h"
 
 namespace castor {
 
@@ -72,7 +73,7 @@ WriteAll_r<Itr> writeAll(Itr begin_, Itr end_, const std::string& separator=", "
 // Concepts : Cont support methods begin() and end()
 template<typename Cont> inline
 relation writeAll(lref<Cont>& cont_, const std::string& separator=", ", const std::string& terminateWith="\n") {
-  typedef typename Cont::iterator Itr;
+  typedef typename detail::PickIterator<Cont>::type Itr;
   lref<Itr> b, e;
   return begin(cont_,b) && end(cont_,e) && WriteAll_r<lref<Itr> >(b, e, separator, terminateWith);
 }
@@ -84,7 +85,7 @@ WriteAll_r<Itr> writeAllTo(std::ostream& outputStrm, Itr begin_, Itr end_, const
 
 template<typename Cont> inline
 relation writeAllTo(std::ostream& outputStrm, lref<Cont>& cont_, const std::string& separator=", ", const std::string& terminateWith="\n") {
-  typedef typename Cont::iterator Itr;
+  typedef typename detail::PickIterator<Cont>::type Itr;
   lref<Itr> b, e;
   return begin(cont_,b) && end(cont_,e) && WriteAll_r<lref<Itr> >(b, e, separator, terminateWith, outputStrm);
 }

@@ -36,6 +36,11 @@ Enhancements to ILE (closure/lambda facility):
 
 - Speed improvements for ILE expressions. Closer to the speed of custom function objects.
 
+Other enhancements 
+----------------------------------------------
+ - Support for const container<> and const_iterator in relations : begin(), end(), not_empty, 
+ 
+
 New features:
 -------------
 - Class Coroutine and macros co_begin, co_end, co_return & co_yield that support coroutine style programming
@@ -57,9 +62,10 @@ New features:
   + item_set() - for lookup & enumeration of objects in associative containers where key and value is the same(e.g. std::set, std::multiset).
   + pause() - To pause execution. Prints a message and waits for a key press by calling cin.ignore(). Helpful as a debugging aid.
   + pause_f() - Similar to pause(), but prints result of a function call instead of a string message.
-  + permute() -  To generate permutations of a sequnce/string.
+  + permutation(), permutation_cmp() -  To generate permutations of a sequnce/string.
   + range_dec() - To iterate over a range in decreasing order.
   + ritem() -  To lookup & enumerate values from a sequence in reverse. The sequence must provide rbegin() and rend().
+  + rbegin(), end() - To test/generate reverse iterators for a reversible container.
   + shuffle() - To generate a randomized sequence/string.
   + unique_mem(), unique_mf() - Similar to unique() but filtering is based on a data member or value returned by a method call.
   + writeAll(), writeAllTo() - To print all elements in a sequence to cout or to a stream.
@@ -122,10 +128,12 @@ In order to use the following deprecated facilites a #define CASTOR_ENABLE_DEPRE
 
 Potential Incompatibilities:
 ---------------------------
-- item() relation now yields an lref<> that references the actual element in the container/sequence 
+- item() & head() relations now yield an lref<> that references the actual element in the container/sequence 
   instead of a copy.
-- item() will now succeed once for every occurance of the value in the container/sequence. Old behavior
+- item() now succeeds once for every occurance of the value in the container/sequence. Old behavior
   of item was to succeed only once for such cases.
+- Template paramters for eq_mf reordered to minimize need for explicit template arguments when 
+  using const objects. Code that explicitly specify template arguments to these relations will be affected.
 
 Bug fixes:
 ----------

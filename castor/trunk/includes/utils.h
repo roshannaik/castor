@@ -159,7 +159,7 @@ Boolean empty(const Cont& c) {
 
 template<class Cont> inline
 relation not_empty(lref<Cont>& c_) {
-    return eq_mf<bool>(false, c_, &Cont::empty);
+    return eq_mf<bool,Cont>(false, c_, &Cont::empty); // explicit template arg to allow for const Cont
 }
 
 // this overload allows calls to not_empty without explicit template type arguments
@@ -312,7 +312,6 @@ RangeDec_Step_r<T> range_dec(lref<T> val, T max_, T min_, T step_) {
     return RangeDec_Step_r<T>(val, min_, max_, step_);
 }
 
-
 //--------------------------------------------------------
 //  Relation item_set
 //--------------------------------------------------------
@@ -321,7 +320,7 @@ class ItemSet_r : public Coroutine {
     typedef typename SetT::value_type value_type;
     lref<value_type> obj;
     lref<SetT> cont;
-    typedef typename SetT::iterator iter;
+    typedef typename detail::PickIterator<SetT>::type iter;
     std::pair<iter,iter> results;
 public:
     ItemSet_r(const lref<value_type>& obj, const lref<SetT>& cont_) : obj(obj), cont(cont_)
@@ -396,7 +395,8 @@ class ItemCont_r : public Coroutine {
     typedef typename Cont::value_type value_type;
     lref<value_type> obj;
     lref<Cont> cont;
-    lref<typename Cont::iterator> i;
+    typedef typename detail::PickIterator<Cont>::type iter;
+    lref<iter> i;
 public:
     ItemCont_r(const lref<value_type>& obj, const lref<Cont>& cont_) : obj(obj), cont(cont_)
     { }
@@ -446,7 +446,7 @@ class ItemMap_r : public Coroutine {
     lref<const key_type> key;
     lref<mapped_type> obj;
     lref<MapT> cont;
-    typedef typename MapT::iterator iter;
+    typedef typename detail::PickIterator<MapT>::type iter;
     std::pair<iter,iter> results;
 public:
     ItemMap_r(lref<const key_type> key, lref<mapped_type> obj, const lref<MapT>& cont_) : key(key), obj(obj), cont(cont_)
@@ -509,7 +509,8 @@ class ItemRCont_r : public Coroutine {
     typedef typename Cont::value_type value_type;
     lref<value_type> obj;
     lref<Cont> cont;
-    lref<typename Cont::reverse_iterator> i;
+    typedef typename detail::PickRIterator<Cont>::type iter;
+    lref<iter> i;
 public:
     ItemRCont_r(const lref<value_type>& obj, const lref<Cont>& cont_) : obj(obj), cont(cont_)
     { }
@@ -532,6 +533,7 @@ public:
     }
 };
 
+// Cont is a reversible container
 template<class Cont> inline
 ItemRCont_r<Cont> ritem(lref<typename Cont::value_type> obj, lref<Cont>& cont_) {
     return ItemRCont_r<Cont>(obj, cont_);
@@ -716,7 +718,7 @@ public:
         co_return(false);
       if(h.defined())
           co_return( *h==*(seq_->begin()) );
-      h=*(seq_->begin());
+      h.set_ptr(&*(seq_->begin()),false);
       co_yield(true);
       h.reset();
       co_end();
@@ -778,15 +780,16 @@ public:
     { }
 
     bool operator() (void) {
-      typename Seq::iterator b;
+      typedef typename detail::PickIterator<Seq>::type iter;
+      iter b;
       co_begin();
       if(seq_->empty())
         co_return(false);
-		  if(t.defined()) {
-			  b = seq_->begin();
+      if(t.defined()) {
+        b = seq_->begin();
         co_return( *t == Seq(++b, seq_->end()) );
-		  }
-		  b = seq_->begin();
+      }
+      b = seq_->begin();
       t = Seq(++b, seq_->end());
       co_yield(true);
       t.reset();
@@ -1143,7 +1146,7 @@ Sequence_r<Seq> sequence(lref<Seq>& seq) {
 //  Merge : m is the sorted merge of the two sorted sequences l, r
 //--------------------------------------------------------
 
-template<typename Seq>
+template<class Seq>
 relation merge(lref<Seq>& l_, lref<Seq>& r_, lref<Seq>& m) {
 	lref<typename Seq::value_type> h1, h2;
 	lref<Seq> t1, t2, tmp;
@@ -1172,9 +1175,8 @@ relation merge(lref<Seq>& l_, lref<Seq>& r_, lref<Seq>& m) {
 //--------------------------------------------------------
 //  begin relation : For working with iterators
 //--------------------------------------------------------
-template<class Cont>
+template<class Cont,class Iter>
 class Begin_r : public Coroutine {
-    typedef typename Cont::iterator Iter;
     lref<Cont> cont_;
     lref<Iter> iter;
 public:
@@ -1195,16 +1197,22 @@ public:
 // 1st argument disallows a raw vector to be passed as argument... since passing 
 // a raw vector to a lref causes the lref to make a copy of the vector.
 template<class Cont> inline
-Begin_r<Cont> begin(lref<Cont>& cont_, const lref<typename Cont::iterator>& iter) {
-    return Begin_r<Cont>(cont_, iter);
+Begin_r<Cont,typename Cont::iterator> 
+begin(lref<Cont>& cont_, const lref<typename Cont::iterator>& iter) {
+    return Begin_r<Cont,typename Cont::iterator>(cont_, iter);
+}
+
+template<class Cont> inline
+Begin_r<Cont,typename Cont::const_iterator> 
+begin(lref<Cont>& cont_, const lref<typename Cont::const_iterator>& iter) {
+    return Begin_r<Cont,typename Cont::const_iterator>(cont_, iter);
 }
 
 //--------------------------------------------------------
 //  end relation : For working with iterators 
 //--------------------------------------------------------
-template<class Cont>
+template<class Cont, class IterT>
 class End_r : public Coroutine {
-    typedef typename Cont::iterator IterT;
     lref<Cont> cont_;
     lref<IterT> iter;
 public:
@@ -1223,17 +1231,22 @@ public:
 };
 
 template<class Cont> inline
-End_r<Cont> end(lref<Cont>& cont_, const lref<typename Cont::iterator>& iter) {
-    return End_r<Cont>(cont_, iter);
+End_r<Cont,typename Cont::iterator> 
+end(lref<Cont>& cont_, const lref<typename Cont::iterator>& iter) {
+    return End_r<Cont,typename Cont::iterator>(cont_, iter);
 }
 
+template<class Cont> inline
+End_r<Cont,typename Cont::const_iterator> 
+end(lref<Cont>& cont_, const lref<typename Cont::const_iterator>& iter) {
+    return End_r<Cont,typename Cont::const_iterator>(cont_, iter);
+}
 
 //--------------------------------------------------------
 //  begin relation : For working with reverse iterators
 //--------------------------------------------------------
-template<class Cont>
+template<class Cont, class Iter>
 class RBegin_r : public Coroutine {
-    typedef typename Cont::reverse_iterator Iter;
     lref<Cont> cont_;
     lref<Iter> iter;
 public:
@@ -1254,16 +1267,22 @@ public:
 // 1st argument disallows a raw vector to be passed as argument... since passing 
 // a raw vector to a lref causes the lref to make a copy of the vector.
 template<class Cont> inline
-RBegin_r<Cont> rbegin(lref<Cont>& cont_, const lref<typename Cont::reverse_iterator>& iter) {
-    return RBegin_r<Cont>(cont_, iter);
+RBegin_r<Cont,typename Cont::reverse_iterator> 
+rbegin(lref<Cont>& cont_, const lref<typename Cont::reverse_iterator>& iter) {
+    return RBegin_r<Cont,typename Cont::reverse_iterator>(cont_, iter);
+}
+
+template<class Cont> inline
+RBegin_r<Cont,typename Cont::const_reverse_iterator> 
+rbegin(lref<Cont>& cont_, const lref<typename Cont::const_reverse_iterator>& iter) {
+    return RBegin_r<Cont,typename Cont::const_reverse_iterator>(cont_, iter);
 }
 
 //--------------------------------------------------------
 //  rend relation : For working with reverse iterators 
 //--------------------------------------------------------
-template<class Cont>
+template<class Cont, class IterT>
 class REnd_r : public Coroutine {
-    typedef typename Cont::reverse_iterator IterT;
     lref<Cont> cont_;
     lref<IterT> iter;
 public:
@@ -1282,11 +1301,16 @@ public:
 };
 
 template<class Cont> inline
-REnd_r<Cont> rend(lref<Cont>& cont_, const lref<typename Cont::reverse_iterator>& iter) {
-    return REnd_r<Cont>(cont_, iter);
+REnd_r<Cont,typename Cont::reverse_iterator> 
+rend(lref<Cont>& cont_, const lref<typename Cont::reverse_iterator>& iter) {
+    return REnd_r<Cont,typename Cont::reverse_iterator>(cont_, iter);
 }
 
-
+template<class Cont> inline
+REnd_r<Cont,typename Cont::const_reverse_iterator> 
+rend(lref<Cont>& cont_, const lref<typename Cont::const_reverse_iterator>& iter) {
+    return REnd_r<Cont,typename Cont::const_reverse_iterator>(cont_, iter);
+}
 
 //-------------------------------------------------
 // eval() - Invoke the function/function object: Succeeds only once

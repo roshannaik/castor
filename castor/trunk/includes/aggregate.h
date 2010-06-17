@@ -218,7 +218,7 @@ public:
         if(m.defined())
           co_return( m.get()== * std::max_element(cont->begin(), cont->end(), cmp) );
 
-        m.set_ptr(&*(std::max_element(cont->begin(), cont->end(), cmp)),false);
+        m= *std::max_element(cont->begin(), cont->end(), cmp);
 	    co_yield(true);
 		m.reset();
   		co_end();
@@ -308,7 +308,7 @@ public:
         if(m.defined())
           co_return( m.get()== * std::min_element(cont->begin(), cont->end(), cmp) );
 
-        m.set_ptr(&*(std::min_element(cont->begin(), cont->end(), cmp)),false);
+        m=*std::min_element(cont->begin(), cont->end(), cmp);
 	    co_yield(true);
 		m.reset();
   		co_end();

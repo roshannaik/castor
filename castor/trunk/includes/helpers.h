@@ -366,5 +366,29 @@ public:
 	}
 };
 
+
+
+// Picks Cont::iterator or Cont::const_iterator
+template<class Cont>
+struct PickIterator {
+    typedef typename Cont::iterator type;
+};
+
+template<class Cont>
+struct PickIterator<const Cont> {
+    typedef typename Cont::const_iterator type;
+};
+
+template<class Cont>
+struct PickRIterator {
+    typedef typename Cont::reverse_iterator type;
+};
+
+template<class Cont>
+struct PickRIterator<const Cont> {
+    typedef typename Cont::const_reverse_iterator type;
+};
+
+
 } } // namespace castor::detail
 #endif

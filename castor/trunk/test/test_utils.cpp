@@ -318,6 +318,7 @@ void test_eval_mf() {
 //  Tests  : begin and end relations to obtain iterators to lref<CollectionT>
 //--------------------------------------------------------
 void test_begin_end() {
+    {
     list<int> li; li.push_back(1); li.push_back(2); li.push_back(3);
     lref<list<int> > lrli;
     lref<list<int>::iterator> itrB, itrE;
@@ -326,6 +327,23 @@ void test_begin_end() {
         throw "failed test_begin_end 1";
     if(!equal(*itrB, *itrE, li.begin()))
         throw "failed test_begin_end 1";
+    }
+    { // const container with const_iterator
+        lref<const string> s = "castor";
+        string::const_iterator b = s->begin(), e = s->end();
+        lref<string::const_iterator> lb, le;
+        relation r = begin(s,lb) && end(s,le) && eq(b,lb) && eq(e,le);
+        if(!r())
+            throw "failed test_begin_end 2";
+    }
+    { // non const container with const_iterator
+        lref<string> s = "castor";
+        string::const_iterator b = s->begin(), e = s->end();
+        lref<string::const_iterator> lb, le;
+        relation r = begin(s,lb) && end(s,le) && eq(b,lb) && eq(e,le);
+        if(!r())
+            throw "failed test_begin_end 3";
+    }
 }
 
 
@@ -667,7 +685,7 @@ void test_tail() {
     {
     // tail of empty list
     lref<vector<int> > tk;
-    lref</*const*/ vector<int> >vk = vector<int>();
+    lref<const vector<int> >vk = vector<int>();
     relation r3 =  tail(vk,tk);
     if(r3())
         throw "failed test_tail 3";
@@ -1301,7 +1319,7 @@ void test_item() {
         throw "failed test_item 8";
     }
     {
-    // 9- iterate using
+    // 9- iterate over container
 
     int ai[] = {1,2,3,4,5};
     lref<vector<int> > vi = vector<int>(ai+0, ai+5);
@@ -1372,6 +1390,17 @@ void test_item() {
         throw "failed test_item 13";
 
     }
+    //{// const container and const_iterator
+    //    int arr[] = {1,2,3,4};
+    //    lref<const vector<int> > v = vector<int>(arr,arr+4);
+    //    lref<const int> i;
+    //    if(item(i,v)())
+    //        throw "failed test_item 14";
+    //    vector<int>::const_iterator b = v->begin(), e = v->end();
+    //    lref<const int> j;
+    //    if(item(j,b, e)())
+    //        throw "failed test_item 14";
+    // }
 }
 
 void test_item_set() {
@@ -1685,21 +1714,33 @@ void test_empty() {
     if(!r())
         throw "failed test_empty 2";
     }
+    { // 3- const Cont (not lref<Cont>)
+    const vector<int> vi;
+    relation r = empty(vi);
+    if(!r())
+        throw "failed test_empty 3";
+    }
 }
 
 
 void test_not_emtpy() {
-    { //1 
+    { //1  - using lref<Cont>
     lref<vector<int> > lvi = vector<int>();
     relation r = not_empty(lvi);
     if(r())
         throw "failed test_not_empty 1";
     }
-    { //2
+    { //2 - not using lref<Cont>
     vector<int> vi = vector<int>();
     relation r = not_empty(vi);
     if(r())
         throw "failed test_not_empty 2";
+    }
+    { //3 - const objects
+    lref<const vector<int> > lvi = vector<int>();
+    relation r = not_empty(lvi);
+    if(r())
+        throw "failed test_not_empty 3";
     }
 }
 
