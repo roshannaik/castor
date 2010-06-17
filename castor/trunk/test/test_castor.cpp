@@ -663,7 +663,8 @@ void runtests() {
 
 	// collection 
 	run_test( test_shuffle );
-    run_test( test_permute );
+    run_test( test_permutation );
+    run_test( test_permutation_cmp );
 
 	// TLRs
 	run_test( test_order );

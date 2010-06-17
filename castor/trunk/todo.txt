@@ -1,13 +1,11 @@
   Todo
 ------------
 HIGH
-- const iterator support for item
-- joins
-- ? writeAll for group<>
-- ritem should work on random access containers
+?- allow binding lref<const int> i to lref<int>;
+- input only params should have _i suffix
 + All TLRs should be collection oriented also ?
    - reverse/ritem
-- relocate zip
+- relocate zip - should it be an operator ?
 - Consider splitting set_ptr into two nullary methods
 - Item should be able to support random lookup for containers
 + Wrap up TLRs (consider renaming them .."TakeLeft" ?)

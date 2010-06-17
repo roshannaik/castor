@@ -225,7 +225,7 @@ public:
     typedef Collection collection_type;
     typedef Iter iterator_type;
 
-    EqSeq_r(const lref<Collection>& c, const Iter& begin_, const Iter& end_, const Cmp& cmp) : Base(cmp) ,c(c), begin_(begin_), end_(end_)
+    EqSeq_r(const lref<Collection>& c, const Iter& begin_, const Iter& end_, const Cmp& cmp=::castor::detail::None()) : Base(cmp) ,c(c), begin_(begin_), end_(end_)
     { }
 
     bool operator() (void) {
@@ -241,7 +241,7 @@ public:
 
 template<typename Cont, typename Iter> inline 
 EqSeq_r<Cont, Iter> eq_seq(const lref<Cont>& c, Iter begin_, Iter end_) {
-    return EqSeq_r<Cont, Iter>(c, begin_, end_, ::castor::detail::None());
+    return EqSeq_r<Cont, Iter>(c, begin_, end_);
 }
 
 template<typename Cont, typename Iter, typename Cmp> inline 
@@ -634,86 +634,87 @@ public:
 
 
 // overloads for non-const member functions
-template<typename L, typename R, typename Obj> inline
+template<typename L, typename Obj, typename R> inline
 Eq_mf_r0<L,Obj,R(Obj::*)(void)> 
 eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::*mf)(void) ) {
     return Eq_mf_r0<L,Obj,R(Obj::*)(void)>(l,obj_,mf);
 }
 
-template<typename L, typename R, typename P1, typename Obj, typename A1> inline
+template<typename L, typename Obj, typename R, typename P1, typename A1> inline
 Eq_mf_r1<L,Obj,R(Obj::*)(P1),A1> 
 eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1), const A1& a1_) {
     return Eq_mf_r1<L,Obj,R(Obj::*)(P1),A1>(l,obj_,mf,a1_);
 }
 
-template<typename L, typename R, typename P1, typename P2, typename Obj, typename A1, typename A2> inline
+template<typename L, typename Obj, typename R, typename P1, typename P2, typename A1, typename A2> inline
 Eq_mf_r2<L,Obj,R(Obj::*)(P1,P2),A1,A2> 
 eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2), const A1& a1_, const A2& a2_) {
     return Eq_mf_r2<L,Obj,R(Obj::*)(P1,P2),A1,A2>(l,obj_,mf,a1_,a2_);
 }
 
-template<typename L, typename R, typename P1, typename P2, typename P3, typename Obj, typename A1, typename A2, typename A3> inline
+template<typename L, typename Obj, typename R, typename P1, typename P2, typename P3, typename A1, typename A2, typename A3> inline
 Eq_mf_r3<L,Obj,R(Obj::*)(P1,P2,P3),A1,A2,A3> 
 eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3), const A1& a1_, const A2& a2_, const A3& a3_) {
     return Eq_mf_r3<L,Obj,R(Obj::*)(P1,P2,P3),A1,A2,A3>(l,obj_,mf,a1_,a2_,a3_);
 }
 
-template<typename L, typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename A1, typename A2, typename A3, typename A4> inline
+template<typename L, typename Obj, typename R, typename P1, typename P2, typename P3, typename P4, typename A1, typename A2, typename A3, typename A4> inline
 Eq_mf_r4<L,Obj,R(Obj::*)(P1,P2,P3,P4),A1,A2,A3,A4> 
 eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
     return Eq_mf_r4<L,Obj,R(Obj::*)(P1,P2,P3,P4),A1,A2,A3,A4>(l,obj_,mf,a1_,a2_,a3_,a4_);
 }
 
-template<typename L, typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+template<typename L, typename Obj, typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename A1, typename A2, typename A3, typename A4, typename A5> inline
 Eq_mf_r5<L,Obj,R(Obj::*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5> 
 eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
     return Eq_mf_r5<L,Obj,R(Obj::*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5>(l,obj_,mf,a1_,a2_,a3_,a4_,a5_);
 }
 
-template<typename L, typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+template<typename L, typename Obj, typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
 Eq_mf_r6<L,Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6> 
 eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
     return Eq_mf_r6<L,Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6>(l,obj_,mf,a1_,a2_,a3_,a4_,a5_,a6_);
 }
 
+
 // overloads for const member functions
-template<typename L, typename R, typename Obj> inline
+template<typename L, typename Obj, typename R> inline
 Eq_mf_r0<L,Obj,R(Obj::*)(void) const> 
 eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::*mf)(void) const) {
     return Eq_mf_r0<L,Obj,R(Obj::*)(void) const>(l,obj_,mf);
 }
 
-template<typename L, typename R, typename P1, typename Obj, typename A1> inline
+template<typename L, typename Obj, typename R, typename P1, typename A1> inline
 Eq_mf_r1<L,Obj,R(Obj::*)(P1) const,A1> 
 eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1) const, const A1& a1_) {
     return Eq_mf_r1<L,Obj,R(Obj::*)(P1) const,A1>(l,obj_,mf,a1_);
 }
 
-template<typename L, typename R, typename P1, typename P2, typename Obj, typename A1, typename A2> inline
+template<typename L, typename Obj, typename R, typename P1, typename P2, typename A1, typename A2> inline
 Eq_mf_r2<L,Obj,R(Obj::*)(P1,P2) const,A1,A2> 
 eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2) const, const A1& a1_, const A2& a2_) {
     return Eq_mf_r2<L,Obj,R(Obj::*)(P1,P2) const,A1,A2>(l,obj_,mf,a1_,a2_);
 }
 
-template<typename L, typename R, typename P1, typename P2, typename P3, typename Obj, typename A1, typename A2, typename A3> inline
+template<typename L, typename Obj, typename R, typename P1, typename P2, typename P3, typename A1, typename A2, typename A3> inline
 Eq_mf_r3<L,Obj,R(Obj::*)(P1,P2,P3) const,A1,A2,A3> 
 eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3) const, const A1& a1_, const A2& a2_, const A3& a3_) {
     return Eq_mf_r3<L,Obj,R(Obj::*)(P1,P2,P3) const,A1,A2,A3>(l,obj_,mf,a1_,a2_,a3_);
 }
 
-template<typename L, typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename A1, typename A2, typename A3, typename A4> inline
+template<typename L, typename Obj, typename R, typename P1, typename P2, typename P3, typename P4, typename A1, typename A2, typename A3, typename A4> inline
 Eq_mf_r4<L,Obj,R(Obj::*)(P1,P2,P3,P4) const,A1,A2,A3,A4> 
 eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
     return Eq_mf_r4<L,Obj,R(Obj::*)(P1,P2,P3,P4) const,A1,A2,A3,A4>(l,obj_,mf,a1_,a2_,a3_,a4_);
 }
 
-template<typename L, typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+template<typename L, typename Obj, typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename A1, typename A2, typename A3, typename A4, typename A5> inline
 Eq_mf_r5<L,Obj,R(Obj::*)(P1,P2,P3,P4,P5) const,A1,A2,A3,A4,A5> 
 eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
     return Eq_mf_r5<L,Obj,R(Obj::*)(P1,P2,P3,P4,P5) const,A1,A2,A3,A4,A5>(l,obj_,mf,a1_,a2_,a3_,a4_,a5_);
 }
 
-template<typename L, typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+template<typename L, typename Obj, typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
 Eq_mf_r6<L,Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,A1,A2,A3,A4,A5,A6> 
 eq_mf(lref<L> l, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
     return Eq_mf_r6<L,Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,A1,A2,A3,A4,A5,A6>(l,obj_,mf,a1_,a2_,a3_,a4_,a5_,a6_);

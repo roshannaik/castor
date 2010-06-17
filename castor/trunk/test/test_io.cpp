@@ -50,7 +50,7 @@ void test_writeAllTo() {
   }	
   { // write container to stream
 	stringstream sstrm;
-    lref<vector<string> > vls = vector<string>(as,as+4);
+    lref<const vector<string> > vls = vector<string>(as,as+4);
     if(!writeAllTo(sstrm,vls,"")())
         throw "failed test_writeAllTo 3"; 
     string s;
