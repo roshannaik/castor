@@ -67,9 +67,9 @@ public:
 	}
 };
 
-
+namespace detail {
 //---------------------------------------------------------------
-// TestOnlyRelation : Helper for creating custom relations that
+// detail::TestOnlyRelation : Helper for creating custom relations that
 //                    do not produce any side effects
 //---------------------------------------------------------------
 template<typename Derived>
@@ -87,6 +87,8 @@ public:
       co_end();
     }
 };
+
+} // namespace detail
 
 #ifdef CASTOR_ENABLE_DEPRECATED
 //---------------------------------------------------------------
