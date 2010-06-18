@@ -387,7 +387,7 @@ void test_cut() {
 	if( r() )
 		throw "failed test_cut 5";
 	}
-#ifndef __BCPLUSPLUS__   // cut() && cut() not supported in BCB
+#ifndef __BCPLUSPLUS__   // cut() || cut() not supported in BCB
 	{ // cut() || cut()
 	relation r = cutexpr( cut() || cut() );
 	if( r() )
@@ -435,42 +435,6 @@ void test_cut() {
     if(lss->size()!=3)
         throw "failed test_cut 13";
     }
-//#endif // __BCPLUSPLUS__
-}
-
-
-
-//--------------------------------------------------------
-//   Fast And Support
-//--------------------------------------------------------
-
-class myFastAndTestRel : public TestOnlyRelation<myFastAndTestRel> {
-  lref<int> i;
-public:
-  myFastAndTestRel(lref<int> i) : i(i)
-  {}
-  myFastAndTestRel(const myFastAndTestRel& rhs) : i(rhs.i){
-#ifndef __BCPLUSPLUS__
-	static int times=0;
-	if(++times>2)
-	  throw "Relation myFastAndTestRel copy constructed too many times " ;
-#endif
-  }
-
-  bool operator () (void) {
-	co_begin();
-	co_yield(*i<20);
-	co_end();
-  }
-};
-
-
-void test_op_and_fast() {
-  {
-	lref<int> i;
-	relation r = range(i,18,22) && myFastAndTestRel(i);
-	while(r());
-  }
 }
 
 

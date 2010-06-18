@@ -15,7 +15,7 @@ namespace castor {
 // predicate : Adaptor relation for treating predicate functions as relations
 //----------------------------------------------------------------------------
 template<typename Pred>
-struct Predicate0_r : public TestOnlyRelation<Predicate0_r<Pred> > {
+struct Predicate0_r : public detail::TestOnlyRelation<Predicate0_r<Pred> > {
 	Pred pred;
 
 	Predicate0_r (const Pred& pred) : pred(pred)
@@ -27,7 +27,7 @@ struct Predicate0_r : public TestOnlyRelation<Predicate0_r<Pred> > {
 };
 
 template<typename Pred, typename A1>
-struct Predicate1_r : public TestOnlyRelation<Predicate1_r<Pred,A1> > {
+struct Predicate1_r : public detail::TestOnlyRelation<Predicate1_r<Pred,A1> > {
 	Pred pred;
 	A1 a1;
 	Predicate1_r (const Pred& pred, const A1& a1) : pred(pred), a1(a1)
@@ -39,7 +39,7 @@ struct Predicate1_r : public TestOnlyRelation<Predicate1_r<Pred,A1> > {
 };
 
 template<typename Pred, typename A1, typename A2>
-struct Predicate2_r : public TestOnlyRelation<Predicate2_r<Pred,A1,A2> > {
+struct Predicate2_r : public detail::TestOnlyRelation<Predicate2_r<Pred,A1,A2> > {
 	Pred pred;
 	A1 a1;	A2 a2;
 
@@ -52,7 +52,7 @@ struct Predicate2_r : public TestOnlyRelation<Predicate2_r<Pred,A1,A2> > {
 };
 
 template<typename Pred, typename A1, typename A2, typename A3>
-struct Predicate3_r : public TestOnlyRelation<Predicate3_r<Pred,A1,A2,A3> > {
+struct Predicate3_r : public detail::TestOnlyRelation<Predicate3_r<Pred,A1,A2,A3> > {
 	Pred pred;
 	A1 a1;	A2 a2;	A3 a3;
 
@@ -66,7 +66,7 @@ struct Predicate3_r : public TestOnlyRelation<Predicate3_r<Pred,A1,A2,A3> > {
 
 
 template<typename Pred, typename A1, typename A2, typename A3, typename A4>
-struct Predicate4_r : public TestOnlyRelation<Predicate4_r<Pred,A1,A2,A3,A4> > {
+struct Predicate4_r : public detail::TestOnlyRelation<Predicate4_r<Pred,A1,A2,A3,A4> > {
 	Pred pred;
 	A1 a1;	A2 a2;	A3 a3;	A4 a4;
 
@@ -79,7 +79,7 @@ struct Predicate4_r : public TestOnlyRelation<Predicate4_r<Pred,A1,A2,A3,A4> > {
 };
 
 template<typename Pred, typename A1, typename A2, typename A3, typename A4, typename A5>
-struct Predicate5_r : public TestOnlyRelation<Predicate5_r<Pred,A1,A2,A3,A4,A5> > {
+struct Predicate5_r : public detail::TestOnlyRelation<Predicate5_r<Pred,A1,A2,A3,A4,A5> > {
 	Pred pred;
 	A1 a1;	A2 a2;	A3 a3;	A4 a4;	A5 a5;
 
@@ -92,7 +92,7 @@ struct Predicate5_r : public TestOnlyRelation<Predicate5_r<Pred,A1,A2,A3,A4,A5> 
 };
 
 template<typename Pred, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
-struct Predicate6_r : public TestOnlyRelation<Predicate6_r<Pred,A1,A2,A3,A4,A5,A6> > {
+struct Predicate6_r : public detail::TestOnlyRelation<Predicate6_r<Pred,A1,A2,A3,A4,A5,A6> > {
 	Pred pred;
 	A1 a1;	A2 a2;	A3 a3;	A4 a4;	A5 a5;  A6 a6;
 
@@ -189,7 +189,7 @@ predicate(R(* pred)(P1,P2,P3,P4,P5,P6), const A1& a1_, const A2& a2_, const A3& 
 // predicate_mf : Adaptor relation for treating predicate methods as relations
 //----------------------------------------------------------------------------
 template<typename Obj, typename MemPred>
-class MemPredicate0_r : public TestOnlyRelation<MemPredicate0_r<Obj,MemPred> > {
+class MemPredicate0_r : public detail::TestOnlyRelation<MemPredicate0_r<Obj,MemPred> > {
     lref<Obj> obj_;
 	MemPred pred;
 public:
@@ -202,7 +202,7 @@ public:
 };
 
 template<typename Obj, typename MemPred, typename A1>
-class MemPredicate1_r : public TestOnlyRelation<MemPredicate1_r<Obj,MemPred,A1> > {
+class MemPredicate1_r : public detail::TestOnlyRelation<MemPredicate1_r<Obj,MemPred,A1> > {
     lref<Obj> obj_;
 	MemPred pred;
 	A1 arg1;
@@ -216,7 +216,7 @@ public:
 };
 
 template<typename Obj, typename MemPred, typename A1, typename A2>
-class MemPredicate2_r : public TestOnlyRelation<MemPredicate2_r<Obj,MemPred,A1,A2> > {
+class MemPredicate2_r : public detail::TestOnlyRelation<MemPredicate2_r<Obj,MemPred,A1,A2> > {
     lref<Obj> obj_;
 	MemPred pred;
 	A1 arg1; A2 arg2;
@@ -230,7 +230,7 @@ public:
 };
 
 template<typename Obj, typename MemPred, typename A1, typename A2, typename A3>
-class MemPredicate3_r : public TestOnlyRelation<MemPredicate3_r<Obj,MemPred,A1,A2,A3> > {
+class MemPredicate3_r : public detail::TestOnlyRelation<MemPredicate3_r<Obj,MemPred,A1,A2,A3> > {
     lref<Obj> obj_;
 	MemPred pred;
 	A1 arg1; A2 arg2; A3 arg3;
@@ -244,7 +244,7 @@ public:
 };
 
 template<typename Obj, typename MemPred, typename A1, typename A2, typename A3, typename A4>
-class MemPredicate4_r : public TestOnlyRelation<MemPredicate4_r<Obj,MemPred,A1,A2,A3,A4> > {
+class MemPredicate4_r : public detail::TestOnlyRelation<MemPredicate4_r<Obj,MemPred,A1,A2,A3,A4> > {
 	lref<Obj> obj_;
 	MemPred pred;
 	A1 arg1; A2 arg2; A3 arg3; A4 arg4;
@@ -258,7 +258,7 @@ public:
 };
 
 template<typename Obj, typename MemPred, typename A1, typename A2, typename A3, typename A4, typename A5>
-class MemPredicate5_r : public TestOnlyRelation<MemPredicate5_r<Obj,MemPred,A1,A2,A3,A4,A5> > {
+class MemPredicate5_r : public detail::TestOnlyRelation<MemPredicate5_r<Obj,MemPred,A1,A2,A3,A4,A5> > {
     lref<Obj> obj_;
 	MemPred pred;
 	A1 arg1; A2 arg2; A3 arg3; A4 arg4; A5 arg5;
@@ -272,7 +272,7 @@ public:
 };
 
 template<typename Obj, typename MemPred, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
-class MemPredicate6_r : public TestOnlyRelation<MemPredicate6_r<Obj,MemPred,A1,A2,A3,A4,A5,A6> > {
+class MemPredicate6_r : public detail::TestOnlyRelation<MemPredicate6_r<Obj,MemPred,A1,A2,A3,A4,A5,A6> > {
     lref<Obj> obj_;
 	MemPred pred;
 	A1 arg1; A2 arg2; A3 arg3; A4 arg4; A5 arg5; A6 arg6;
@@ -384,7 +384,7 @@ predicate_mf(lref<Obj>& obj_, R(Obj::* mempred)(P1,P2,P3,P4,P5,P6) const, const 
 //----------------------------------------------------------------
 
 template<typename Obj, typename MemberT>
-class Predicate_mem_r : public TestOnlyRelation<Predicate_mem_r<Obj,MemberT> > {
+class Predicate_mem_r : public detail::TestOnlyRelation<Predicate_mem_r<Obj,MemberT> > {
 	lref<Obj> obj_;
 	MemberT Obj::*  mem;
 public:
