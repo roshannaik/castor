@@ -653,7 +653,6 @@ void runtests() {
 
     run_test( test_writeTo_readFrom );
 
-    run_test( test_op_and_fast );
     run_test( test_op_exor );
 	run_test( test_repeat );
 	run_test( test_pause );

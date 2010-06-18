@@ -14,7 +14,7 @@ namespace castor {
 //  Write relation : Prints lrefs and POTs to std::cout
 //--------------------------------------------------------
 template<typename T>
-class Write_r : public TestOnlyRelation<Write_r<T> > {
+class Write_r : public detail::TestOnlyRelation<Write_r<T> > {
     T val;
     std::ostream* out_;
 public:
@@ -43,7 +43,7 @@ Write_r<std::string> write(const char* obj_) {
 //--------------------------------------------------------
 // Concepts : Itr is an iterator, pointer, or lref<Iterator> or lref<pointer>
 template<typename Itr>
-class WriteAll_r : public TestOnlyRelation<WriteAll_r<Itr> > {
+class WriteAll_r : public detail::TestOnlyRelation<WriteAll_r<Itr> > {
     Itr beg_, end_;
     std::string sep, terminateWith;
     std::ostream* out;
@@ -110,7 +110,7 @@ Write_r<std::string> writeTo(std::ostream& outputStrm, const char* obj_) {
 // -----------------------------------------------------------------
 
 template<typename OP>
-class WriteF_r : public TestOnlyRelation<WriteF_r<OP> > {
+class WriteF_r : public detail::TestOnlyRelation<WriteF_r<OP> > {
     OP func;
     std::ostream* outputStrm;
 public:
@@ -123,7 +123,7 @@ public:
 };
 
 template<typename OP1, typename A1>
-class WriteF1_r : public TestOnlyRelation<WriteF1_r<OP1, A1> > {
+class WriteF1_r : public detail::TestOnlyRelation<WriteF1_r<OP1, A1> > {
     OP1 func;
     A1 arg1;
     std::ostream* outputStrm;
@@ -137,7 +137,7 @@ public:
 };
 
 template<typename OP2, typename A1, typename A2>
-class WriteF2_r : public TestOnlyRelation<WriteF2_r<OP2, A1, A2> > {
+class WriteF2_r : public detail::TestOnlyRelation<WriteF2_r<OP2, A1, A2> > {
     OP2 func;
     A1 arg1; A2 arg2;
     std::ostream* outputStrm;
@@ -152,7 +152,7 @@ public:
 
 
 template<typename OP3, typename A1, typename A2, typename A3>
-class WriteF3_r : public TestOnlyRelation<WriteF3_r<OP3, A1, A2, A3> > {
+class WriteF3_r : public detail::TestOnlyRelation<WriteF3_r<OP3, A1, A2, A3> > {
     OP3 func;
     A1 arg1; A2 arg2; A3 arg3;
     std::ostream* outputStrm;
@@ -166,7 +166,7 @@ public:
 };
 
 template<typename OP4, typename A1, typename A2, typename A3, typename A4>
-class WriteF4_r : public TestOnlyRelation<WriteF4_r<OP4, A1, A2, A3, A4> > {
+class WriteF4_r : public detail::TestOnlyRelation<WriteF4_r<OP4, A1, A2, A3, A4> > {
     OP4 func;
     A1 arg1; A2 arg2; A3 arg3; A4 arg4;
     std::ostream* outputStrm;
@@ -181,7 +181,7 @@ public:
 
 
 template<typename OP5, typename A1, typename A2, typename A3, typename A4, typename A5>
-class WriteF5_r : public TestOnlyRelation<WriteF5_r<OP5, A1, A2, A3, A4, A5> > {
+class WriteF5_r : public detail::TestOnlyRelation<WriteF5_r<OP5, A1, A2, A3, A4, A5> > {
     OP5 func;
     A1 arg1; A2 arg2; A3 arg3; A4 arg4; A5 arg5;
     std::ostream* outputStrm;
@@ -195,7 +195,7 @@ public:
 };
 
 template<typename OP6, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
-class WriteF6_r : public TestOnlyRelation<WriteF6_r<OP6, A1, A2, A3, A4, A5, A6> > {
+class WriteF6_r : public detail::TestOnlyRelation<WriteF6_r<OP6, A1, A2, A3, A4, A5, A6> > {
     OP6 func;
     A1 arg1; A2 arg2; A3 arg3; A4 arg4; A5 arg5; A6 arg6;
     std::ostream* outputStrm;
@@ -382,7 +382,7 @@ writeTo_f(std::ostream& outputStrm, R(* f)(P1,P2,P3,P4,P5,P6), const A1& a1_, co
 // -----------------------------------------------------------------
 
 template<typename Obj, typename MemFunT>
-class WriteMF_r : public TestOnlyRelation<WriteMF_r<Obj,MemFunT> > {
+class WriteMF_r : public detail::TestOnlyRelation<WriteMF_r<Obj,MemFunT> > {
 	lref<Obj> obj_;
     MemFunT mf;
     std::ostream* outputStrm;
@@ -397,7 +397,7 @@ public:
 
 
 template<typename Obj, typename MemFunT, typename A1>
-class WriteMF1_r : public TestOnlyRelation<WriteMF1_r<Obj,MemFunT,A1> > {
+class WriteMF1_r : public detail::TestOnlyRelation<WriteMF1_r<Obj,MemFunT,A1> > {
 	lref<Obj> obj_;
     MemFunT mf;
 	A1 a1_;
@@ -413,7 +413,7 @@ public:
 
 
 template<typename Obj, typename MemFunT, typename A1, typename A2>
-class WriteMF2_r : public TestOnlyRelation<WriteMF2_r<Obj,MemFunT,A1,A2> > {
+class WriteMF2_r : public detail::TestOnlyRelation<WriteMF2_r<Obj,MemFunT,A1,A2> > {
 	lref<Obj> obj_;
     MemFunT mf;
 	A1 a1_; A2 a2_;
@@ -429,7 +429,7 @@ public:
 
 
 template<typename Obj, typename MemFunT, typename A1, typename A2, typename A3>
-class WriteMF3_r : public TestOnlyRelation<WriteMF3_r<Obj,MemFunT,A1,A2,A3> > {
+class WriteMF3_r : public detail::TestOnlyRelation<WriteMF3_r<Obj,MemFunT,A1,A2,A3> > {
 	lref<Obj> obj_;
     MemFunT mf;
 	A1 a1_; A2 a2_; A3 a3_;
@@ -445,7 +445,7 @@ public:
 
 
 template<typename Obj, typename MemFunT, typename A1, typename A2, typename A3, typename A4>
-class WriteMF4_r : public TestOnlyRelation<WriteMF4_r<Obj,MemFunT,A1,A2,A3,A4> > {
+class WriteMF4_r : public detail::TestOnlyRelation<WriteMF4_r<Obj,MemFunT,A1,A2,A3,A4> > {
 	lref<Obj> obj_;
     MemFunT mf;
 	A1 a1_; A2 a2_; A3 a3_; A4 a4_;
@@ -461,7 +461,7 @@ public:
 
 
 template<typename Obj, typename MemFunT, typename A1, typename A2, typename A3, typename A4, typename A5>
-class WriteMF5_r : public TestOnlyRelation<WriteMF5_r<Obj,MemFunT,A1,A2,A3,A4,A5> > {
+class WriteMF5_r : public detail::TestOnlyRelation<WriteMF5_r<Obj,MemFunT,A1,A2,A3,A4,A5> > {
 	lref<Obj> obj_;
     MemFunT mf;
 	A1 a1_; A2 a2_; A3 a3_; A4 a4_; A5 a5_;
@@ -477,7 +477,7 @@ public:
 
 
 template<typename Obj, typename MemFunT, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
-class WriteMF6_r : public TestOnlyRelation<WriteMF6_r<Obj,MemFunT,A1,A2,A3,A4,A5,A6> > {
+class WriteMF6_r : public detail::TestOnlyRelation<WriteMF6_r<Obj,MemFunT,A1,A2,A3,A4,A5,A6> > {
 	lref<Obj> obj_;
     MemFunT mf;
 	A1 a1_; A2 a2_; A3 a3_; A4 a4_; A5 a5_; A6 a6_;
