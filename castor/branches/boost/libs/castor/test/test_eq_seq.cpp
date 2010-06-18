@@ -60,11 +60,10 @@ int test_main(int, char * [])
         const int di[] = {1,2,3};
         lref<vector<int> > vk = vector<int>(di, di+3);
         const vector<int> cv(di, di+3);
-        int ei[] = {3,2,3};
         relation r3 = eq_seq(vk, cv.begin(), cv.end());
-	    int k=0;
-	    for(; r3(); ++k);
-	    BOOST_CHECK(k==1 && vk.defined());
+        int k=0;
+        for(; r3(); ++k);
+        BOOST_CHECK(k==1 && vk.defined());
     }
     return 0;
 }

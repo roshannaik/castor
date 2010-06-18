@@ -106,7 +106,7 @@ PauseF_r<Func> pause_f(Func f) {
 //-------------------------------------------------------------------------
 
 template<class T>
-struct Defined_r : public TestOnlyRelation<Defined_r<T> >{
+struct Defined_r : public detail::TestOnlyRelation<Defined_r<T> >{
     lref<T> r_;
     Defined_r(const lref<T>& r_) : r_(r_)
     { }
@@ -122,7 +122,7 @@ Defined_r<T> defined(lref<T>& r_) {
 }
 
 template<class T>
-struct UnDefined_r : public TestOnlyRelation<UnDefined_r<T> > {
+struct UnDefined_r : public detail::TestOnlyRelation<UnDefined_r<T> > {
     lref<T> r_;
     UnDefined_r(const lref<T>& r_) : r_(r_)
     { }

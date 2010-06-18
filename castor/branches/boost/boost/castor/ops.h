@@ -10,36 +10,6 @@
 #include <boost/castor/workaround.h>
 
 namespace castor {
-#ifdef CASTOR_ALL_REGULAR_OPS
-	#undef CASTOR_USE_GENERIC_OR
-	#define CASTOR_USE_REGULAR_OR
-	#undef CASTOR_USE_GENERIC_AND
-	#define CASTOR_USE_REGULAR_AND
-	#undef CASTOR_USE_GENERIC_EXOR
-	#define CASTOR_USE_REGULAR_EXOR
-#endif
-
-#ifdef CASTOR_ALL_GENERIC_OPS
-	#define CASTOR_USE_GENERIC_OR
-	#undef  CASTOR_USE_REGULAR_OR
-	#define CASTOR_USE_GENERIC_AND
-	#undef  CASTOR_USE_REGULAR_AND
-	#define CASTOR_USE_GENERIC_EXOR
-	#undef  CASTOR_USE_REGULAR_EXOR
-#endif
-
-
-#if !defined(CASTOR_USE_GENERIC_OR) && !defined(CASTOR_USE_REGULAR_OR)
- #define CASTOR_USE_GENERIC_OR
-#endif
-
-#if !defined(CASTOR_USE_GENERIC_AND) && !defined(CASTOR_USE_REGULAR_AND)
- #define CASTOR_USE_REGULAR_AND
-#endif
-
-#if !defined(CASTOR_USE_GENERIC_EXOR) && !defined(CASTOR_USE_REGULAR_EXOR)
-  #define CASTOR_USE_GENERIC_EXOR
-#endif
 
 //---------------------------------------------------------------
 //    Relational OR operator : provides backtracking
@@ -65,17 +35,11 @@ public:
 	}
 };
 
-#ifdef CASTOR_USE_GENERIC_OR
-template<typename L, typename R> inline
-Or_r<L,R> operator || (const L& l, const R & r) {
-	return Or_r<L,R>(l, r);
-}
-#else
 inline
 Or_r<relation,relation> operator || (const relation& l, const relation& r) {
 	return Or_r<relation,relation>(l, r);
 }
-#endif
+
 //---------------------------------------------------------------
 //    Relational AND operator
 //---------------------------------------------------------------
@@ -137,13 +101,6 @@ struct IsRelation_Constraint {
   }
 };
 
-#ifdef CASTOR_USE_GENERIC_AND
-template<typename L, typename R> inline
-And_r<L,R,IsTestOnlyRelation<R>::result> operator && (const L & l, const R & r) {
-	return And_r<L,R,IsTestOnlyRelation<R>::result>(l, r);
-}
-#else
-
 #if defined(CASTOR_DISABLE_AND_OPTIMIZATION)
 inline
 And_r<relation,relation, false> operator && (const relation & l, const relation & r) {
@@ -154,8 +111,6 @@ template<typename R> inline
 And_r<relation,R,IsTestOnlyRelation<R>::result> operator && (const relation & l, const R & r) {
   return And_r<relation, R, IsTestOnlyRelation<R>::result>(l, r);
 }
-#endif
-
 #endif
 
 
@@ -184,17 +139,10 @@ public:
 };
 
 
-#ifdef CASTOR_USE_GENERIC_EXOR
-template<typename L, typename R> inline 
-ExOr_r<L,R> operator ^ (const L & l, const R & r) {
-	return ExOr_r<L,R>(l, r);
-}
-#else
 inline
 ExOr_r<relation,relation> operator ^ (const relation & l, const relation & r) {
 	return ExOr_r<relation,relation>(l, r);
 }
-#endif
 
 } // namespace castor
 #endif
