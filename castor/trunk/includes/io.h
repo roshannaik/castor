@@ -128,7 +128,7 @@ class WriteF1_r : public detail::TestOnlyRelation<WriteF1_r<OP1, A1> > {
     A1 arg1;
     std::ostream* outputStrm;
 public:
-    WriteF1_r (const OP1& func, const A1& arg1, std::ostream* outputStrm=std::cout) : func(func), arg1(arg1), outputStrm(&outputStrm)
+    WriteF1_r (const OP1& func, const A1& arg1, std::ostream& outputStrm=std::cout) : func(func), arg1(arg1), outputStrm(&outputStrm)
     { }
 
     bool apply (void) {

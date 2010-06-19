@@ -1365,18 +1365,18 @@ void test_item() {
     {//12 - compile time checks for overloads : item(i,std::set<>)  & item(i,std::multiset<>)
         lref<set<int> > s;
         lref<multiset<int> > ms;
-        lref<int> i;
+        lref<const int> i;
         ItemSet_r<set<int> > r1 = item(i,s);        // ensure the call is forwarded to item_set
         ItemSet_r<multiset<int> > r2 = item(i,ms);  // ensure the call is forwarded to item_set
     }
     {  //13 - basic tests for overload - item(i,std::set<>)  & item(i,std::multiset<>)
-    lref<int> i;
+    lref<const int> i;
     int ai[] = {1,2,3,4,2};
     lref<set<int> > si = set<int>(ai+0, ai+5);
     lref<multiset<int> > mi = multiset<int>(ai+0, ai+5);
 
     relation r = item(i,si);
-    int j=0;
+    size_t j=0;
     while(r())
         ++j;
     if(j!=si->size())
@@ -1418,12 +1418,15 @@ void test_item_set() {
         ++j;
     if(j!=2)
         throw "failed test_item_set 1";
-
+#ifdef __GNUG__
+    if(item_set<multiset<int> >(-1,mi)())
+#else
     if(item_set(-1,mi)())
+#endif
         throw "failed test_item_set 1";
     }
     { // test mode - std::set
-    lref<int> i=2;
+    lref<const int> i=2;
     relation r = item_set(i,si);
     int j=0;
     while(r())
@@ -1431,24 +1434,28 @@ void test_item_set() {
     if(j!=1)
         throw "failed test_item_set 2";
 
-    if(item_set(-1,si)())
+#ifdef __GNUG__
+    if(item_set<set<int> >(-1,si)())
+#else
+    if(item_set(-1,mi)())
+#endif
         throw "failed test_item_set 2";
     }
     {  // gen mode - std::multiset
     if(mi->size()==si->size())  // require duplicates in mi
         throw "failed test_item_set 3";
-    lref<int> i;
+    lref<const int> i;
     relation r = item_set(i,mi);
-    int j=0;
+    size_t j=0;
     while(r())
         ++j;
     if(j!=mi->size())
         throw "failed test_item_set 3";
     }
     {  // gen mode - std::set
-    lref<int> i;
+    lref<const int> i;
     relation r = item_set(i,si);
-    int j=0;
+    size_t j=0;
     while(r())
         ++j;
     if(j!=si->size())
@@ -1467,14 +1474,22 @@ void test_item_map() {
     lref<map<char,int> > m = map<char,int>(mm->begin(), mm->end());
 
     { // lookup key & obj - multimap
+#ifdef __GNUG__
+        relation r = item_map<multimap<char,int> >('c',100,mm);
+#else
         relation r = item_map('c',100,mm);
+#endif
         int count=0;
         while(r())
             ++count;
         if(count!=2)
             throw "failed test_item_map 1";
         
+#ifdef __GNUG__
+        r = item_map<multimap<char,int> >('z',400,mm);
+#else
         r = item_map('z',400,mm);
+#endif
         count=0;
         while(r())
             ++count;
@@ -1485,7 +1500,7 @@ void test_item_map() {
         lref<const char> k;
         lref<int> v;
         relation r = item_map(k,v,mm);
-        int count=0;
+        size_t count=0;
         while(r())
             ++count;
         if(count!=mm->size())
@@ -1503,7 +1518,11 @@ void test_item_map() {
     }
     { // gen key, lookup obj - multimap
         lref<const char> k;
+#ifdef __GNUG__
+        relation r = item_map<multimap<char,int> >(k,100,mm);
+#else
         relation r = item_map(k,100,mm);
+#endif
         if(!r())
             throw "failed test_item_map 4";
         if(*k!='a')

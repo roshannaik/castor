@@ -1,5 +1,5 @@
 // Castor : Logic Programming Library
-// Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
+// Copyright Â© 2007-2010 Roshan Naik (roshan@mpprogramming.com).
 // This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 #include <castor.h>
 #include <string>
@@ -359,7 +359,11 @@ void test_max_of() {
             throw "failed test_max_of 2";
  
         // failure test
+#ifdef __GNUG__
+        r =  max_of<vector<string> >(v,"Prolog") ;
+#else
         r =  max_of(v,"Prolog") ;
+#endif
         if(r())
             throw "failed test_max_of 2";
     }
@@ -390,7 +394,11 @@ void test_max_of() {
             throw "failed test_max_of 4";
     }
     { // test - with cmp
+#ifdef __GNUG__
+        relation r =  max_of<vector<string> >(v,"C#", std::greater<string>() ) ;
+#else
         relation r =  max_of(v,"C#", std::greater<string>() ) ;
+#endif
         if(!r())
             throw "failed test_max_of 5";
     }
@@ -439,7 +447,11 @@ void test_min_of() {
             throw "failed test_min_of 2";
  
         // failure test
-        r =  min_of(v,"Prolog") ;
+#ifdef __GNUG__
+        r =  min_of<vector<string> >(v,"Prolog");
+#else
+        r =  min_of(v,"Prolog");
+#endif
         if(r())
             throw "failed test_min_of 2";
     }
@@ -470,7 +482,11 @@ void test_min_of() {
             throw "failed test_min_of 4";
     }
     { // test - with cmp
+#ifdef __GNUG__
+        relation r =  min_of<vector<string> >(v,"castor", std::greater<string>() ) ;
+#else
         relation r =  min_of(v,"castor", std::greater<string>() ) ;
+#endif
         if(!r())
             throw "failed test_min_of 5";
     }
@@ -522,12 +538,21 @@ void test_sum_of() {
             throw "failed test_sum_of 2";
     }
     {// basic - test
+#ifdef __GNUG__
+        relation r = sum_of<vector<int> >(vi,15);
+#else
         relation r = sum_of(vi,15);
+#endif
+
         if(!r())
             throw "failed test_sum_of 3";
  
         // failure test
+#ifdef __GNUG__
+        r =  sum_of<vector<int> >(vi,10) ;
+#else
         r =  sum_of(vi,10) ;
+#endif
         if(r())
             throw "failed test_sum_of 3";
     }
@@ -615,12 +640,20 @@ void test_average_of() {
             throw "failed test_average_of 2";
     }
     {// test
+#ifdef __GNUG__
+        relation r = average_of<vector<int> >(vi,3);
+#else
         relation r = average_of(vi,3);
+#endif
         if(!r())
             throw "failed test_average_of 3";
  
         // failure test
-        r =  average_of(vi,10) ;
+#ifdef __GNUG__
+        r =  average_of<vector<int> >(vi,10);
+#else
+        r =  average_of(vi,10);
+#endif
         if(r())
             throw "failed test_average_of 3";
     }

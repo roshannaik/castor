@@ -1,4 +1,4 @@
- ===================================================
+===================================================
    Whats new in Castor 1.1 beta ($date)
 ===================================================
 
@@ -38,7 +38,8 @@ Enhancements to ILE (closure/lambda facility):
 
 Other enhancements 
 ----------------------------------------------
- - Support for const container<> and const_iterator in relations : begin(), end(), not_empty, 
+- Optimizations for && relation
+- Support for const container<> and const_iterator in relations : begin(), end() & not_empty. 
  
 
 New features:
@@ -119,6 +120,17 @@ New features:
         }
 
 
+Potential Incompatibilities:
+---------------------------
+- item() does not work with const containers or const_iterators.
+- In generate mode, item() & head() relations now yield an lref<> that references the actual element in the container/sequence 
+  instead of a copy.
+- item() now succeeds once for every occurance of the value in the container/sequence. Old behavior
+  of item was to succeed only once for such cases.
+- Template paramters for eq_mf reordered to minimize need for explicit template arguments when 
+  using const objects. Code that explicitly specify template arguments to these relations will be affected.
+
+
 Deprecated:
 -----------
 In order to use the following deprecated facilites a #define CASTOR_ENABLE_DEPRECATED is required.
@@ -126,14 +138,6 @@ In order to use the following deprecated facilites a #define CASTOR_ENABLE_DEPRE
 - OneSolution relation is now deprecated. Use class Coroutine instead.
 - size() relation. Use size_of() instead. All (non TLR) aggregate relations now have _of suffix.
 
-Potential Incompatibilities:
----------------------------
-- item() & head() relations now yield an lref<> that references the actual element in the container/sequence 
-  instead of a copy.
-- item() now succeeds once for every occurance of the value in the container/sequence. Old behavior
-  of item was to succeed only once for such cases.
-- Template paramters for eq_mf reordered to minimize need for explicit template arguments when 
-  using const objects. Code that explicitly specify template arguments to these relations will be affected.
 
 Bug fixes:
 ----------

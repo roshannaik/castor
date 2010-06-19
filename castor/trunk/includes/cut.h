@@ -37,6 +37,8 @@ namespace detail {
 // Operators && and || for Cut expressions
 //-----------------------------------------
 
+struct InvalidState{};
+
 template<typename LRel, typename RRel>
 class CutAnd : public Coroutine {
     LRel l;
