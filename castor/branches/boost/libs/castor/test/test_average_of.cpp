@@ -33,12 +33,20 @@ int test_main(int, char * [])
     }
 
     { // test
-        relation r = average_of(vi, 3);
+#ifdef __GNUG__
+        relation r = average_of<vector<int> >(vi,3);
+#else
+        relation r = average_of(vi,3);
+#endif
 
         BOOST_CHECK(r());
  
         // failure test
-        r = average_of(vi, 10);
+#ifdef __GNUG__
+        r =  average_of<vector<int> >(vi,10);
+#else
+        r =  average_of(vi,10);
+#endif
 
         BOOST_CHECK(!r());
     }

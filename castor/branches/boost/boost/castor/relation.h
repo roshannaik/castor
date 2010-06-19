@@ -6,13 +6,10 @@
 #define CASTOR_RELATION_H 1
 #include <memory>
 
-#include <boost/castor/workaround.h>
-#include <boost/castor/coroutine.h>
+#include "workaround.h"
+#include "coroutine.h"
 
 namespace castor {
-
- struct InvalidState{}; // Exception type
-
 
 //---------------------------------------------------------------
 //    relation 

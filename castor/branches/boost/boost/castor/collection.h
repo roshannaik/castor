@@ -1,14 +1,14 @@
 // Castor : Logic Programming Library
-// Copyright © 2009 Roshan Naik (roshan@mpprogramming.com).
+// Copyright Â© 2009 Roshan Naik (roshan@mpprogramming.com).
 // This software is goverened by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
 #if !defined CASTOR_COLLECTION_H
 #define CASTOR_COLLECTION_H 1
 
-#include <boost/castor/coroutine.h>
-#include <boost/castor/relation.h>
-#include <boost/castor/lref.h>
-#include <boost/castor/utils.h>
+//#include "coroutine.h"
+#include "relation.h"
+#include "lref.h"
+#include "utils.h"
 #include <algorithm>
 #include <vector>
 #include <functional>
@@ -35,7 +35,7 @@ bool equal_heap(RandItr first_b, RandItr first_e, RandItr second_b, RandItr seco
 // Cmp : less than ordering 
 template<class InItr, class InItr2, class Cmp>
 bool equal_bags(InItr first_b, InItr first_e, InItr2 second_b, InItr2 second_e, Cmp cmp = std::less<typename std::iterator_traits<InItr>::value_type>() ) {
-    std::iterator_traits<InItr>::difference_type s1 = std::distance(first_b,first_e), s2 = std::distance(second_b,second_e);
+    typename std::iterator_traits<InItr>::difference_type s1 = std::distance(first_b,first_e), s2 = std::distance(second_b,second_e);
 	if(s1!=s2)
 		return false;
     typedef typename std::iterator_traits<InItr>::value_type value_type;

@@ -5,7 +5,7 @@
 #if !defined CASTOR_CUT_H
 #define CASTOR_CUT_H 1
 
-#include <boost/castor/relation.h>
+#include "relation.h"
 
 namespace castor {
 
@@ -36,6 +36,8 @@ namespace detail {
 //-----------------------------------------
 // Operators && and || for Cut expressions
 //-----------------------------------------
+
+struct InvalidState{};
 
 template<typename LRel, typename RRel>
 class CutAnd : public Coroutine {

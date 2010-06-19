@@ -5,11 +5,11 @@
 #if !defined CASTOR_UTILS_H
 #define CASTOR_UTILS_H 1
 
-#include <boost/castor/lref.h>
-#include <boost/castor/relation.h>
-#include <boost/castor/eq.h>
-#include <boost/castor/helpers.h>
-#include <boost/castor/functional.h>
+#include "lref.h"
+#include "relation.h"
+#include "eq.h"
+#include "helpers.h"
+#include "functional.h"
 
 #include <list>
 #include <deque>
@@ -156,10 +156,26 @@ Boolean empty(const Cont& c) {
 //-------------------------------------------------------------------------
 // not_empty: To check if collection is empty
 //------------------------------------------------------------------------
+#ifdef __GNUG__
+template<class Cont>
+struct  NotEmpty_r : public detail::TestOnlyRelation<NotEmpty_r<Cont> > {
+   lref<Cont> c;
+   NotEmpty_r(const lref<Cont>& c_) :c(c_)
+   { }
+   bool apply(void) const {
+    return !c->empty();
+   }
+};
+#endif
 
 template<class Cont> inline
 relation not_empty(lref<Cont>& c_) {
-    return eq_mf<bool,Cont>(false, c_, &Cont::empty); // explicit template arg to allow for const Cont
+// here we use explicit template arg Cont to allow for const Cont
+#ifdef __GNUG__
+    return NotEmpty_r<Cont>(c_);
+#else
+    return eq_mf<bool,Cont>(false, c_, &Cont::empty);
+#endif
 }
 
 // this overload allows calls to not_empty without explicit template type arguments
@@ -318,12 +334,12 @@ RangeDec_Step_r<T> range_dec(lref<T> val, T max_, T min_, T step_) {
 template<class SetT>
 class ItemSet_r : public Coroutine {
     typedef typename SetT::value_type value_type;
-    lref<value_type> obj;
+    lref<const value_type> obj;
     lref<SetT> cont;
-    typedef typename detail::PickIterator<SetT>::type iter;
+    typedef typename SetT::const_iterator iter;  // some libraries typedef SetT::iterator to be same as SetT::const_iterator
     std::pair<iter,iter> results;
 public:
-    ItemSet_r(const lref<value_type>& obj, const lref<SetT>& cont_) : obj(obj), cont(cont_)
+    ItemSet_r(const lref<const value_type>& obj, const lref<SetT>& cont_) : obj(obj), cont(cont_)
     { }
 
     bool operator () (void) {
@@ -347,7 +363,7 @@ public:
 // SetT : is an asociative container where SetT::key_type is same as SetT::value_type
 template<class SetT>  inline
 ItemSet_r<SetT> 
-item_set(lref<typename SetT::value_type> obj, lref<SetT>& cont_) {
+item_set(lref<const typename SetT::value_type> obj, lref<SetT>& cont_) {
     return ItemSet_r<SetT>(obj, cont_);
 }
 
@@ -426,12 +442,12 @@ ItemCont_r<Cont> item(lref<typename Cont::value_type> obj, lref<Cont>& cont_) {
 }
 
 template<class T>  inline
-ItemSet_r<std::set<T> > item(lref<typename std::set<T>::value_type> obj, lref<std::set<T> >& cont_) {
+ItemSet_r<std::set<T> > item(lref<const typename std::set<T>::value_type> obj, lref<std::set<T> >& cont_) {
     return item_set(obj,cont_);
 }
 
 template<class T>  inline
-ItemSet_r<std::multiset<T> > item(lref<typename std::multiset<T>::value_type> obj, lref<std::multiset<T> >& cont_) {
+ItemSet_r<std::multiset<T> > item(lref<const typename std::multiset<T>::value_type> obj, lref<std::multiset<T> >& cont_) {
     return item_set(obj,cont_);
 }
 
