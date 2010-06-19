@@ -35,12 +35,20 @@ int test_main(int, char * [])
     }
 
     { // basic - test
-        relation r = sum_of(vi, 15);
+#ifdef __GNUG__
+        relation r = sum_of<vector<int> >(vi,15);
+#else
+        relation r = sum_of(vi,15);
+#endif
 
         BOOST_CHECK(r());
  
         // failure test
-        r = sum_of(vi, 10);
+#ifdef __GNUG__
+        r =  sum_of<vector<int> >(vi,10) ;
+#else
+        r =  sum_of(vi,10) ;
+#endif
 
         BOOST_CHECK(!r());
     }

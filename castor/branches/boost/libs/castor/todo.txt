@@ -1,7 +1,8 @@
   Todo
 ------------
 HIGH
-?- allow binding lref<const int> i to lref<int>;
+- Document item_set, item_map and item overloads
+x allow binding lref<const int> i to lref<int>;
 - input only params should have _i suffix
 + All TLRs should be collection oriented also ?
    - reverse/ritem

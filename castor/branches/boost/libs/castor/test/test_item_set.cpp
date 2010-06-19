@@ -20,23 +20,33 @@ int test_main(int, char * [])
             ++j;
         BOOST_CHECK(j==2);
 
-        BOOST_CHECK(!item_set(-1,mi)());
+#ifdef __GNUG__
+    BOOST_CHECK(!item_set<multiset<int> >(-1,mi)());
+#else
+    BOOST_CHECK(!item_set(-1,mi)());
+#endif
+        
     }
     { // test mode - std::set
-        lref<int> i=2;
+        lref<const int> i=2;
         relation r = item_set(i,si);
         int j=0;
         while(r())
             ++j;
         BOOST_CHECK(j==1);
 
-        BOOST_CHECK(!item_set(-1,si)());
+#ifdef __GNUG__
+    BOOST_CHECK(!item_set<set<int> >(-1,si)());
+#else
+    BOOST_CHECK(!item_set(-1,si)());
+#endif
+
     }
     {  // gen mode - std::multiset
         BOOST_CHECK(mi->size()>si->size());  // require duplicates in mi
-        lref<int> i;
+        lref<const int> i;
         relation r = item_set(i,mi);
-        int j=0;
+        size_t j=0;
         while(r())
             ++j;
         BOOST_CHECK(j==mi->size());
