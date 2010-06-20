@@ -8,6 +8,18 @@
 
 using namespace castor;
 
+namespace {
+struct Base { 
+    int b; 
+    Base() : b(0) { }
+};
+struct Derived : Base { 
+    int d; 
+    Derived() : d(1), Base() { }
+};
+
+} // namespace 
+
 int getN(int, int, int, int, int, int) { return 6; }
 
 struct num {
@@ -173,6 +185,16 @@ int test_main(int, char * [])
         writeTo_mem(sstrm, me, &name::first)();
 
 	BOOST_CHECK(sstrm.str() == "Roshan");
+    }
+
+    { // base class member
+	lref<Derived> d = Derived();
+        stringstream sstrm;
+        writeTo_mem(sstrm, d, &Base::b)();
+        writeTo_mem(sstrm, d, &Derived::b)();
+        writeTo_mem(sstrm, d, &Derived::d)();
+
+        BOOST_CHECK(sstrm.str()=="Roshan");
     }
 
     { // write value to stream and then read it

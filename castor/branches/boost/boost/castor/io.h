@@ -493,88 +493,88 @@ public:
 
 
 // Overloads for non-const member functions
-template<typename R, typename Obj> inline
+template<typename R, typename Obj, typename Obj2> inline
 WriteMF_r<Obj,R(Obj::*)(void)> 
-writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj::*mf)(void) ) {
+writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj2::* mf)(void) ) {
     return WriteMF_r<Obj,R(Obj::*)(void)>(obj_,mf, outputStrm);
 }
 
-template<typename R, typename P1, typename Obj, typename A1> inline
+template<typename R, typename P1, typename Obj, typename Obj2, typename A1> inline
 WriteMF1_r<Obj,R(Obj::*)(P1),A1> 
-writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj::* mf)(P1), const A1& a1_) {
+writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj2::* mf)(P1), const A1& a1_) {
     return WriteMF1_r<Obj,R(Obj::*)(P1),A1>(obj_,mf,a1_, outputStrm);
 }
 
-template<typename R, typename P1, typename P2, typename Obj, typename A1, typename A2> inline
+template<typename R, typename P1, typename P2, typename Obj, typename Obj2, typename A1, typename A2> inline
 WriteMF2_r<Obj,R(Obj::*)(P1,P2),A1,A2> 
-writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj::* mf)(P1,P2), const A1& a1_, const A2& a2_) {
+writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj2::* mf)(P1,P2), const A1& a1_, const A2& a2_) {
     return WriteMF2_r<Obj,R(Obj::*)(P1,P2),A1,A2>(obj_,mf,a1_,a2_, outputStrm);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename Obj, typename A1, typename A2, typename A3> inline
+template<typename R, typename P1, typename P2, typename P3, typename Obj, typename Obj2, typename A1, typename A2, typename A3> inline
 WriteMF3_r<Obj,R(Obj::*)(P1,P2,P3),A1,A2,A3> 
-writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3), const A1& a1_, const A2& a2_, const A3& a3_) {
+writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3), const A1& a1_, const A2& a2_, const A3& a3_) {
     return WriteMF3_r<Obj,R(Obj::*)(P1,P2,P3),A1,A2,A3>(obj_,mf,a1_,a2_,a3_, outputStrm);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename A1, typename A2, typename A3, typename A4> inline
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename Obj2, typename A1, typename A2, typename A3, typename A4> inline
 WriteMF4_r<Obj,R(Obj::*)(P1,P2,P3,P4),A1,A2,A3,A4> 
-writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
+writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3,P4), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
     return WriteMF4_r<Obj,R(Obj::*)(P1,P2,P3,P4),A1,A2,A3,A4>(obj_,mf,a1_,a2_,a3_,a4_, outputStrm);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename Obj2, typename A1, typename A2, typename A3, typename A4, typename A5> inline
 WriteMF5_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5> 
-writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
+writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3,P4,P5), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
     return WriteMF5_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5>(obj_,mf,a1_,a2_,a3_,a4_,a5_, outputStrm);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename Obj2, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
 WriteMF6_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6> 
-writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
+writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3,P4,P5,P6), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
     return WriteMF6_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6>(obj_,mf,a1_,a2_,a3_,a4_,a5_,a6_, outputStrm);
 }
 
 // Overloads for const member functions
-template<typename R, typename Obj> inline
+template<typename R, typename Obj, typename Obj2> inline
 WriteMF_r<Obj,R(Obj::*)(void) const> 
-writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj::*mf)(void) const) {
+writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj2::* mf)(void) const) {
     return WriteMF_r<Obj,R(Obj::*)(void) const>(obj_,mf, outputStrm);
 }
 
-template<typename R, typename P1, typename Obj, typename A1> inline
+template<typename R, typename P1, typename Obj, typename Obj2, typename A1> inline
 WriteMF1_r<Obj,R(Obj::*)(P1) const,A1> 
-writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj::* mf)(P1) const, const A1& a1_) {
+writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj2::* mf)(P1) const, const A1& a1_) {
     return WriteMF1_r<Obj,R(Obj::*)(P1) const,A1>(obj_,mf,a1_, outputStrm);
 }
 
-template<typename R, typename P1, typename P2, typename Obj, typename A1, typename A2> inline
+template<typename R, typename P1, typename P2, typename Obj, typename Obj2, typename A1, typename A2> inline
 WriteMF2_r<Obj,R(Obj::*)(P1,P2) const,A1,A2> 
-writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj::* mf)(P1,P2) const, const A1& a1_, const A2& a2_) {
+writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj2::* mf)(P1,P2) const, const A1& a1_, const A2& a2_) {
     return WriteMF2_r<Obj,R(Obj::*)(P1,P2) const,A1,A2>(obj_,mf,a1_,a2_, outputStrm);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename Obj, typename A1, typename A2, typename A3> inline
+template<typename R, typename P1, typename P2, typename P3, typename Obj, typename Obj2, typename A1, typename A2, typename A3> inline
 WriteMF3_r<Obj,R(Obj::*)(P1,P2,P3) const,A1,A2,A3> 
-writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3) const, const A1& a1_, const A2& a2_, const A3& a3_) {
+writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3) const, const A1& a1_, const A2& a2_, const A3& a3_) {
     return WriteMF3_r<Obj,R(Obj::*)(P1,P2,P3) const,A1,A2,A3>(obj_,mf,a1_,a2_,a3_, outputStrm);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename A1, typename A2, typename A3, typename A4> inline
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename Obj2, typename A1, typename A2, typename A3, typename A4> inline
 WriteMF4_r<Obj,R(Obj::*)(P1,P2,P3,P4) const,A1,A2,A3,A4> 
-writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
+writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3,P4) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
     return WriteMF4_r<Obj,R(Obj::*)(P1,P2,P3,P4) const,A1,A2,A3,A4>(obj_,mf,a1_,a2_,a3_,a4_, outputStrm);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename Obj2, typename A1, typename A2, typename A3, typename A4, typename A5> inline
 WriteMF5_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5) const,A1,A2,A3,A4,A5> 
-writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
+writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3,P4,P5) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
     return WriteMF5_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5) const,A1,A2,A3,A4,A5>(obj_,mf,a1_,a2_,a3_,a4_,a5_, outputStrm);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename Obj2, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
 WriteMF6_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,A1,A2,A3,A4,A5,A6> 
-writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
+writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3,P4,P5,P6) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
     return WriteMF6_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,A1,A2,A3,A4,A5,A6>(obj_,mf,a1_,a2_,a3_,a4_,a5_,a6_, outputStrm);
 }
 
@@ -618,88 +618,88 @@ writeTo_mf(std::ostream& outputStrm, lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P
 
 
 // Overloads for non-const member functions
-template<typename R, typename Obj> inline
+template<typename R, typename Obj, typename Obj2> inline
 WriteMF_r<Obj,R(Obj::*)(void)> 
-write_mf(lref<Obj>& obj_, R(Obj::*mf)(void) ) {
+write_mf(lref<Obj>& obj_, R(Obj2::* mf)(void) ) {
     return WriteMF_r<Obj,R(Obj::*)(void)>(obj_,mf);
 }
 
-template<typename R, typename P1, typename Obj, typename A1> inline
+template<typename R, typename P1, typename Obj, typename Obj2, typename A1> inline
 WriteMF1_r<Obj,R(Obj::*)(P1),A1> 
-write_mf(lref<Obj>& obj_, R(Obj::* mf)(P1), const A1& a1_) {
+write_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1), const A1& a1_) {
     return WriteMF1_r<Obj,R(Obj::*)(P1),A1>(obj_,mf,a1_);
 }
 
-template<typename R, typename P1, typename P2, typename Obj, typename A1, typename A2> inline
+template<typename R, typename P1, typename P2, typename Obj, typename Obj2, typename A1, typename A2> inline
 WriteMF2_r<Obj,R(Obj::*)(P1,P2),A1,A2> 
-write_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2), const A1& a1_, const A2& a2_) {
+write_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2), const A1& a1_, const A2& a2_) {
     return WriteMF2_r<Obj,R(Obj::*)(P1,P2),A1,A2>(obj_,mf,a1_,a2_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename Obj, typename A1, typename A2, typename A3> inline
+template<typename R, typename P1, typename P2, typename P3, typename Obj, typename Obj2, typename A1, typename A2, typename A3> inline
 WriteMF3_r<Obj,R(Obj::*)(P1,P2,P3),A1,A2,A3> 
-write_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3), const A1& a1_, const A2& a2_, const A3& a3_) {
+write_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3), const A1& a1_, const A2& a2_, const A3& a3_) {
     return WriteMF3_r<Obj,R(Obj::*)(P1,P2,P3),A1,A2,A3>(obj_,mf,a1_,a2_,a3_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename A1, typename A2, typename A3, typename A4> inline
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename Obj2, typename A1, typename A2, typename A3, typename A4> inline
 WriteMF4_r<Obj,R(Obj::*)(P1,P2,P3,P4),A1,A2,A3,A4> 
-write_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
+write_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3,P4), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
     return WriteMF4_r<Obj,R(Obj::*)(P1,P2,P3,P4),A1,A2,A3,A4>(obj_,mf,a1_,a2_,a3_,a4_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename Obj2, typename A1, typename A2, typename A3, typename A4, typename A5> inline
 WriteMF5_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5> 
-write_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
+write_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3,P4,P5), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
     return WriteMF5_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5>(obj_,mf,a1_,a2_,a3_,a4_,a5_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename Obj2, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
 WriteMF6_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6> 
-write_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
+write_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3,P4,P5,P6), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
     return WriteMF6_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6>(obj_,mf,a1_,a2_,a3_,a4_,a5_,a6_);
 }
 
 // Overloads for const member functions
-template<typename R, typename Obj> inline
+template<typename R, typename Obj, typename Obj2> inline
 WriteMF_r<Obj,R(Obj::*)(void) const> 
-write_mf(lref<Obj>& obj_, R(Obj::*mf)(void) const) {
+write_mf(lref<Obj>& obj_, R(Obj2::* mf)(void) const) {
     return WriteMF_r<Obj,R(Obj::*)(void) const>(obj_,mf);
 }
 
-template<typename R, typename P1, typename Obj, typename A1> inline
+template<typename R, typename P1, typename Obj, typename Obj2, typename A1> inline
 WriteMF1_r<Obj,R(Obj::*)(P1) const,A1> 
-write_mf(lref<Obj>& obj_, R(Obj::* mf)(P1) const, const A1& a1_) {
+write_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1) const, const A1& a1_) {
     return WriteMF1_r<Obj,R(Obj::*)(P1) const,A1>(obj_,mf,a1_);
 }
 
-template<typename R, typename P1, typename P2, typename Obj, typename A1, typename A2> inline
+template<typename R, typename P1, typename P2, typename Obj, typename Obj2, typename A1, typename A2> inline
 WriteMF2_r<Obj,R(Obj::*)(P1,P2) const,A1,A2> 
-write_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2) const, const A1& a1_, const A2& a2_) {
+write_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2) const, const A1& a1_, const A2& a2_) {
     return WriteMF2_r<Obj,R(Obj::*)(P1,P2) const,A1,A2>(obj_,mf,a1_,a2_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename Obj, typename A1, typename A2, typename A3> inline
+template<typename R, typename P1, typename P2, typename P3, typename Obj, typename Obj2, typename A1, typename A2, typename A3> inline
 WriteMF3_r<Obj,R(Obj::*)(P1,P2,P3) const,A1,A2,A3> 
-write_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3) const, const A1& a1_, const A2& a2_, const A3& a3_) {
+write_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3) const, const A1& a1_, const A2& a2_, const A3& a3_) {
     return WriteMF3_r<Obj,R(Obj::*)(P1,P2,P3) const,A1,A2,A3>(obj_,mf,a1_,a2_,a3_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename A1, typename A2, typename A3, typename A4> inline
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename Obj, typename Obj2, typename A1, typename A2, typename A3, typename A4> inline
 WriteMF4_r<Obj,R(Obj::*)(P1,P2,P3,P4) const,A1,A2,A3,A4> 
-write_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
+write_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3,P4) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
     return WriteMF4_r<Obj,R(Obj::*)(P1,P2,P3,P4) const,A1,A2,A3,A4>(obj_,mf,a1_,a2_,a3_,a4_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5> inline
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename Obj, typename Obj2, typename A1, typename A2, typename A3, typename A4, typename A5> inline
 WriteMF5_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5) const,A1,A2,A3,A4,A5> 
-write_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
+write_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3,P4,P5) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
     return WriteMF5_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5) const,A1,A2,A3,A4,A5>(obj_,mf,a1_,a2_,a3_,a4_,a5_);
 }
 
-template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
+template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename Obj, typename Obj2, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6> inline
 WriteMF6_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,A1,A2,A3,A4,A5,A6> 
-write_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
+write_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3,P4,P5,P6) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
     return WriteMF6_r<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,A1,A2,A3,A4,A5,A6>(obj_,mf,a1_,a2_,a3_,a4_,a5_,a6_);
 }
 
@@ -723,8 +723,8 @@ public:
 	}
 };
 
-template<typename Obj, typename MemberT> inline
-WriteMem_r<Obj, MemberT> write_mem(lref<Obj>& obj_, MemberT Obj::* mem) {
+template<typename Obj, typename Obj2, typename MemberT> inline
+WriteMem_r<Obj, MemberT> write_mem(lref<Obj>& obj_, MemberT Obj2::* mem) {
 	return WriteMem_r<Obj, MemberT>(obj_, mem, std::cout);
 }
 
@@ -732,8 +732,8 @@ WriteMem_r<Obj, MemberT> write_mem(lref<Obj>& obj_, MemberT Obj::* mem) {
 // writeTo_mem relation
 //--------------------------------------------------------
 
-template<typename Obj, typename MemberT> inline
-WriteMem_r<Obj, MemberT> writeTo_mem(std::ostream& outputStrm, lref<Obj>& obj_, MemberT Obj::* mem) {
+template<typename Obj, typename Obj2, typename MemberT> inline
+WriteMem_r<Obj, MemberT> writeTo_mem(std::ostream& outputStrm, lref<Obj>& obj_, MemberT Obj2::* mem) {
     return WriteMem_r<Obj, MemberT>(obj_, mem, outputStrm);
 }
 

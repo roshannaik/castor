@@ -621,8 +621,8 @@ public:
 	}
 };
 
-template<class Obj, class MemberT> inline
-UniqueMem_r<Obj, MemberT> unique_mem(lref<Obj>& obj_, MemberT Obj::* mem) {
+template<class Obj, class Obj2, class MemberT> inline
+UniqueMem_r<Obj, MemberT> unique_mem(lref<Obj>& obj_, MemberT Obj2::* mem) {
 	return UniqueMem_r<Obj, MemberT>(obj_, mem);
 }
 
@@ -644,15 +644,15 @@ public:
 };
 
 // Overloads for non-const member functions
-template<class R, class Obj> inline
+template<class R, class Obj, class Obj2> inline
 UniqueMf_r<R,R(Obj::*)(void), Obj>
-unique_mf(lref<Obj>& obj_, R(Obj::*mf)(void) ) {
+unique_mf(lref<Obj>& obj_, R(Obj2::*mf)(void) ) {
     return UniqueMf_r<R,R(Obj::*)(void), Obj>(obj_,mf);
 }
 
-template<class R, class Obj> inline
+template<class R, class Obj, class Obj2> inline
 UniqueMf_r<R,R(Obj::*)(void) const, Obj>
-unique_mf(lref<Obj>& obj_, R(Obj::*mf)(void) const) {
+unique_mf(lref<Obj>& obj_, R(Obj2::*mf)(void) const) {
     return UniqueMf_r<R,R(Obj::*)(void) const, Obj>(obj_,mf);
 }
 
@@ -879,10 +879,10 @@ relation insert(lref<typename Seq::value_type> value_, lref<typename Seq::iterat
 #ifdef __BCPLUSPLUS__
 	relation (*self)(lref<typename Seq::value_type> , lref<typename Seq::iterator> , lref<typename Seq::iterator> , lref<Seq>& ) = &insert<Seq>;
 	return   sequence(insertedSeq)(value_)(b_,e_)
-		  || predicate(b_!=e_) && next(b_,n) && recurse(self,value_,n,e_,tmp) && dereference(b_,v) && sequence(insertedSeq)(v)(tmp);
+		  || predicate(b_!=e_) && castor::next(b_,n) && recurse(self,value_,n,e_,tmp) && dereference(b_,v) && sequence(insertedSeq)(v)(tmp);
 #else
 	return   sequence(insertedSeq)(value_)(b_,e_)
-		  || predicate(b_!=e_) && next(b_,n) && recurse(&insert<Seq>,value_,n,e_,tmp) && dereference(b_,v) && sequence(insertedSeq)(v)(tmp);
+          || predicate(b_!=e_) && castor::next(b_,n) && recurse(&insert<Seq>,value_,n,e_,tmp) && dereference(b_,v) && sequence(insertedSeq)(v)(tmp);
 #endif
 }
 
@@ -895,10 +895,10 @@ relation insert_seq(lref<typename Seq::iterator> valuesB_, lref<typename Seq::it
 #ifdef __BCPLUSPLUS__
 	relation (*self)(lref<typename Seq::iterator> , lref<typename Seq::iterator> , lref<typename Seq::iterator> , lref<typename Seq::iterator> , lref<Seq>& ) = &insert_seq<Seq>;
 	return   sequence(insertedSeq)(valuesB_,valuesE_)(b_,e_)
-		  || predicate(b_!=e_) && next(b_,n) && recurse(self,valuesB_,valuesE_,n,e_,tmp) && dereference(b_,v) && sequence(insertedSeq)(v)(tmp);
+		  || predicate(b_!=e_) && castor::next(b_,n) && recurse(self,valuesB_,valuesE_,n,e_,tmp) && dereference(b_,v) && sequence(insertedSeq)(v)(tmp);
 #else
 	return   sequence(insertedSeq)(valuesB_,valuesE_)(b_,e_)
-		  || predicate(b_!=e_) && next(b_,n) && recurse(&insert_seq<Seq>,valuesB_,valuesE_,n,e_,tmp) && dereference(b_,v) && sequence(insertedSeq)(v)(tmp);
+		  || predicate(b_!=e_) && castor::next(b_,n) && recurse(&insert_seq<Seq>,valuesB_,valuesE_,n,e_,tmp) && dereference(b_,v) && sequence(insertedSeq)(v)(tmp);
 #endif
 }
 
@@ -1451,78 +1451,92 @@ public:
 
 // nullary
 template<class Func> inline
-Eval_r0<Func> eval(Func f) {
+Eval_r0<Func> 
+eval(Func f) {
     return Eval_r0<Func>(f);
 }
 
 template<class R> inline
-Eval_r0<R(*)(void)> eval(R(* f)(void)) {
+Eval_r0<R(*)(void)> 
+eval(R(* f)(void)) {
     return Eval_r0<R(*)(void)>(f);
 }
 
 // unary
 template<class Func, class A1> inline
-Eval_r1<Func,A1> eval(Func f, const A1& a1_) {
+Eval_r1<Func,A1> 
+eval(Func f, const A1& a1_) {
     return Eval_r1<Func,A1>(f,a1_);
 }
 
 template<class R, class P1, class A1> inline
-Eval_r1<R(*)(P1),A1> eval(R(* f)(P1), const A1& a1_) {
+Eval_r1<R(*)(P1),A1> 
+eval(R(* f)(P1), const A1& a1_) {
     return Eval_r1<R(*)(P1),A1>(f,a1_);
 }
 
 // binary
 template<class Func, class A1, class A2> inline
-Eval_r2<Func,A1,A2> eval(Func f, const A1& a1_, const A2& a2_) {
+Eval_r2<Func,A1,A2> 
+eval(Func f, const A1& a1_, const A2& a2_) {
     return Eval_r2<Func,A1,A2>(f,a1_,a2_);
 }
 
 template<class R, class P1, class P2, class A1, class A2> inline
-Eval_r2<R(*)(P1,P2),A1,A2> eval(R(* f)(P1,P2), const A1& a1_, const A2& a2_) {
+Eval_r2<R(*)(P1,P2),A1,A2> 
+eval(R(* f)(P1,P2), const A1& a1_, const A2& a2_) {
     return Eval_r2<R(*)(P1,P2),A1,A2>(f,a1_,a2_);
 }
 
 // ternary
 template<class Func, class A1, class A2, class A3> inline
-Eval_r3<Func,A1,A2,A3> eval(Func f, const A1& a1_, const A2& a2_, const A3& a3_) {
+Eval_r3<Func,A1,A2,A3> 
+eval(Func f, const A1& a1_, const A2& a2_, const A3& a3_) {
     return Eval_r3<Func,A1,A2,A3>(f,a1_,a2_,a3_);
 }
 
 template<class R, class P1, class P2, class P3, class A1, class A2, class A3> inline
-Eval_r3<R(*)(P1,P2,P3),A1,A2,A3> eval(R(* f)(P1,P2,P3), const A1& a1_, const A2& a2_, const A3& a3_) {
+Eval_r3<R(*)(P1,P2,P3),A1,A2,A3> 
+eval(R(* f)(P1,P2,P3), const A1& a1_, const A2& a2_, const A3& a3_) {
     return Eval_r3<R(*)(P1,P2,P3),A1,A2,A3>(f,a1_,a2_,a3_);
 }
 
 // quaternary
 template<class Func, class A1, class A2, class A3, class A4> inline
-Eval_r4<Func,A1,A2,A3,A4> eval(Func f, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
+Eval_r4<Func,A1,A2,A3,A4> 
+eval(Func f, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
     return Eval_r4<Func,A1,A2,A3,A4>(f,a1_,a2_,a3_,a4_);
 }
 
 template<class R, class P1, class P2, class P3, class P4, class A1, class A2, class A3, class A4> inline
-Eval_r4<R(*)(P1,P2,P3,P4),A1,A2,A3,A4> eval(R(* f)(P1,P2,P3,P4), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
+Eval_r4<R(*)(P1,P2,P3,P4),A1,A2,A3,A4> 
+eval(R(* f)(P1,P2,P3,P4), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
     return Eval_r4<R(*)(P1,P2,P3,P4),A1,A2,A3,A4>(f,a1_,a2_,a3_,a4_);
 }
 
 // quinary
 template<class Func, class A1, class A2, class A3, class A4, class A5> inline
-Eval_r5<Func,A1,A2,A3,A4,A5> eval(Func f, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
+Eval_r5<Func,A1,A2,A3,A4,A5> 
+eval(Func f, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
     return Eval_r5<Func,A1,A2,A3,A4,A5>(f,a1_,a2_,a3_,a4_,a5_);
 }
 
 template<class R, class P1, class P2, class P3, class P4, class P5, class A1, class A2, class A3, class A4, class A5> inline
-Eval_r5<R(*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5> eval(R(* f)(P1,P2,P3,P4,P5), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
+Eval_r5<R(*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5> 
+eval(R(* f)(P1,P2,P3,P4,P5), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
     return Eval_r5<R(*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5>(f,a1_,a2_,a3_,a4_,a5_);
 }
 
 // sestary
 template<class Func, class A1, class A2, class A3, class A4, class A5, class A6> inline
-Eval_r6<Func,A1,A2,A3,A4,A5,A6> eval(Func f, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
+Eval_r6<Func,A1,A2,A3,A4,A5,A6> 
+eval(Func f, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
     return Eval_r6<Func,A1,A2,A3,A4,A5,A6>(f,a1_,a2_,a3_,a4_,a5_,a6_);
 }
 
 template<class R, class P1, class P2, class P3, class P4, class P5, class P6, class A1, class A2, class A3, class A4, class A5, class A6> inline
-Eval_r6<R(*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6> eval(R(* f)(P1,P2,P3,P4,P5,P6), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
+Eval_r6<R(*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6> 
+eval(R(* f)(P1,P2,P3,P4,P5,P6), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
     return Eval_r6<R(*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6>(f,a1_,a2_,a3_,a4_,a5_,a6_);
 }
 
@@ -1648,88 +1662,88 @@ public:
 };
 
 // Overloads for non-const member functions
-template<class R, class Obj> inline
+template<class R, class Obj, class Obj2> inline
 Eval_mf_r0<Obj,R(Obj::*)(void)> 
-eval_mf(lref<Obj>& obj_, R(Obj::*mf)(void) ) {
+eval_mf(lref<Obj>& obj_, R(Obj2::* mf)(void) ) {
     return Eval_mf_r0<Obj,R(Obj::*)(void)>(obj_,mf);
 }
 
-template<class R, class P1, class Obj, class A1> inline
+template<class R, class P1, class Obj, class Obj2, class A1> inline
 Eval_mf_r1<Obj,R(Obj::*)(P1),A1> 
-eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1), const A1& a1_) {
+eval_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1), const A1& a1_) {
     return Eval_mf_r1<Obj,R(Obj::*)(P1),A1>(obj_,mf,a1_);
 }
 
-template<class R, class P1, class P2, class Obj, class A1, class A2> inline
+template<class R, class P1, class P2, class Obj, class Obj2, class A1, class A2> inline
 Eval_mf_r2<Obj,R(Obj::*)(P1,P2),A1,A2> 
-eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2), const A1& a1_, const A2& a2_) {
+eval_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2), const A1& a1_, const A2& a2_) {
     return Eval_mf_r2<Obj,R(Obj::*)(P1,P2),A1,A2>(obj_,mf,a1_,a2_);
 }
 
-template<class R, class P1, class P2, class P3, class Obj, class A1, class A2, class A3> inline
+template<class R, class P1, class P2, class P3, class Obj, class Obj2, class A1, class A2, class A3> inline
 Eval_mf_r3<Obj,R(Obj::*)(P1,P2,P3),A1,A2,A3> 
-eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3), const A1& a1_, const A2& a2_, const A3& a3_) {
+eval_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3), const A1& a1_, const A2& a2_, const A3& a3_) {
     return Eval_mf_r3<Obj,R(Obj::*)(P1,P2,P3),A1,A2,A3>(obj_,mf,a1_,a2_,a3_);
 }
 
-template<class R, class P1, class P2, class P3, class P4, class Obj, class A1, class A2, class A3, class A4> inline
+template<class R, class P1, class P2, class P3, class P4, class Obj, class Obj2, class A1, class A2, class A3, class A4> inline
 Eval_mf_r4<Obj,R(Obj::*)(P1,P2,P3,P4),A1,A2,A3,A4> 
-eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
+eval_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3,P4), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
     return Eval_mf_r4<Obj,R(Obj::*)(P1,P2,P3,P4),A1,A2,A3,A4>(obj_,mf,a1_,a2_,a3_,a4_);
 }
 
-template<class R, class P1, class P2, class P3, class P4, class P5, class Obj, class A1, class A2, class A3, class A4, class A5> inline
+template<class R, class P1, class P2, class P3, class P4, class P5, class Obj, class Obj2, class A1, class A2, class A3, class A4, class A5> inline
 Eval_mf_r5<Obj,R(Obj::*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5> 
-eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
+eval_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3,P4,P5), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
     return Eval_mf_r5<Obj,R(Obj::*)(P1,P2,P3,P4,P5),A1,A2,A3,A4,A5>(obj_,mf,a1_,a2_,a3_,a4_,a5_);
 }
 
-template<class R, class P1, class P2, class P3, class P4, class P5, class P6, class Obj, class A1, class A2, class A3, class A4, class A5, class A6> inline
+template<class R, class P1, class P2, class P3, class P4, class P5, class P6, class Obj, class Obj2, class A1, class A2, class A3, class A4, class A5, class A6> inline
 Eval_mf_r6<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6> 
-eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
+eval_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3,P4,P5,P6), const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
     return Eval_mf_r6<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6),A1,A2,A3,A4,A5,A6>(obj_,mf,a1_,a2_,a3_,a4_,a5_,a6_);
 }
 
 // Overloads for const member functions
-template<class R, class Obj> inline
+template<class R, class Obj, class Obj2> inline
 Eval_mf_r0<Obj,R(Obj::*)(void) const> 
-eval_mf(lref<Obj>& obj_, R(Obj::*mf)(void) const) {
+eval_mf(lref<Obj>& obj_, R(Obj2::* mf)(void) const) {
     return Eval_mf_r0<Obj,R(Obj::*)(void) const>(obj_,mf);
 }
 
-template<class R, class P1, class Obj, class A1> inline
+template<class R, class P1, class Obj, class Obj2, class A1> inline
 Eval_mf_r1<Obj,R(Obj::*)(P1) const,A1> 
-eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1) const, const A1& a1_) {
+eval_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1) const, const A1& a1_) {
     return Eval_mf_r1<Obj,R(Obj::*)(P1) const,A1>(obj_,mf,a1_);
 }
 
-template<class R, class P1, class P2, class Obj, class A1, class A2> inline
+template<class R, class P1, class P2, class Obj, class Obj2, class A1, class A2> inline
 Eval_mf_r2<Obj,R(Obj::*)(P1,P2) const,A1,A2> 
-eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2) const, const A1& a1_, const A2& a2_) {
+eval_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2) const, const A1& a1_, const A2& a2_) {
     return Eval_mf_r2<Obj,R(Obj::*)(P1,P2) const,A1,A2>(obj_,mf,a1_,a2_);
 }
 
-template<class R, class P1, class P2, class P3, class Obj, class A1, class A2, class A3> inline
+template<class R, class P1, class P2, class P3, class Obj, class Obj2, class A1, class A2, class A3> inline
 Eval_mf_r3<Obj,R(Obj::*)(P1,P2,P3) const,A1,A2,A3> 
-eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3) const, const A1& a1_, const A2& a2_, const A3& a3_) {
+eval_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3) const, const A1& a1_, const A2& a2_, const A3& a3_) {
     return Eval_mf_r3<Obj,R(Obj::*)(P1,P2,P3) const,A1,A2,A3>(obj_,mf,a1_,a2_,a3_);
 }
 
-template<class R, class P1, class P2, class P3, class P4, class Obj, class A1, class A2, class A3, class A4> inline
+template<class R, class P1, class P2, class P3, class P4, class Obj, class Obj2, class A1, class A2, class A3, class A4> inline
 Eval_mf_r4<Obj,R(Obj::*)(P1,P2,P3,P4) const,A1,A2,A3,A4> 
-eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
+eval_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3,P4) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_) {
     return Eval_mf_r4<Obj,R(Obj::*)(P1,P2,P3,P4) const,A1,A2,A3,A4>(obj_,mf,a1_,a2_,a3_,a4_);
 }
 
-template<class R, class P1, class P2, class P3, class P4, class P5, class Obj, class A1, class A2, class A3, class A4, class A5> inline
+template<class R, class P1, class P2, class P3, class P4, class P5, class Obj, class Obj2, class A1, class A2, class A3, class A4, class A5> inline
 Eval_mf_r5<Obj,R(Obj::*)(P1,P2,P3,P4,P5) const,A1,A2,A3,A4,A5> 
-eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
+eval_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3,P4,P5) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_) {
     return Eval_mf_r5<Obj,R(Obj::*)(P1,P2,P3,P4,P5) const,A1,A2,A3,A4,A5>(obj_,mf,a1_,a2_,a3_,a4_,a5_);
 }
 
-template<class R, class P1, class P2, class P3, class P4, class P5, class P6, class Obj, class A1, class A2, class A3, class A4, class A5, class A6> inline
+template<class R, class P1, class P2, class P3, class P4, class P5, class P6, class Obj, class Obj2, class A1, class A2, class A3, class A4, class A5, class A6> inline
 Eval_mf_r6<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,A1,A2,A3,A4,A5,A6> 
-eval_mf(lref<Obj>& obj_, R(Obj::* mf)(P1,P2,P3,P4,P5,P6) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
+eval_mf(lref<Obj>& obj_, R(Obj2::* mf)(P1,P2,P3,P4,P5,P6) const, const A1& a1_, const A2& a2_, const A3& a3_, const A4& a4_, const A5& a5_, const A6& a6_) {
     return Eval_mf_r6<Obj,R(Obj::*)(P1,P2,P3,P4,P5,P6) const,A1,A2,A3,A4,A5,A6>(obj_,mf,a1_,a2_,a3_,a4_,a5_,a6_);
 }
 

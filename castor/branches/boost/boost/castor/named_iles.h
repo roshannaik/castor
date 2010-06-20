@@ -5,8 +5,8 @@
 #if !defined CASTOR_NAMED_ILES_H
 #define CASTOR_NAMED_ILES_H 1
 
-#include <boost/castor/ile.h>
-#include <boost/castor/helpers.h>
+#include "ile.h"
+#include "helpers.h"
 
 namespace castor {
 
@@ -35,18 +35,18 @@ at(lref<Obj>& obj, Index i) {
 }
 
 //-------------------------------------------------
-// ref() - Takes a reference to an object/lref
+// id() - Takes a reference to an object/lref
 //-------------------------------------------------
 template<typename T>
-class Ref_ILE {
+class Id_ILE {
 	lref<T> obj;
 public:
 	typedef T& result_type;
 
-    Ref_ILE(T& obj) : obj(&obj,false)
+    Id_ILE(T& obj) : obj(&obj,false)
     { }
 
-    Ref_ILE(lref<T>& obj) : obj(obj)
+    Id_ILE(lref<T>& obj) : obj(obj)
     { }
 
 	T& operator()(void) {
@@ -55,12 +55,12 @@ public:
 };
 
 template<typename T>
-class Ref_ILE<T*> {
+class Id_ILE<T*> {
 	T* obj;
 public:
 	typedef T* result_type;
 
-    Ref_ILE(T* obj) : obj(obj)
+    Id_ILE(T* obj) : obj(obj)
     { }
 
 	T* operator()(void) {
@@ -69,20 +69,21 @@ public:
 };
 
 template<class T> inline
-Ile<Ref_ILE<T> >
-ref(T& obj) {
-    return Ref_ILE<T>(obj);
+Ile<Id_ILE<T> >
+id(T& obj) {
+    return Id_ILE<T>(obj);
 }
 
 template<class T> inline
-Ile<Ref_ILE<T*> >
-ref(T* obj) {
-    return Ref_ILE<T*>(obj);
+Ile<Id_ILE<T*> >
+id(T* obj) {
+    return Id_ILE<T*>(obj);
 }
 
 template<class T>
-Ile<Ref_ILE<T> > ref(const lref<T>& obj) { 
-    return Ref_ILE<T>(obj);
+Ile<Id_ILE<T> > 
+id(const lref<T>& obj) { 
+    return Id_ILE<T>(obj);
 }
 
 //-------------------------------------------------

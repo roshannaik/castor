@@ -9,6 +9,20 @@
 
 using namespace castor;
 
+namespace {
+struct Base {
+    int b;
+    Base():b(0) {}
+    int foo(){ return 1; }
+    int foo_base(){ return 2; }
+};
+struct Derived : Base {
+    int d;
+    Derived() : d(10), Base() {}
+    int foo() { return 3; }
+    int foo_derived(){ return 4; }
+};
+
 
 struct employee {
     std::string name;
@@ -18,6 +32,8 @@ struct employee {
         return name == rhs.name && salary == rhs.salary;
     }
 };
+
+} // namespace 
 
 int test_main(int, char * [])
 {
@@ -66,6 +82,13 @@ int test_main(int, char * [])
 	    for(; r(); ++i);
 	    BOOST_CHECK(i==1);
     }
+    {// members of base type
+    lref<Derived> d = Derived();
+    BOOST_CHECK(eq_mem<int>(1,d, &Base::b)());
 
+    BOOST_CHECK(eq_mem<int>(1,d, &Derived::b)());
+
+    BOOST_CHECK(eq_mem<int>(10,d, &Derived::d)());
+    }
     return 0;
 }

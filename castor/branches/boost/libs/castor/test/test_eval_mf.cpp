@@ -7,6 +7,21 @@
 
 using namespace castor;
 
+namespace {
+struct Base {
+    int b;
+    Base():b(0) {}
+    void foo(int){ }
+    void foo_base(int,int){ }
+};
+struct Derived : Base {
+    int d;
+    Derived() : d(10), Base() {}
+    void foo(int) { }
+    void foo_derived(int,int,int){ }
+};
+} // namespace 
+
 int test_main(int, char * [])
 {
     {
@@ -94,6 +109,17 @@ int test_main(int, char * [])
 	eval_mf<double>(f, &Functor6::max, 2.0, 3.0)();
 #endif
         eval_mf<int>(f, &Functor6::cmax, 1, 2)();    	
+    }
+
+    { // on member functions from base & derived type
+        lref<Derived> d = Derived();
+        BOOST_CHECK(eval_mf(d,&Base::foo,1)());
+
+        BOOST_CHECK(eval_mf(d,&Derived::foo,1)());
+
+        BOOST_CHECK(eval_mf(d,&Derived::foo_base,1,2)());
+
+        BOOST_CHECK(eval_mf(d,&Derived::foo_derived,1,2,3)());
     }
 
     return 0;

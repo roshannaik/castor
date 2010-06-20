@@ -5,11 +5,10 @@
 #if !defined CASTOR_TLR_H
 #define CASTOR_TLR_H 1
 
-#include <boost/castor/coroutine.h>
-#include <boost/castor/relation.h>
-#include <boost/castor/lref.h>
-#include <boost/castor/helpers.h>
-
+#include "coroutine.h"
+#include "relation.h"
+#include "lref.h"
+#include "helpers.h"
 #include <vector>
 #include <utility>
 #include <iterator>
@@ -270,16 +269,16 @@ struct OrderMem_tlr : public OrderByBase<T,detail::CompareMember<T,Mem,Pred> > {
 	{}
 };
 
-template<typename T, typename MemberT>  inline
-OrderMem_tlr<T,MemberT,std::less<MemberT> > 
-order_mem(lref<T>& obj, MemberT T::* mem) {
-	return OrderMem_tlr<T,MemberT,std::less<MemberT> >(obj,mem,std::less<MemberT>());
+template<typename T, typename T2, typename MemberT2>  inline
+OrderMem_tlr<T,MemberT2,std::less<MemberT2> > 
+order_mem(lref<T>& obj, MemberT2 T2::* mem) {
+	return OrderMem_tlr<T,MemberT2,std::less<MemberT2> >(obj,mem,std::less<MemberT2>());
 }
 
-template<typename T, typename MemberT, typename Pred>  inline
-OrderMem_tlr<T,MemberT,Pred> 
-order_mem(lref<T>& obj, MemberT T::* mem, Pred cmp) {
-	return OrderMem_tlr<T,MemberT,Pred>(obj,mem,cmp);
+template<typename T, typename T2, typename MemberT2, typename Pred>  inline
+OrderMem_tlr<T,MemberT2,Pred> 
+order_mem(lref<T>& obj, MemberT2 T2::* mem, Pred cmp) {
+	return OrderMem_tlr<T,MemberT2,Pred>(obj,mem,cmp);
 }
 
 //-------------------------------------------------
