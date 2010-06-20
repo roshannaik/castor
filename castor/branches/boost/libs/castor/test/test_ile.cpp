@@ -33,14 +33,14 @@ int test_main(int, char * [])
         lref<int> i = 3;
         int global = 0;
 
-        BOOST_CHECK((ref(global) + i == 3)());
+        BOOST_CHECK((id(global) + i == 3)());
     }
 
     {
         std::stringstream sout;
-        (ref<std::ostream>(sout) << "hello" << 3)();
+        (id<std::ostream>(sout) << "hello" << 3)();
         std::string s;
-        (ref<std::istream>(sout) >> ref(s))();
+        (id<std::istream>(sout) >> id(s))();
 
         BOOST_CHECK(s == "hello3");
     }
@@ -52,7 +52,7 @@ int test_main(int, char * [])
         (lsout << "hello" << one)();
         std::string s;
         lref<std::string> ls(&s, false);
-        (ref<std::istream>(sout) >> ls)();
+        (id<std::istream>(sout) >> ls)();
 
         BOOST_CHECK(s == "hello1");
     }

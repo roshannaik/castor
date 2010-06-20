@@ -38,7 +38,7 @@ int test_main(int, char * [])
 	// should not compare succesfully
 	int ak[] = {1, 2, 3};
 	lref<int*> n = ak + 1;
-	relation r3 = next(n, n);
+	relation r3 = castor::next(n, n);
         int k = 0;
         for (; r3(); ++k);
 

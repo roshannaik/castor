@@ -9,6 +9,21 @@
 
 using namespace castor;
 
+namespace {
+struct Base {
+    int b;
+    Base():b(0) {}
+    int foo(){ return 1; }
+    int foo_base(){ return 2; }
+};
+struct Derived : Base {
+    int d;
+    Derived() : d(10), Base() {}
+    int foo() { return 3; }
+    int foo_derived(){ return 4; }
+};
+} // namespace 
+
 int test_main(int, char * [])
 {
     {
@@ -90,6 +105,21 @@ int test_main(int, char * [])
         i = 0;
 
         BOOST_CHECK(!eq_mf(i, f, &Functor6::method, 1, 1, 1, i2, 1, ci2)());
+    }
+    { // member function of base type
+        lref<int> one=1, two=2, three=3, four=4;
+        lref<Derived> d = Derived();
+
+        BOOST_CHECK(eq_mf(one,d,&Base::foo)());
+
+        BOOST_CHECK(eq_mf(three,d,&Derived::foo)());
+
+
+        BOOST_CHECK(eq_mf(two,d,&Base::foo_base)());
+
+        BOOST_CHECK(eq_mf(two,d,&Derived::foo_base)());
+
+        BOOST_CHECK(eq_mf(four,d,&Derived::foo_derived)());
     }
 
     return 0;
