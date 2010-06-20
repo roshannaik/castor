@@ -103,14 +103,14 @@ void test_ILE_more() {
 	{
 		lref<int> i=3;
 		int global=0;
-		if( (ref(global)+i!=3)() )
+		if( (id(global)+i!=3)() )
 			throw "failed test_ILE_more 1";
 	}
     {
         stringstream sout;
-        (ref<ostream>(sout) << "hello" << 3)();
+        (id<ostream>(sout) << "hello" << 3)();
         string s;
-        (ref<istream>(sout) >> ref(s))();
+        (id<istream>(sout) >> id(s))();
         if(s!="hello3")
             throw "failed test_ILE_more 2";
     }
@@ -121,7 +121,7 @@ void test_ILE_more() {
         (lsout << "hello" << one)();
         string s;
         lref<string> ls(&s,false);
-        (ref<istream>(sout) >> ls)();
+        (id<istream>(sout) >> ls)();
 
         if(s!="hello1")
             throw "failed test_ILE_more 3";

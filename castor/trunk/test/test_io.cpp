@@ -167,7 +167,16 @@ void test_writeTo_mf() {
 	}
 }
 
-
+namespace {
+struct Base { 
+    int b; 
+    Base() : b(0) { }
+};
+struct Derived : Base { 
+    int d; 
+    Derived() : d(1), Base() { }
+};
+}
 void test_writeTo_mem() {
 	{
     typedef pair<string,string> name;
@@ -177,6 +186,15 @@ void test_writeTo_mem() {
 	if(sstrm.str()!="Roshan")
 		throw "failed test_writeTo_mem 1";
 	}
+    { // base class member
+	lref<Derived> d = Derived();
+	stringstream sstrm;
+    writeTo_mem(sstrm, d, &Base::b)();
+    writeTo_mem(sstrm, d, &Derived::b)();
+    writeTo_mem(sstrm, d, &Derived::d)();
+	if(sstrm.str()!="Roshan")
+		throw "failed test_writeTo_mem 1";
+    }
 }
 
 void test_writeTo_readFrom() {
