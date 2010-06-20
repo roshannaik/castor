@@ -389,6 +389,21 @@ void test_eq_f() {
     }
 }
 
+namespace {
+struct Base {
+    int b;
+    Base():b(0) {}
+    int foo(){ return 1; }
+    int foo_base(){ return 2; }
+};
+struct Derived : Base {
+    int d;
+    Derived() : d(10), Base() {}
+    int foo() { return 3; }
+    int foo_derived(){ return 4; }
+};
+}
+
 void test_eq_mf() {
     {
     lref<int> refi;
@@ -461,6 +476,22 @@ void test_eq_mf() {
     if( eq_mf(i,f,&Functor6::method,1,1,1,i2,1,ci2)() )
         throw "failed test_eq_mf 3";
     }
+    { // member function of base type
+        lref<int> one=1, two=2, three=3, four=4;
+        lref<Derived> d = Derived();
+        if(!eq_mf(one,d,&Base::foo)())
+            throw "failed test_eq_mf 4";
+        if(!eq_mf(three,d,&Derived::foo)())
+            throw "failed test_eq_mf 4";
+
+        if(!eq_mf(two,d,&Base::foo_base)())
+            throw "failed test_eq_mf 4";
+        if(!eq_mf(two,d,&Derived::foo_base)())
+            throw "failed test_eq_mf 4";
+
+        if(!eq_mf(four,d,&Derived::foo_derived)())
+            throw "failed test_eq_mf 4";
+    }
 }
 
 struct employee {
@@ -516,6 +547,15 @@ void test_eq_mem() {
 	for(; r(); ++i);
 	if(i!=1)
 		throw "failed test_eq_mem 4";
+    }
+    {// members of base type
+    lref<Derived> d = Derived();
+    if(!eq_mem<int>(1,d, &Base::b)())
+        throw "failed test_eq_mem 5";
+    if(!eq_mem<int>(1,d, &Derived::b)())
+        throw "failed test_eq_mem 5";
+    if(!eq_mem<int>(10,d, &Derived::d)())
+        throw "failed test_eq_mem 5";
     }
 }
 

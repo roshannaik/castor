@@ -224,6 +224,22 @@ void test_eval() {
     }
 }
 
+
+namespace {
+struct Base {
+    int b;
+    Base():b(0) {}
+    void foo(int){ }
+    void foo_base(int,int){ }
+};
+struct Derived : Base {
+    int d;
+    Derived() : d(10), Base() {}
+    void foo(int) { }
+    void foo_derived(int,int,int){ }
+};
+}
+
 void test_eval_mf() {
 	{
 	lref<int> i1=1;
@@ -307,9 +323,19 @@ void test_eval_mf() {
 #else
 	eval_mf<double>(f,&Functor6::max,2.0,3.0)();
 #endif
-    eval_mf<int>(f,&Functor6::cmax,1,2)();    	
+    eval_mf<int>(f,&Functor6::cmax,1,2)();
     }
-
+    { // on member functions from base & derived type
+        lref<Derived> d = Derived();
+        if(!eval_mf(d,&Base::foo,1)())
+            throw "failed test_eval_mf 2";
+        if(!eval_mf(d,&Derived::foo,1)())
+            throw "failed test_eval_mf 2";
+        if(!eval_mf(d,&Derived::foo_base,1,2)())
+            throw "failed test_eval_mf 2";
+        if(!eval_mf(d,&Derived::foo_derived,1,2,3)())
+            throw "failed test_eval_mf 2";
+    }
 }
 
 
@@ -453,7 +479,7 @@ void test_next() {
 	// should not compare succesfully
 	int ak[] = {1,2,3};
 	lref<int*> n = ak+1;
-	relation r3 = next(n, n);  // element cannot be next of itself
+	relation r3 = castor::next(n, n);  // element cannot be next of itself
     int k=0;
     for(; r3(); ++k);
     if(k!=0 || !n.defined())

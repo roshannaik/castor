@@ -23,16 +23,16 @@ Enhancements to ILE (closure/lambda facility):
           E.g.  lref<pair<int,int> > pr .. ; write_f( get(pr,&pair:;first) )
     + mcall - To invoke a member function with upto 6 arguments.
           E.g.  lref<string> str= "hello" ;  predicate( mcall(str, &string::at,0)=='h' )
-    + ref - References an object. Referenced object's lifetime must extend beyond the life of this ILE.
+    + id  - References an object. Referenced object's lifetime must extend beyond the life of this ILE.
           E.g.  lref<string> s="";
-                (eval(ref(cin) >> s) && eval( ref(cout) << s ))();  // cin >> *s ; cout << *s;
+                (eval(id(cin) >> s) && eval( id(cout) << s ))();  // cin >> *s ; cout << *s;
 - ILE expressions now support use of "string literals".
     E.g. - lref<string> ls="castor"; predicate(ls=="castor");
-         - eval(ref(cout) << "hello" << " world" )();  // cout << "hello" << " world";
+         - eval(id(cout) << "hello" << " world" )();  // cout << "hello" << " world";
          - stringstream strm; 
-           eval(ref<ostream>(strm) << "hello")();   // return type of operator << is ostream& and not stringstream&
+           eval(id<ostream>(strm) << "hello")();   // return type of operator << is ostream& and not stringstream&
          - string s;
-           eval(ref<istream>(strm)) >> ref(s))();   // return type of operator >> is istream& and not stringstream&
+           eval(id<istream>(strm)) >> id(s))();   // return type of operator >> is istream& and not stringstream&
 
 - Speed improvements for ILE expressions. Closer to the speed of custom function objects.
 
