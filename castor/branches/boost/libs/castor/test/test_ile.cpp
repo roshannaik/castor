@@ -68,6 +68,16 @@ int test_main(int, char * [])
 
         BOOST_CHECK((ls + "o" == "hello")());
     }
+    { // id()
+        lref<int> i=2;
 
+        BOOST_CHECK(id(i)() == 2);
+
+        int* ptr = &*i;
+        BOOST_CHECK(id(ptr)() == &*i);
+     
+        int const ci = 10;
+        BOOST_CHECK(id(ci)() == 10);
+    }
     return 0;
 }

@@ -5,9 +5,9 @@
 #if !defined CASTOR_REF_H
 #define CASTOR_REF_H 1
 
-#include <boost/castor/config.h>
-#include <boost/castor/relation.h>
-#include <boost/castor/refcountedptr.h>
+#include "config.h"
+#include "relation.h"
+#include "refcountedptr.h"
 
 
 namespace castor {
@@ -180,19 +180,9 @@ T& effective_value(T& obj) {
 }
 
 template <typename T> inline
-const T& effective_value(const T& obj) {
-    return obj;
-}
-
-template <typename T> inline
 T& effective_value(lref<T>& obj) {
     return *obj;
 }
-
-//template <typename T> inline
-//const T& effective_value(const lref<T>& obj) {
-//    return *obj;
-//}
 
 // meta function effective_type
 

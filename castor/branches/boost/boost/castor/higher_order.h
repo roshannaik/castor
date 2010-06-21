@@ -1,11 +1,11 @@
 // Castor : Logic Programming Library
-// Authored by Roshan Naik (roshan@mpprogramming.com)
-// This software is goverened by the MIT license (http://www.opensource.org/licenses/mit-license.php).
+// Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
+// This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
 #if !defined CASTOR_HIGHER_ORDER_H
 #define CASTOR_HIGHER_ORDER_H 1
 
-#include <boost/castor/coroutine.h>
+#include "coroutine.h"
 
 namespace castor {
 

@@ -194,7 +194,7 @@ int test_main(int, char * [])
         writeTo_mem(sstrm, d, &Derived::b)();
         writeTo_mem(sstrm, d, &Derived::d)();
 
-        BOOST_CHECK(sstrm.str()=="Roshan");
+        BOOST_CHECK(sstrm.str()=="001");
     }
 
     { // write value to stream and then read it

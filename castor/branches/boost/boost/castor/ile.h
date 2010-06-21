@@ -1,16 +1,16 @@
 // Castor : Logic Programming Library
-// Copyright © 2008 Roshan Naik (roshan@mpprogramming.com).
-// This software is goverened by the MIT license (http://www.opensource.org/licenses/mit-license.php).
+// Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
+// This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
 #if !defined CASTOR_ILE_H
 #define CASTOR_ILE_H 1
 
-#include <boost/castor/relation.h>
-#include <boost/castor/lref.h>
-#include <boost/castor/ops.h>
-#include <boost/castor/cut.h>
-#include <boost/castor/workaround.h>
-#include <boost/castor/helpers.h>
+#include "relation.h"
+#include "lref.h"
+#include "ops.h"
+#include "cut.h"
+#include "workaround.h"
+#include "helpers.h"
 
 namespace castor {
 //-------------------------------------------------------------------------

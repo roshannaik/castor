@@ -1,13 +1,12 @@
 // Castor : Logic Programming Library
-// Copyright © 2008 Roshan Naik (roshan@mpprogramming.com).
+// Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
 // This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
 #ifndef CASTOR_REFCOUNTEDPTR_H
 #define CASTOR_REFCOUNTEDPTR_H 1
 
-#include <boost/castor/helpers.h>
-
 #include <algorithm>
+#include "helpers.h"
 
 namespace castor {	
 	struct InvalidDeref{}; 
