@@ -84,9 +84,9 @@ int test_main(int, char * [])
     }
     {// members of base type
     lref<Derived> d = Derived();
-    BOOST_CHECK(eq_mem<int>(1,d, &Base::b)());
+    BOOST_CHECK(eq_mem<int>(0,d, &Base::b)());
 
-    BOOST_CHECK(eq_mem<int>(1,d, &Derived::b)());
+    BOOST_CHECK(eq_mem<int>(0,d, &Derived::b)());
 
     BOOST_CHECK(eq_mem<int>(10,d, &Derived::d)());
     }

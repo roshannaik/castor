@@ -1,5 +1,6 @@
-// Castor : Logic Programming Library for C++
-// Copyright © 2007 Roshan Naik (naikrosh@gmail.com)
+// Castor : Logic Programming Library
+// Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
+// This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
 #ifndef CASTOR_WORKAROUND_H
 #define CASTOR_WORKAROUND_H 1
