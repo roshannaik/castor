@@ -1,3 +1,7 @@
+// Castor : Logic Programming Library
+// Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
+// This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
+
 #include "test_eq.h"
 
 #include <castor.h>
@@ -550,9 +554,9 @@ void test_eq_mem() {
     }
     {// members of base type
     lref<Derived> d = Derived();
-    if(!eq_mem<int>(1,d, &Base::b)())
+    if(!eq_mem<int>(0,d, &Base::b)())
         throw "failed test_eq_mem 5";
-    if(!eq_mem<int>(1,d, &Derived::b)())
+    if(!eq_mem<int>(0,d, &Derived::b)())
         throw "failed test_eq_mem 5";
     if(!eq_mem<int>(10,d, &Derived::d)())
         throw "failed test_eq_mem 5";

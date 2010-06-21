@@ -1,3 +1,8 @@
+// Castor : Logic Programming Library
+// Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
+// This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
+
+
 //--------------------------------------------------------
 //  Tests  : predicate relation for converting predicates to relations
 //--------------------------------------------------------

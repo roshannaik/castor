@@ -1,6 +1,7 @@
 // Castor : Logic Programming Library
 // Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
 // This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
+
 #include "test_io.h"
 
 #include <castor.h>
@@ -192,8 +193,8 @@ void test_writeTo_mem() {
     writeTo_mem(sstrm, d, &Base::b)();
     writeTo_mem(sstrm, d, &Derived::b)();
     writeTo_mem(sstrm, d, &Derived::d)();
-	if(sstrm.str()!="Roshan")
-		throw "failed test_writeTo_mem 1";
+	if(sstrm.str()!="001")
+		throw "failed test_writeTo_mem 2";
     }
 }
 
