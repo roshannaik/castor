@@ -19,11 +19,11 @@ class At_ILE {
 	lref<Cont> c;
     Index i;
 public:
-	typedef typename Cont::value_type result_type;
+	typedef typename Cont::value_type& result_type;
     At_ILE(const lref<Cont>& c, Index i) : c(c), i(i) 
     { }
 
-	typename Cont::value_type operator()(void) {
+	result_type operator()(void) {
         return (*c)[effective_value(i)];
     }
 };
@@ -37,34 +37,17 @@ at(lref<Obj>& obj, Index i) {
 //-------------------------------------------------
 // id() - Takes a reference to an object/lref
 //-------------------------------------------------
-template<typename T>
+template<class T>
 class Id_ILE {
-	lref<T> obj;
-public:
-	typedef T& result_type;
-
-    Id_ILE(T& obj) : obj(&obj,false)
-    { }
-
-    Id_ILE(lref<T>& obj) : obj(obj)
-    { }
-
-	T& operator()(void) {
-        return obj.get();
-    }
-};
-
-template<typename T>
-class Id_ILE<T*> {
 	T* obj;
 public:
-	typedef T* result_type;
+    typedef typename effective_type<T>::result_type& result_type;
 
-    Id_ILE(T* obj) : obj(obj)
+    Id_ILE(T& obj) : obj(&obj)
     { }
 
-	T* operator()(void) {
-        return obj;
+	result_type operator()(void) {
+        return effective_value(*obj);
     }
 };
 
@@ -74,17 +57,6 @@ id(T& obj) {
     return Id_ILE<T>(obj);
 }
 
-template<class T> inline
-Ile<Id_ILE<T*> >
-id(T* obj) {
-    return Id_ILE<T*>(obj);
-}
-
-template<class T>
-Ile<Id_ILE<T> > 
-id(const lref<T>& obj) { 
-    return Id_ILE<T>(obj);
-}
 
 //-------------------------------------------------
 // create() and Create<>::with()
@@ -264,12 +236,12 @@ class Get_ILE {
     lref<Obj> obj_;
 	MemberT Obj::* mem;
 public:
-    typedef MemberT result_type;
+    typedef MemberT& result_type;
 
     Get_ILE(const lref<Obj>& obj_, MemberT Obj::* mem) : obj_(obj_), mem(mem)
 	{ }
 
-    MemberT& operator()(void) {
+    result_type operator()(void) {
         return (*obj_).*mem;
     }
 

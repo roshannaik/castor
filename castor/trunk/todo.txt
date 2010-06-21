@@ -1,6 +1,7 @@
   Todo
 ------------
 HIGH
+- some ILEs have const methods (get,mcall) - result_type differs from the non-const method.
 - Document item_set, item_map and item overloads
 x allow binding lref<const int> i to lref<int>;
 - input only params should have _i suffix
@@ -16,7 +17,7 @@ x allow binding lref<const int> i to lref<int>;
    - Move helper headers into detail directory
 + review shuffle and permute
 
-- Look into constraining generic operator && and ||
+- Look into constrained generic operators && and ||
 
 group_by:
 x member function support for group_by

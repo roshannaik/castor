@@ -1,6 +1,7 @@
 // Castor : Logic Programming Library
 // Copyright © 2007-2010 Roshan Naik (roshan@mpprogramming.com).
 // This software is governed by the MIT license (http://www.opensource.org/licenses/mit-license.php).
+
 #include <castor.h>
 #include <string>
 #include <utility>
@@ -100,7 +101,7 @@ void test_ILE() {
 }
 
 void test_ILE_more() {
-	{
+	{ // id(regular objs)
 		lref<int> i=3;
 		int global=0;
 		if( (id(global)+i!=3)() )
@@ -126,7 +127,7 @@ void test_ILE_more() {
         if(s!="hello1")
             throw "failed test_ILE_more 3";
     }
-    {
+    { // == "..."
         lref<string> ls("hello");
         if(!(ls=="hello")())
             throw "failed test_ILE_more 4";
@@ -135,6 +136,17 @@ void test_ILE_more() {
         lref<string> ls("hell");
         if((ls+"o"!="hello")())
             throw "failed test_ILE_more 5";
+    }
+    { // id()
+        lref<int> i=2;
+        if( id(i)() != 2)
+            throw "failed test_ILE_more 6";
+        int* ptr = &*i;
+        if( id(ptr)() != &*i)
+            throw "failed test_ILE_more 6";
+        int const ci = 10;
+        if( id(ci)() != 10)
+            throw "failed test_ILE_more 6";
     }
 }
 

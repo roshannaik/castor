@@ -180,19 +180,9 @@ T& effective_value(T& obj) {
 }
 
 template <typename T> inline
-const T& effective_value(const T& obj) {
-    return obj;
-}
-
-template <typename T> inline
 T& effective_value(lref<T>& obj) {
     return *obj;
 }
-
-//template <typename T> inline
-//const T& effective_value(const lref<T>& obj) {
-//    return *obj;
-//}
 
 // meta function effective_type
 
