@@ -441,11 +441,13 @@ ItemCont_r<Cont> item(lref<typename Cont::value_type> obj, lref<Cont>& cont_) {
     return ItemCont_r<Cont>(obj, cont_);
 }
 
+// std::set
 template<class T>  inline
 ItemSet_r<std::set<T> > item(lref<const typename std::set<T>::value_type> obj, lref<std::set<T> >& cont_) {
     return item_set(obj,cont_);
 }
 
+// std::multiset
 template<class T>  inline
 ItemSet_r<std::multiset<T> > item(lref<const typename std::multiset<T>::value_type> obj, lref<std::multiset<T> >& cont_) {
     return item_set(obj,cont_);
@@ -513,8 +515,8 @@ public:
 // MapT : is an asociative container where MapT::value_type is pair<const MapT::key_type,MapT::mapped_type>
 template<class MapT> inline
 ItemMap_r<MapT>
-item_map(lref<const typename MapT::key_type> key, lref<typename MapT::mapped_type> obj, lref<MapT>& cont_) {
-    return ItemMap_r<MapT>(key, obj, cont_);
+item_map(lref<const typename MapT::key_type> key, lref<typename MapT::mapped_type> val, lref<MapT>& cont_) {
+    return ItemMap_r<MapT>(key, val, cont_);
 }
 
 //--------------------------------------------------------

@@ -72,5 +72,16 @@ int test_main(int, char * [])
         BOOST_CHECK(*k=='c');
         BOOST_CHECK(!r());
     }
+    { // gen key & obj - const multimap
+        const multimap<char,int> cmm(mm->begin(), mm->end());
+        lref<const multimap<char,int> > lcmm (&cmm, false);
+        lref<const char> k;
+        lref<int> v;
+        relation r = item_map(k,v,mm);
+        size_t count=0;
+        while(r())
+            ++count;
+        BOOST_CHECK(count==cmm.size());
+    }   
     return 0;
 }
