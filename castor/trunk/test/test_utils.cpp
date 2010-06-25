@@ -1539,7 +1539,7 @@ void test_item_map() {
     { // lookup key, gen obj - multimap
         lref<const char> k='z';
         lref<int> v;
-        relation r = item_map(k,v,mm);
+        relation r = item_map('z',v,mm);
         int count=0;
         while(r())
             ++count;
@@ -1567,6 +1567,18 @@ void test_item_map() {
             throw "failed test_item_map 4";
         if(r())
             throw "failed test_item_map 4";
+    }
+    { // gen key & obj - const multimap
+        const multimap<char,int> cmm(mm->begin(), mm->end());
+        lref<const multimap<char,int> > lcmm (&cmm, false);
+        lref<const char> k;
+        lref<int> v;
+        relation r = item_map(k,v,mm);
+        size_t count=0;
+        while(r())
+            ++count;
+        if(count!=cmm.size())
+            throw "failed test_item_map 2";
     }
 }
 
