@@ -5,7 +5,7 @@
 
 using namespace castor;
 
-class myFastAndTestRel : public TestOnlyRelation<myFastAndTestRel> {
+class myFastAndTestRel : public detail::TestOnlyRelation<myFastAndTestRel> {
     lref<int> i;
 public:
     myFastAndTestRel(lref<int> i) : i(i)
