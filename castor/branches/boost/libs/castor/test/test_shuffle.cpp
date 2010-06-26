@@ -37,7 +37,7 @@ int test_main(int, char * [])
         lref<int> c;
         lref<std::string> s = "hello", ps;
         lref<std::string::iterator> sb = s->begin(), se = s->end();
-        relation r = (permute(s, ps) && shuffle(ps, s)) >>= count(c);
+        relation r = (permutation(s, ps) && shuffle(ps, s)) >>= count(c);
 
         BOOST_CHECK(r());
 

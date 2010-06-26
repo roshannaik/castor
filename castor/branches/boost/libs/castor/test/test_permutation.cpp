@@ -9,7 +9,7 @@ int test_main(int, char * [])
 {
     { // test mode
         lref<std::string> s = "hello", ps = "olleh";
-        relation r = permute(s, ps);
+        relation r = permutation(s, ps);
 
         BOOST_CHECK(r());
         BOOST_CHECK(!r());
@@ -18,7 +18,7 @@ int test_main(int, char * [])
     { // generate mode
         lref<int> c = 0;
         lref<std::string> s = "hello", ps, ss = "helol";
-        relation r = permute(s, ps) && eq(ps, ss) && eval(++c);
+        relation r = permutation(s, ps) && eq(ps, ss) && eval(++c);
 
         BOOST_CHECK(r() || *c == 1);
 
