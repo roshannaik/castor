@@ -26,7 +26,7 @@ int test_main(int, char * [])
         BOOST_CHECK(r());
     }
     { // 3- const Cont (not lref<Cont>)
-        const vector<int> vi;
+        const std::vector<int> vi;
         relation r = empty(vi);
         BOOST_CHECK(r());
     }

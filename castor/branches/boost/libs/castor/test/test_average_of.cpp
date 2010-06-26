@@ -34,7 +34,7 @@ int test_main(int, char * [])
 
     { // test
 #ifdef __GNUG__
-        relation r = average_of<vector<int> >(vi,3);
+        relation r = average_of<std::vector<int> >(vi,3);
 #else
         relation r = average_of(vi,3);
 #endif
@@ -43,7 +43,7 @@ int test_main(int, char * [])
  
         // failure test
 #ifdef __GNUG__
-        r =  average_of<vector<int> >(vi,10);
+        r =  average_of<std::vector<int> >(vi,10);
 #else
         r =  average_of(vi,10);
 #endif
@@ -73,7 +73,7 @@ int test_main(int, char * [])
         BOOST_CHECK(!a.defined());
     }
     {// gen - with const container
-        lref<const vector<int> > cv = vector<int>(nums,nums+5);
+        lref<const std::vector<int> > cv = std::vector<int>(nums,nums+5);
         lref<int> a;
         relation r = average_of(cv,a);
         BOOST_CHECK(r());

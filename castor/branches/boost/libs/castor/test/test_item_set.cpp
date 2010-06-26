@@ -1,5 +1,7 @@
 #include <boost/castor.h>
-#include <boost/castor.h>
+
+#include <boost/test/minimal.hpp>
+
 
 using namespace castor;
 
@@ -21,7 +23,7 @@ int test_main(int, char * [])
         BOOST_CHECK(j==2);
 
 #ifdef __GNUG__
-    BOOST_CHECK(!item_set<multiset<int> >(-1,mi)());
+    BOOST_CHECK(!item_set<std::multiset<int> >(-1,mi)());
 #else
     BOOST_CHECK(!item_set(-1,mi)());
 #endif
@@ -36,7 +38,7 @@ int test_main(int, char * [])
         BOOST_CHECK(j==1);
 
 #ifdef __GNUG__
-    BOOST_CHECK(!item_set<set<int> >(-1,si)());
+    BOOST_CHECK(!item_set<std::set<int> >(-1,si)());
 #else
     BOOST_CHECK(!item_set(-1,si)());
 #endif

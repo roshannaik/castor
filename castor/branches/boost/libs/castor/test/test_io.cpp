@@ -189,7 +189,7 @@ int test_main(int, char * [])
 
     { // base class member
 	lref<Derived> d = Derived();
-        stringstream sstrm;
+        std::stringstream sstrm;
         writeTo_mem(sstrm, d, &Base::b)();
         writeTo_mem(sstrm, d, &Derived::b)();
         writeTo_mem(sstrm, d, &Derived::d)();

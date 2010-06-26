@@ -33,7 +33,7 @@ int test_main(int, char * [])
  
         // failure test
 #ifdef __GNUG__
-        r =  min_of<vector<string> >(v,"Prolog");
+        r =  min_of<std::vector<std::string> >(v,"Prolog");
 #else
         r =  min_of(v,"Prolog");
 #endif
@@ -65,17 +65,17 @@ int test_main(int, char * [])
 
     { // test - with cmp
 #ifdef __GNUG__
-        relation r =  min_of<vector<string> >(v,"castor", std::greater<string>() ) ;
+        relation r =  min_of<std::vector<std::string> >(v,"castor", std::greater<std::string>() ) ;
 #else
-        relation r =  min_of(v,"castor", std::greater<string>() ) ;
+        relation r =  min_of(v,"castor", std::greater<std::string>() ) ;
 #endif
 
         BOOST_CHECK(r());
     }
 
     {// basic - gen - with const container
-        lref<string> m;
-        lref<vector<string> > cv = vector<string>(arr, arr+4);
+        lref<std::string> m;
+        lref<std::vector<std::string> > cv = std::vector<std::string>(arr, arr+4);
 
         relation r =  min_of(cv,m) ;
         BOOST_CHECK(r());

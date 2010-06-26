@@ -33,7 +33,7 @@ int test_main(int, char * [])
  
         // failure test
 #ifdef __GNUG__
-        r =  max_of<vector<string> >(v,"Prolog") ;
+        r =  max_of<std::vector<std::string> >(v,"Prolog") ;
 #else
         r =  max_of(v,"Prolog") ;
 #endif
@@ -65,16 +65,16 @@ int test_main(int, char * [])
 
     { // test - with cmp
 #ifdef __GNUG__
-        relation r =  max_of<vector<string> >(v,"C#", std::greater<string>() ) ;
+        relation r =  max_of<std::vector<std::string> >(v,"C#", std::greater<std::string>() ) ;
 #else
-        relation r =  max_of(v,"C#", std::greater<string>() ) ;
+        relation r =  max_of(v,"C#", std::greater<std::string>() ) ;
 #endif
 
         BOOST_CHECK(r());
     }
     {// basic - gen - with const container
-        lref<string> m;
-        lref<const vector<string> > cv = vector<string>(arr, arr+4);
+        lref<std::string> m;
+        lref<const std::vector<std::string> > cv = std::vector<std::string>(arr, arr+4);
 
         relation r =  max_of(cv,m);
         BOOST_CHECK(r());
