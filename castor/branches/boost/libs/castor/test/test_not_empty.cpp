@@ -24,7 +24,7 @@ int test_main(int, char * [])
         lref<const std::vector<int> > lvi = std::vector<int>();
         relation r = not_empty(lvi);
 
-        BOOST_CHECK(r());
+        BOOST_CHECK(!r());
     }
     return 0;
 }
