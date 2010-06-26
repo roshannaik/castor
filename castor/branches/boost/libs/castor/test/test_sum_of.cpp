@@ -36,7 +36,7 @@ int test_main(int, char * [])
 
     { // basic - test
 #ifdef __GNUG__
-        relation r = sum_of<vector<int> >(vi,15);
+        relation r = sum_of<std::vector<int> >(vi,15);
 #else
         relation r = sum_of(vi,15);
 #endif
@@ -45,7 +45,7 @@ int test_main(int, char * [])
  
         // failure test
 #ifdef __GNUG__
-        r =  sum_of<vector<int> >(vi,10) ;
+        r =  sum_of<std::vector<int> >(vi,10) ;
 #else
         r =  sum_of(vi,10) ;
 #endif

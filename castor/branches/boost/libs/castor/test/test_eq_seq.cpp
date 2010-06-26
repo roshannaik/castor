@@ -58,8 +58,8 @@ int test_main(int, char * [])
     }
     { // with const_iterator
         const int di[] = {1,2,3};
-        lref<vector<int> > vk = vector<int>(di, di+3);
-        const vector<int> cv(di, di+3);
+        lref<std::vector<int> > vk = std::vector<int>(di, di+3);
+        const std::vector<int> cv(di, di+3);
         relation r3 = eq_seq(vk, cv.begin(), cv.end());
         int k=0;
         for(; r3(); ++k);
