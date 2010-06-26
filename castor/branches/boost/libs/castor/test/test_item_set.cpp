@@ -48,7 +48,7 @@ int test_main(int, char * [])
         BOOST_CHECK(mi->size()>si->size());  // require duplicates in mi
         lref<const int> i;
         relation r = item_set(i,mi);
-        size_t j=0;
+        std::size_t j=0;
         while(r())
             ++j;
         BOOST_CHECK(j==mi->size());

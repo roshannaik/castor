@@ -39,7 +39,6 @@ int test_main(int, char * [])
         while(r())
             ++count;
         BOOST_CHECK(count==1);
-        throw "failed test_item_map 1";
     }
     { // gen key & obj - multimap
         lref<const char> k;
@@ -49,7 +48,6 @@ int test_main(int, char * [])
         while(r())
             ++count;
         BOOST_CHECK(count==mm->size());
-        throw "failed test_item_map 2";
     }
     { // lookup key, gen obj - multimap
         lref<const char> k='z';
@@ -59,7 +57,6 @@ int test_main(int, char * [])
         while(r())
             ++count;
         BOOST_CHECK(count==2);
-        throw "failed test_item_map 3";
     }
     { // gen key, lookup obj - multimap
         lref<const char> k;
