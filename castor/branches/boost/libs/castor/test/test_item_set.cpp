@@ -56,7 +56,7 @@ int test_main(int, char * [])
     {  // gen mode - std::set
         lref<int> i;
         relation r = item_set(i,si);
-        int j=0;
+        std::size_t j=0;
         while(r())
             ++j;
         BOOST_CHECK(j==si->size());
