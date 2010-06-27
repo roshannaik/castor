@@ -42,6 +42,7 @@ int main()
   // clock_t start = clock();
   runtests();
   // cout << "\nTime taken " << (clock() - start) << "\n\n Testing Complete! \a\n";
+  cout << "\n";
   return 0;
 }
 

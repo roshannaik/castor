@@ -1,4 +1,4 @@
-Castor v1.1 pre beta, Jun 26th 2010 : 
+Castor v1.1 pre beta, Jun 27th 2010 : 
 
 Copyright (C) 2008, 2010 Roshan Naik
 
