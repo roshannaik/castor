@@ -1539,7 +1539,7 @@ void test_item_map() {
     { // lookup key, gen obj - multimap
         lref<const char> k='z';
         lref<int> v;
-        relation r = item_map('z',v,mm);
+        relation r = item_map(k,v,mm);
         int count=0;
         while(r())
             ++count;

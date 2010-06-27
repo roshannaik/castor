@@ -39,10 +39,9 @@ void runtests();
 
 int main() 
 {
-  clock_t start = clock();
+  // clock_t start = clock();
   runtests();
-  cout << "\nTime taken " << (clock() - start) << "\n\n Testing Complete! \a";
-  //cin.ignore();
+  // cout << "\nTime taken " << (clock() - start) << "\n\n Testing Complete! \a\n";
   return 0;
 }
 
