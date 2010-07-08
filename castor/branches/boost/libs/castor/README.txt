@@ -1,6 +1,6 @@
-Castor v1.1 pre beta, April 25th 2010 : 
+Castor v1.1 pre beta, Jun 26th 2010 : 
 
-Copyright (C) 2010 Roshan Naik
+Copyright (C) 2008, 2010 Roshan Naik
 
 License
 ============================
@@ -15,7 +15,7 @@ About Castor
 ============================
 Castor is a pure C++ library that enables the Logic paradigm in C++.
 Since it is a pure header library there is no need to build Castor separately 
-into a shared to static library. Also Castor does not depend on any library other 
+into a shared or static library. Also Castor does not depend on any library other 
 than the standard C++ library.
 
 Extract files from the archive and add the "castor" directory to your compiler's include 
@@ -36,12 +36,13 @@ int main() {
 
 Documentation
 ========================
-Please refer to the castor\docs directory for the following:
+Please refer to the castor1.1\docs directory for the following:
 
   - "Whats new.txt" : Full list of the features introduced in Castor 1.1
-  - Tutorial on Logic paradigm and Castor: CastorTutorial.pdf
 
-  - Castor Reference Manual: CastorReference.pdf
+  - Tutorial : CastorTutorial.pdf
+
+  - Reference Manual: CastorReference.pdf
 
   - Design and implementation of Castor: CastorDesign.pdf
 
@@ -49,14 +50,15 @@ Please refer to the castor\docs directory for the following:
 
 Supported compilers:
 ========================
-Microsoft Visual C++ 2008 on Windows
-GCC 4.4.1 
+Microsoft Visual C++ 2008 and 2010
+GCC 4.4.1
+
 
 
 Compiling Castor test suite:
 ============================
 
-First cd to castor/test directory.
+First cd to castor1.1/test directory.
 
 
 Microsoft C++ (on Windows)
@@ -67,13 +69,13 @@ From visual studio:
 
 
 From command line:
-  To compile:   cl /I..\ /EHsc  *.cpp
+  To compile:   cl /I..\ /EHsc  *.cpp /Fetest_castor
   To Run    :   test_castor.exe
 
 
 
 GCC  (on Unix)
 --------------------------------------
-  To compile:   g++ -I../ *.cpp -o test_castor
+  To compile:   g++ -I../ *.cpp -o test_castor 
   To Run    :   ./test_castor
 

@@ -100,6 +100,7 @@ run test_sequence.cpp ;
 run test_shuffle.cpp ;
 run test_size.cpp ../../test/build//boost_test_exec_monitor ;
 run test_size_of.cpp ../../test/build//boost_test_exec_monitor ;
+run test_skip.cpp ;
 run test_sum.cpp ;
 run test_sum_of.cpp ;
 run test_tail.cpp ../../test/build//boost_test_exec_monitor ;
