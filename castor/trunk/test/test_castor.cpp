@@ -17,7 +17,6 @@
 #include <map>
 
 #include <castor.h>
-#include <includes/functional.h>
 
 #include "test_core.h"
 #include "test_utils.h"
@@ -657,7 +656,9 @@ void runtests() {
 	run_test( test_repeat );
 	run_test( test_pause );
 	run_test( test_pause_f );
-	run_test( test_zip );
+
+    run_test( test_zip );
+    run_test( test_skip );
 	run_test( test_True );
 
 	// collection 

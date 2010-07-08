@@ -13,7 +13,7 @@ namespace castor {
 // zip(l,r) - succeeds each time l() and r() succeed
 //-------------------------------------------------
 
-template<typename L, typename R>
+template<class L, class R>
 class Zip_r : public Coroutine {
 	L l;
 	R r;
@@ -37,11 +37,35 @@ public:
 	}
 };
 
-template<typename L, typename R>
+template<class L, class R>
 Zip_r<L,R> zip(const L& l, const R& r) {
 	return Zip_r<L,R>(l,r);
 }
 
+
+template<class Integral, class Rel>
+class Skip_r : public Coroutine {
+	Integral n;
+	Rel r;
+public:
+	Skip_r (const Integral& n, const Rel& r) : n(n), r(r)
+	{ }
+
+	bool operator()(void) {
+		co_begin();
+		while(true) {
+            for( ; effective_value(n)>0; --effective_value(n) )
+                r();
+		    co_yield(r());
+		}
+		co_end();
+	}
+};
+
+template<class Integral, class Rel>
+Skip_r<Integral,Rel> skip(Integral times, const Rel& r) {
+    return Skip_r<Integral,Rel>(times,r);
+}
 
 } // namespace castor
 #endif
