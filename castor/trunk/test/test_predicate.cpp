@@ -185,15 +185,11 @@ void test_predicate_mf() {
 	}
 #endif
 
-#if defined(__BCPLUSPLUS__) 
+#ifdef __BCPLUSPLUS__
 #else
 	{// const obj, const member predicate
 	lref<const Functor> f = Functor();
-#ifdef _MSC_VER
-	relation r = predicate_mf<bool,int,const int,int,int,lref<int>,const int,const Functor>(f, &Functor::allEqual, 1,1, 1,1, 1,1);
-#else
 	relation r = predicate_mf(f, &Functor::allEqual, 1,1, 1,1, 1,1);
-#endif
 	int i=0;
 	for(; r(); ++i);
 	if(i!=1)
@@ -201,15 +197,11 @@ void test_predicate_mf() {
 	}
 #endif
 
-#if defined(__BCPLUSPLUS__) 
+#ifdef __BCPLUSPLUS__
 #else
 	{// const object, const member predicate
 	lref<const Functor> f = Functor();
-#ifdef _MSC_VER
-	relation r = predicate_mf<bool,int,const int,int, const Functor>(f, &Functor::ternaryConstPred, 2, 3, 6);
-#else
 	relation r = predicate_mf(f, &Functor::ternaryConstPred, 2, 3, 6);
-#endif
 	int i=0;
 	for(; r(); ++i);
 	if(i!=1)
