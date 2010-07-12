@@ -41,14 +41,10 @@ int test_main(int, char * [])
     }
 #endif
 
-#if !defined(__BCPLUSPLUS__) && !defined(__GNUG__)
+#if !defined(__BCPLUSPLUS__)
     { // const obj, const member predicate
 	lref<const Functor> f = Functor();
-#ifdef _MSC_VER
-	relation r = predicate_mf<bool, int, const int, int, int, lref<int>, const int, const Functor>(f, &Functor::allEqual, 1, 1, 1, 1, 1, 1);
-#else
 	relation r = predicate_mf(f, &Functor::allEqual, 1, 1, 1, 1, 1, 1);
-#endif
 	int i = 0;
 	for(; r(); ++i);
 
@@ -56,14 +52,11 @@ int test_main(int, char * [])
     }
 #endif
 
-#if !defined(__BCPLUSPLUS__) && !defined(__GNUG__)
+#if !defined(__BCPLUSPLUS__) 
     { // const object, const member predicate
 	lref<const Functor> f = Functor();
-#ifdef _MSC_VER
-	relation r = predicate_mf<bool, int, const int, int, const Functor>(f, &Functor::ternaryConstPred, 2, 3, 6);
-#else
 	relation r = predicate_mf(f, &Functor::ternaryConstPred, 2, 3, 6);
-#endif
+
 	int i = 0;
 	for(; r(); ++i);
 
