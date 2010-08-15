@@ -133,6 +133,54 @@ void test_reverse() {
 	}
 }
 
+
+void test_skip() {
+	{ // int argument
+	lref<int> i;
+	int ai[] = { 1,2,3,4 };
+    relation r = item(i,ai,ai+4) >>= skip(2);
+    int j=3;
+	while( r() ) {
+		if(*i!=j++)
+			throw "failed test_skip 1";
+	}
+	}
+	{ // lref<int> argument
+	    lref<int> i;
+        lref<unsigned long> s=2;
+        relation r = range(i,1,4) >>= skip(s);
+        int j=3;
+	    while( r() ) {
+		    if(*i!=j++)
+			    throw "failed test_skip 2";
+	    }
+    }
+    { // skip first two evens in the array
+    int ai[] = { 1,2,3,4,5,6,7,8 };
+    lref<int> i;
+    relation r = item(i,ai,ai+8) && predicate(i%2==0) >>= skip(2) ;
+    if(! r() )
+        throw "failed test_skip 3";
+    if( *i!=6 )
+        throw "failed test_skip 3";
+    if(! r() )
+        throw "failed test_skip 3";
+    if( *i!=8 )
+        throw "failed test_skip 3";
+    if( r() )
+        throw "failed test_skip 3";
+    if( i.defined() )
+        throw "failed test_skip 3";
+    }
+	{ // skip - more than items generated
+	    lref<int> i;
+        relation r = range(i,1,4) >>= skip(5);
+	    if( r() )
+		    throw "failed test_skip 4";
+    }
+}
+
+
 char firstChar(string& s) {
 	return s.at(0);
 }
@@ -297,7 +345,7 @@ void test_group_by() {
 		if(g1.defined() || g2.defined() || s.defined() || num.defined())
 			throw "failed test_group_by 2";
 	}
-	{ // nested grouping with keyCmp & values_by() - 2 levels
+	{ // nested grouping with keyCmp & item_order() - 2 levels
 		lref<string> num;
 		string results[] = { "million", "madam", "Three", "Two", "Six", "One", "Five", "Four" };
 		char keys1[] = { 'm', 'T', 'S', 'O', 'F' };
