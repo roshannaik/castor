@@ -1,4 +1,4 @@
-Castor v1.1 pre beta, Jun 27th 2010 : 
+Castor v1.1, Aug 15th 2010 : 
 
 Copyright (C) 2008, 2010 Roshan Naik
 
@@ -48,10 +48,10 @@ Please refer to the castor1.1\docs directory for the following:
 
 
 
-Supported compilers:
+Tested with compilers:
 ========================
-Microsoft Visual C++ 2008 and 2010
-GCC 4.4.1
+Microsoft Visual C++ 2005, 2008 and 2010
+GCC 4.3.3, 4.4.1, 4.4.3
 
 
 
