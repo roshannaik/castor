@@ -1,5 +1,5 @@
 SET ROOT=%USERPROFILE%\Documents\Projects
-SET SRC=%USERPROFILE%\Documents\Projects\castor-trunk
+SET SRC=%USERPROFILE%\Documents\Projects\release1.1
 SET RELEASENAME=castor1.1
 SET DST=%USERPROFILE%\Documents\Projects\%RELEASENAME%
 SET OUTFILE=castor-1.1
@@ -66,7 +66,7 @@ winrar x %OUTDIR%\%OUTFILE%.tar
 
 
 cd %RELEASENAME%\test
-echo cl /I..\ /EHsc  *.cpp /Fetest_castor
-:: test_castor.exe
+cl /I..\ /EHsc  *.cpp /Fetest_castor
+test_castor.exe
 
-:: cd %SRC%
+cd %SRC%
