@@ -18,7 +18,7 @@ Since it is a pure header library there is no need to build Castor separately
 into a shared or static library. Also Castor does not depend on any library other 
 than the standard C++ library.
 
-Extract files from the archive and add the "castor" directory to your compiler's include 
+Extract files from the archive and add the "castor1.1" directory to your compiler's include 
 path. To make the library's facilities available to your application #include <castor.h>.
 All facilites provided by Castor are part of the "castor" namespace.
 
@@ -63,11 +63,6 @@ First cd to castor1.1/test directory.
 
 Microsoft C++ (on Windows)
 --------------------------------------
-From visual studio:
-  Open the solution file test\test_castor.sln
-  Ensure the Include path is set to the correct location of castor.h
-
-
 From command line:
   To compile:   cl /I..\ /EHsc  *.cpp /Fetest_castor
   To Run    :   test_castor.exe
