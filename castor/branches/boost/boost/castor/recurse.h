@@ -5,9 +5,9 @@
 #ifndef CASTOR_RECURSE_H
 #define CASTOR_RECURSE_H 1
 
-#include <boost/castor/relation.h>
-#include <boost/castor/helpers.h>
-#include <boost/castor/workaround.h>
+#include "relation.h"
+#include "helpers.h"
+#include "workaround.h"
 
 namespace castor {
 

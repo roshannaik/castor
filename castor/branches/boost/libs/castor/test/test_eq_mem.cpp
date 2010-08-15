@@ -90,5 +90,10 @@ int test_main(int, char * [])
 
         BOOST_CHECK(eq_mem<int>(10,d, &Derived::d)());
     }
+    { // on "string" literals
+        lref<pair<string,string> > p = make_pair("Castor","C++");
+        BOOST_CHECK( eq_mem<string>("Castor",p, &pair<string,string>::first)() );
+        BOOST_CHECK( eq_mem("Castor",p, &pair<string,string>::first)() );
+    }
     return 0;
 }
