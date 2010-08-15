@@ -658,7 +658,7 @@ void runtests() {
 	run_test( test_pause_f );
 
     run_test( test_zip );
-    run_test( test_skip );
+
 	run_test( test_True );
 
 	// collection 
@@ -671,7 +671,8 @@ void runtests() {
 	run_test( test_order_mf );
 	run_test( test_order_mem );
 	run_test( test_reverse );
-	run_test( test_group_by );
+    run_test( test_skip );
+    run_test( test_group_by );
 
     // aggregates
 	run_test( test_count );
@@ -689,5 +690,7 @@ void runtests() {
     run_test( test_reduce_of );
     run_test( test_average_of );
 
-	cout << "\nFailed: " << failCount << "\nPassed: " << passCount  << "\nTotal: " << testCount;
+	cout << "\nFailed: " << failCount 
+         << "\nPassed: " << passCount  
+         << "\nTotal: " << testCount;
 }

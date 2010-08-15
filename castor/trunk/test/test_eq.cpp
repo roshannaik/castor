@@ -561,5 +561,12 @@ void test_eq_mem() {
     if(!eq_mem<int>(10,d, &Derived::d)())
         throw "failed test_eq_mem 5";
     }
+    { // on "string" literals
+    lref<pair<string,string> > p = make_pair("Castor","C++");
+    if(!eq_mem<string>("Castor",p, &pair<string,string>::first)())
+        throw "failed test_eq_mem 6";
+    if(!eq_mem("Castor",p, &pair<string,string>::first)())
+        throw "failed test_eq_mem 6";
+    }
 }
 

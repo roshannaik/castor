@@ -197,8 +197,12 @@ void test_eq_ILE() {
         throw "failed test_eq_ILE 4";
     }
 }
-
-struct My {
+struct MyBase {
+    int j;
+    MyBase() : j(0)
+    {}
+};
+struct My : MyBase{
     int i;
     My() : i(0) { }
     My(int) : i(1) { }
@@ -311,10 +315,16 @@ void test_get() {
     }
     {
     lref<My> lm = My(1);
-	if( (get(lm,&My::i)+get(lm,&My::i))()!=2)
+	if( (get(lm,&My::i)+get(lm,&My::i))()!=2 )
         throw "failed test_get 2";
     }
+    {
+    lref<My> lm = My(1);
+    if( (get(lm,&My::j)+get(lm,&My::j))()!=0 )
+        throw "failed test_get 3";
+    }
 }
+
 namespace {
 void blah(void)                     { }
 int foo(void)                       { return 0; }
@@ -409,7 +419,10 @@ void test_call() {
 }
 
 namespace {
-struct Obj {
+struct BaseObj {
+    int bmethod(int i) { return i; }
+};
+struct Obj : BaseObj {
     typedef int result_type;
     int method0 (void)                    { return  0; }
     int method1 (int)                     { return  1; }
@@ -441,6 +454,8 @@ void test_mcall() {
 		if( mcall(m,&Obj::method,1,1,1,1,1)()!=5 )
 			throw "failed test_mcall 0";
 		if( mcall(m,&Obj::method,1,1,1,1,1,1)()!=6 )
+			throw "failed test_mcall 0";
+        if( mcall(m,&BaseObj::bmethod,9)()!=9 )
 			throw "failed test_mcall 0";
 		// invoke const member function
 		typedef int (Obj::* CMF)(int,int,int)    const;
