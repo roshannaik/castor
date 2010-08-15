@@ -8,9 +8,9 @@
 #include <algorithm>
 #include <numeric>
 #include <functional>
-#include <boost/castor/relation.h>
-#include <boost/castor/lref.h>
-#include <boost/castor/coroutine.h>
+#include "relation.h"
+#include "lref.h"
+#include "coroutine.h"
 
 namespace castor {
 

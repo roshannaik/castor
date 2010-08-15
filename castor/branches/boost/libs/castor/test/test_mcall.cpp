@@ -22,6 +22,7 @@ int test_main(int, char * [])
         BOOST_CHECK(mcall(m, &Obj::method, 1, 1, 1, 1)() == 4);
         BOOST_CHECK(mcall(m, &Obj::method, 1, 1, 1, 1, 1)() == 5);
         BOOST_CHECK(mcall(m, &Obj::method, 1, 1, 1, 1, 1, 1)() == 6);
+        BOOST_CHECK(mcall(m,&BaseObj::bmethod,9)()!=9);
 
         // invoke const member function
         typedef int (Obj::* CMF)(int, int, int) const;

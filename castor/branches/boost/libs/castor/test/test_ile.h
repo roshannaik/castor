@@ -3,7 +3,13 @@
 
 using namespace castor;
 
-struct My {
+struct MyBase {
+    int j;
+    MyBase() : j(0)
+    {}
+};
+
+struct My : MyBase {
     int i;
     My() : i(0) { }
     My(int) : i(1) { }
@@ -61,7 +67,12 @@ int bar(lref<int> i) {
     return 2;
 }
 
-struct Obj {
+
+struct BaseObj {
+    int bmethod(int i) { return i; }
+};
+
+struct Obj : BaseObj  {
     typedef int result_type;
 
     int method0 (void)                         { return  0; }
