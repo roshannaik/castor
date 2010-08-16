@@ -1,12 +1,13 @@
-SET ROOT=%USERPROFILE%\Documents\Projects
-SET SRC=%USERPROFILE%\Documents\Projects\release1.1
-SET RELEASENAME=castor1.1
-SET DST=%USERPROFILE%\Documents\Projects\%RELEASENAME%
 SET OUTFILE=castor-1.1
+SET RELEASENAME=castor1.1
+SET ROOT=%USERPROFILE%\Documents\Projects
+
+SET SRC=%USERPROFILE%\Documents\Projects\release1.1
+SET DST=%USERPROFILE%\Documents\Projects\%RELEASENAME%
+
 SET OUTDIR=%USERPROFILE%\Documents\Projects\deploy
 SET TESTDIR=%USERPROFILE%\Documents\Projects\test
 
-PATH=%PATH%;
 
 echo ----------- 1) STAGING into %DST% --------------
 
@@ -31,7 +32,7 @@ mkdir %DST%\test
 xcopy test\*.h  %DST%\test\
 xcopy test\*.cpp %DST%\test\
 
-attrib +R %DST%
+attrib +R  %DST%\* /S
 
 
 echo ----------- 2) PACKAGING into %OUTDIR% -------------
@@ -69,4 +70,4 @@ cd %RELEASENAME%\test
 cl /I..\ /EHsc  *.cpp /Fetest_castor
 test_castor.exe
 
-cd %SRC%
+cd %OUTDIR%
