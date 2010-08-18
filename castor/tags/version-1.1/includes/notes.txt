@@ -1,0 +1,414 @@
+========================================================================
+    Castor Library Notes
+========================================================================
+Version History :
+
+
+Changes in v 0.1: April 13th 2006
+---------------------------------
+ 1- Added ref<T>::comparison operators <, >, <=, >=  for filtering support
+ 2- Renamed Unify to UnifyL (left handed unification)
+ 3- Added UnifyLR to support full (left and right handed) unification
+ 4- Added relation defined(ref<T>) to support Prolog's "meta-logical type predicate" var()
+ 5- ref<T>::operator= now provides same functionality as eq(ref<T>, t) thus (r=2) is same as eq(r,2)
+    + eq() now implemented in terms of ref<T>::operator=
+
+  
+Changes in v 0.2: April 16th 2006
+---------------------------------
+  1- Removed ref<T>::operator=. Using eq() due to clarity of semantics.
+  2- Also disabling default ref<T>::operator=(const T&) till its semantics are clearer.
+  3- REF_COMPARE_BINARYOP_DECL no longer checks for l.defined() || r.defined() and
+     lets *l & *r to throw in such case.
+  5- Added artihmetic operators +,-,*,/ support for ref for supporting (delayed) arithmetic.
+  6- Added eq() overloads (in conjunction with each above artihmetic operator) that
+     is used in to allow eq(x,y+z) where x,y,z are ref<T>.
+  7- RefCountedPtr::setValue() to support artihmetic overloads of eq();
+  8- Added overload ref::(const T& newValue); That uses RefCountedPtr::setValue().
+     This is used to support artihmetic overloads of eq().
+  9- ref::comparison operators now return false after first successful invocation.
+     Thus, they also implment "past end" end semantics like all other relations.
+ 10- multiply is implmented differently (better!) than plus to explicitly indicate that it
+     does not allow more than one parameter to be undefined.
+ 11- eq(const T&,const T&) overload to allow simple calls like eq(2,3);
+ 12- Added eq template overload with single template type. This is to simulate
+     default template parameter for functions (which is not yet supported in C++)
+       + BCB Compiler Issue: Doesnt choose the correct overloads for eq<string>("hi","hi")
+ 13- Changed semantics of UnifyLR : Now assigns R to L when both are undefined, and returns true
+     This is done to match Prolog semantics. Unclear at this point if this is the right decision.
+ 14- Added undefined() relation. Same as Prolog's metalogical var()
+ 15- Added eq() support for unifying collections with sequences.
+     i.e. eq(ref<Collection> c, Iter begin, Iter end)
+
+
+Changes in v 0.3: April 24 2006
+---------------------------------
+  1- Added eq_f(). Supports unification with a value produced by a nullary function object/function
+      + eq_f() was not prodvided as an overload of eq() because unifiying two function objects (that provide ==)
+        should be possible and this is distinct from unifying a T with a value produced by a function/func object
+  2- Added relation eq_p() to unify with pointers (after dereferencing)
+  3- Added bind() with 5 overloads: Used to produce nullary function objects out of a function or function object
+  4- Added next(ref<T> n, T curr) and prev(ref<T> p, T curr)
+     This could be used for both values and iterators.
+       + added increment/decrement to perform the required operations for both overloads
+  5- Moved eq* relations to eq.h
+  6- Moved relations undefined(), defined() & next() to utils.h
+  7- Fixed a bug in UnifyL. r is now passed to ref.set() by value instead of by ptr.
+  8- Modified UnifyLR<> : If only one of l or r is defined then the undefiend one will 
+  9  point to the same underlying value as the other.
+ 10- Added relation not_eq() : Cannot be used for generating a unequal value as denoted by the ref<const T> parameter
+ 11- Renamed ref::set(T*) to ref::set_ptr(T*)
+ 12- Got rid of v0.2 item 12. It doesnt seem useful. Automatic type deduction takes care of this.
+ 13- Added not_empty()
+ 14- Error Relation for reporting errors via exceptions
+ 15- not_eq_p
+ 16- ref::set, ref::set_ptr & ref::reset are now public instead of private
+ 17- relations head(), tail() and head_tail() for collections
+ 18- Added append: Support for de/composing collections via append(collection)(item1)(item2).ignore()
+
+  
+Changes in v 0.4: May 7 2006
+---------------------------------
+  1- renamed append() to sequence() : now only supports composing a sequence from defined items & comparing
+     against defined items. Removed ability to decompose sequence. i.e no unification at element level.
+     Sequence can be composed from an arbitrary mix of scalar values, ref values, and other ref sequences.
+     eg: ref<int> refValue = 2 ;
+         ref<list<int> > refList = /* 3,4,5 */;
+         list<int> valList = /* 6,7 */;
+         re sequence(m)(1)(refValue)(refList)(valList);
+  2- Support for interconversion between ref<T> and ref<const T>
+  3- Fixed bug in head(), tail() :  now works on empty collections, and throw if collection is undefined
+  4- PureRelation, ImPureRelation helper classes for creating custom relations.. these need better names
+  5- Updated implementation of custom relations in utils.h & eq.h to use PureRelation & ImPureRelation. 
+     Reduced about 12 loc per class
+  6- Added relations HeadN, TailN, Size for working with collections
+
+
+
+Changes in v 0.7: July 4th 2006
+---------------------------------
+  1- Support for inline lref expressions (r1*2*r3/5) whose evaluation is delayed. 
+  2- Updated eq() for working with ref expressions .. eq(r1, r2*r3+3)
+  3- Rewrote ref<> class 
+      + Disallow constuction of ref<T> from ref<Y> if Y* is not convertible to T* (even if Y is convertible to T)
+      + Renamed ref::set() to ref::operator=()
+      + Now supports polymorphic assignment. eg: ref<Base> rb=Base(); rb=Derived(); 
+      + Added ref<T>::operator=(ref<T>&) and ref<T>::operator=(ref<T2>&). Simply makes a copies the value of argument.
+      + ref::operator=() optimized : operator new/delete is invoked only if the type of the new value is 
+                                    not the same as the T for ref<T>.
+      + ref::reset() optimized : does not delete pointee. Simply marks it as invalid. Deletion is deferred
+                                 till refcount=0 or a different type of object needs to be allocated.
+      + Safe (no memory leak) even if reset() is not invoked between calls to set()
+      + Dropped special support for ref<const T> as originally intended (to indicate non-generative semantics)
+  4- Renamed 'ref' to 'lref' (abbreviation for Logic Reference)
+  5- Replace sequence<T>::operator()(const T& item) with sequence<T>::operator()(const ConvertibleToT& item)  
+  6- Added support for creating sequences from iterators: sequence<T>::operator() (Iter start, Iter end)
+  7- Renamed make_relation to recurse
+  8- Added support for recursing on member relations using the relation 'recurse'
+  9- Added begin() and end() relations for obtaining iterators to lref<CollectionType>
+ 10- Added support for mixing non-comparison operators with comparison operators to create comlex ILE (inline lref 
+      expressions) relations
+ 
+ Changes in v 0.8: Aug 14th 2006
+---------------------------------
+  1- Added relationList for open/dynamic relations
+  2- lref.swap() now swaps stored values instead of the ref-counted pointers to the stored the value.
+  3- Added relation Boolean that produces the stored boolean value
+  4- Added make_relation for converting boolean functions to relations. 
+  5- The apply method does not need to be const for custom pure relations
+  6- Rewrote eq 
+	a. Added eq(lref,ref) overload. 
+	b. Renamed eq(lref<Collection>, Iter, Iter)  to  eq_coll(lref<Collection>, Iter, Iter)
+	c. Renamed eq_coll to eq_seq()
+	d. Added eq(, , CMP) overload      ... support for custom comparison predicate 
+	e. Added eq_seq(... ,CMP) overload  ... support for custom comparison predicate 
+	f. Introduced helper base class UnifyBase for UnifyL and UnifyLR
+	g. Introduced helper base class UnifySeqBase for UnifySeq
+	h. Well bounded comparison of sequences (takes into account begin and end iterators of both sequences unlike std::equal)
+	i. Removed eq_ptr and not_eq_ptr. lref<T*>. pointers are not logic references so their values should be 
+	   usable immediately. For example: eq(l,*ptr)
+  7- Support for cuts provided. Example:
+        relation r = supercut(   (a<b)  && cut() && write("a is less than b") 
+                              || (a>b)  && cut() && write("a is greater than b") 
+                              || (a==b)          && write("a is equal to b") 
+                              );
+
+ Changes in v 0.9: jan 15th 2007
+ ---------------------------------
+*  1- Renamed supercut to cutexpr
+   2- Support for Borland C++ Builder 2006 (bcc32 v5.82). No support for cut()||cut() and cut()&&cut() in BCB.
+   3- Improved #includes reflect dependecies better
+   4- Added ILE support for binary operators << and >>  (missed previously by oversight)
+*  5- Added ILE support for unary prefix operators -,+,!,~,++,-- and postfix operators ++ and --
+   5- const/nonconst member operator() for ILE and *_ILE classes
+   6- const/nonconst parameter variety overloads for effective_value()
+   7- Changed effective_type<Ile<T> >::result_type from T to effective_type<T>::result_type
+   8- inc/dec relations for incrementing/decrementing lrefs. Can be use for regular values or pointers/iterators
+   9- Test execution times (measured by executing on command line and not inside IDE)
+			VC++ :  300ms (debug mode), 46ms (release mode)
+		    BCB  :   32ms (debug mode), 31ms (release mode)
+  10- Removed meta function effective_type. Replaced all uses of it with expr::result_type. lref now
+      also contains member typedef result_type (same as lref::pointee_type) to support this simpler model.
+  11- Added const(non-const) overloads for all accessors in lref. I.e. method get() and operators * and ->
+  12- lref<T>::get() now returns T& instead of T*
+  13- Rewrote recurse/make_relation to better support const member functions and const objects
+  14- Renamed make_relation() to predicate()
+  15- Overloads for predicate and recurse that handle member functions renamed to predicate_mem and recurse_mem.
+      This avoids conflicts with global functions that take member function pointers as first argument.
+  16- Dropped support for cuts in Borland C++ Builder
+* 17- Added lref<T>::operator T() const - Now lrefs can be converted automatically to underlying type as needed. Useful
+      when mixing and matching lref<T> with T. It is unclear now if this might cause overload problems if any.
+  18- Added relation range to test/generate values in a specified range
+  19- Added support for const member relations in recurse_mem
+  20- Bug Fix: pointer to obj was not being initialized in predicate_mem's return type.
+  21- Added higer order relation : negate.
+  22- Updated relations next and prev to allow both generation and test. Also reversed order of parameters.
+* 23- Added relational operator ^ . Executes rhs only if lhs fails to produce any solution.
+  24- Added relation item() to iterate/test for an item in a sequence
+* 25- Disabled support for ILE creation using mutating operators (i.e: Postfix and prefix ++ and --)
+  26- Added nullary support for use of nullary funcs with predicate,predicate_mem, recurse, recurse_mem
+  27- Renamed relation not_eq to notEq as 'not_eq' is a reserved keyword and alternative token for operator !=
+* 28- Support for GCC 4.1.1 
+  29- Overload added for relation deref that works on non lref types. lref will be dreferenced twice and others only once
+  30- Implementation changed for relations next and prev to delay evaluations of ++ and -- in all cases
+  31- Added relation insert. Inserts a value into different positions inside a list.
+  32- Changed order of parameters and/or their types in the foll relations for sake of uniformity and readability :
+       head, head_n, tail, tail_n, head_tail, head_n_tail, begin, end, size, item, range, deref
+
+  Changes in v : 0.93
+ ---------------------------------
+   1-  Updated all relations that take logic refs to sequences/containers to take them by lref<Cont>& in order 
+       to disable passing of sequence/container types by value. Prefer passing iterators or lref<Cont::iterator> which 
+       are more efficient. When using iterators user must ensure they are valid at time of evaluation.
+   2-  Added overloads for eq_f to support upto 6 arguments. Also modified parameter types for eq_f.
+*  3-  Removed ILE support for relation eq. Use eq_f instead.
+   4-  Implmented all overlaods for eq_mf supporting from 0 upto 6 arguments.
+   5-  Removed relation notEq. Use ILE with operator != instead.
+   6-  Templatized arguments to ^ operator instead of relation args. (templatizing && operator's args clashes with VC++ std lib)
+** 7-  Discontinued support for Ile-based relations. All ILEs are now merely regular function objects. For creating relations with 
+       Iles use them as argument to relation predicate. Return type is fixed to bool for comparison operators, && and ||. All other
+       operators have return type same as the first argument. Reconsider enabling direct use of ILEs to create relations once/if C++0x
+       brings in support for finer control on overloads. Currently cant find a way to distinguish &&(Ile,someRelation_r) from &&(Ile,value)
+       using overloading facilites. In the former case we need to create a relation, and in the later case we need to create a new Ile.
+*  8- Support for impure ILEs re-enabled. i.e Allowing ILE support for operators ++,-- which may modify their arguments. Now that we 
+      dont have relational-Iles (as noted above) users need to be careful not to use these operators in building inline relations with
+      predicate(ile). As before, none of the assignment operators are supported in creating ILEs.
+   9- Removed detail::increment and detail::decrement.. Using ILEs for ++ and -- instead.
+  10- Changed relations prev and next. curr_ argument must be intialized. Relation prev only requires type T to implement prefix --, and 
+      relation next() now only requires prefix ++. This now allows next() to be used with forward iterators unlike before where it 
+      required T to implement both ++ and --.
+* 11- Changed implementation of predicate and predicate_mem to use effective_value on the arguments prior to applying the 
+      actual predication function to them. This allows lrefs are arguments to predicate functions. Since predicate functions are not 
+      relations they are not expected to have lref<T> as parameter type. This change makes it easy to use lref argument types to predicate
+      functions via predicate and predicate_mem relations. It is not always feasible to explicitly dereference lrefs when in relational
+      code when since they may not be initialized yet. 
+  12- Updated definition of relation defined to use class Defined_r instead of predicate funciton defined_r as it required an lref argument.
+
+
+  Changes in v : 0.95 (Beta release 1)
+ ---------------------------------
+ 1- Added overload for relation range to reduce need for explicit template argument
+ 2- Added relation read 
+ 3- effective_value() no longer supports evaluation of ILEs
+ 4- Introduced castor::detail::evaluate() to support evualuation of ILEs in addition to lrefs and POTs
+ 5- Changed implementation of ILEs to use evaluate() instead of effective_value()
+
+  Changes in v : 0.97 (Beta release 2) Feb 1st 2008
+ ---------------------------------
+   1- Added relation read() to read from cin or other input stream
+   2- Parameterized relation write to support writing to arbitrary stream. Dropped parameter 'suffix' from relation write.
+   3- Added relations write_f and write_mf
+   4- Support for gcc 4.2 (fixed errors in utils.h : reported by Rohit Thadani)
+   5- Changed param specfications (to lref&) of eq_f and eq_mf to make them similar to write_f and write_mf
+   6- Dropped support for BCB2006 and enabled support for BCB2007
+   7- Enabled support for cuts with BCB2007. [However, cut && cut  AND  cut || cut  not supported with BCB2007]
+   8- Disabled logic references to references. lref<T&> 
+   9- Fixed bug in detail::RefType that caused problem when using 3 or more prefix ++ and -- operators on Iles. (reported by Rohit Thadani)
+  10- Finalized rules for computing return types for ILEs
+        Unary prefix operators:  For ++,-- its  T&. 
+                                 For +,-,~ its T. 
+                                 For ! its  bool.
+        Unary postfix operators: For ++, -- its T.
+        Binary infix operators:  For ==, <, >, <=, >=, &&, || its bool. 
+                                 For +,-,*,/,^,%,<<,>>,|,&  its T, where T is type of first arg.
+        Unsupported : address of operator &, derefence operator * and member dereference operator ->, indexing operator[] and 
+                      all forms of assignment (+=  etc.)
+  11- Removed const method qualifier on member function apply for all PredicateBinderN. This allows impure predicate functions 
+      and ILEs with relation predicate(). Restricting to pure functors, although safer, seems heavy handed.
+  12- Renamed predicate_mem to predicate_mf, and recurse_mem to recurse_mf for unformity with other relations as write_mf and eq_mf.
+  13- Updated signatures of recurse, recurse_mf to accept arguments as lref<T>& instead of T
+  14- Predicate_mf to match signatures of eq_mf. This is simpler and more general.
+  15- Mix of lref and POTs in param types for functions/methods/relations is not supported by eq_f, eq_mf, predicate, predicate_mf,
+      recurse, recurse_mf, write_f, write_mf. Functions/methods used as args to these relations are expected to have POT params
+      relations used as args to these relations are expected to have lref params
+  16- write, write_f and write_mf do not take a std::ostream argument anymore. Always writes to std::cout.
+  17- Introduced writeTo, writeTo_f and writeTo_mf which support writing to arbitrary (but explicitly specified) std::ostream. The ostream is now the 1st argument.
+      This writeTo_* relations were introduced to remove ambiguity when between write_f(Func, , ostream& output=cout) and write_f(Func1, A1&, ostream& output=cout)
+      when calling write_f(ile,cout) due to the default param output.
+  18- Split functionality of relation read into readFrom & read relations for symmetry with write and writeTo.
+  19- Minor modification to relationList, made some members private.
+* 20- Changed implementations of relational &&, || and ^ to use simpler Coroutine style.
+  21- Macros CASTOR_ALL_GENERIC_OPS,CASTOR_ALL_REGULAR_OPS and CASTOR_USE_GENERIC_*, CASTOR_USE_REGULAR_* to select between regular vs. generic 
+      implementations of ||, && and ^. (this is not used for operators defined over cut)
+  22- PureRelation renamed to TestOnlyRelation and ImpureRelation to OneSolutionRelation. TestOnlyRelation will be undocumented as predicate() is easier to use.
+  23- TestOnlyRelation will be undocumented since predicate() is a simpler alternative.
+  24- Verified support for gcc 4.1.1.
+  25- Modified lref::swap to swap pointers to referenced objects instead of referenced objects themselves.
+      The reset_ and exactType_ flags are also swapped. Reference count is not.
+  26- Added  overloads for relation range with additional step_ parameter
+
+
+  Changes in v : 1.0 , Feb 11th 2008
+ ---------------------------------
+ * 1- Replaced relationList with Conjuntions, Disjunctions and ExDisjunctions
+   2- Bug fix in utils.h. Needed to include <string> and <utility>
+ * 3- Added effective_type for T and lref<T>
+ * 4- Added relations unique and unique_f
+ * 5- Aded ILE Create<T>::with(..) for delayed creation of objects. Can be combined with other ILE operators
+   6- Added header io.h and moved read, readFrom, write, writeTo, write_f, write_mf into it from utils.h
+ 
+ 
+ TODO
+ ---------------------------------
+    *: index ILE
+    *: deref ILE
+
+     : review overloads of relations next & prev
+     : Provide optimization overloads for head/tail similar to prev/next
+     : lref<T>
+		 + what about lref<int>=lref<double> ?
+     : Tests for and, or, exor
+     : head_tail(T,Coll,Coll)
+     : head(h, begin, end)
+     : not_eq_f
+      
+  Future TODO
+ ---------------------------------
+    *: operator & and | for relations
+     : More overloads for writeTo ( such as writeTo_mf and writeTo_f )
+    *: reorganize headers
+    *: function call support for ILE
+     : relation::swap()
+     : Should PureRelation::operator() be virtual ? Derived classes are not expected to override this.
+     : review remaining BCB workarounds 
+     : ? make both iterator & lref<Cont> overloads for most relations that accept sequences
+     : Function getValues can be converted to a relation from a regular function
+     : And_r should be properly templatized for better efficiency... conflict with overload in VC++'s std library holding this back
+     : When supporting member functions (eg. eq_f) should there be additional overload for obj type to be lref<T*> ?
+     : Enumerated types and collections of them, head, tail overloads for them
+     : sequence::ignore(n)
+     : Implement newItem()
+     : History management for sequence().(ItrStart,Itrend) can be made more efficient space wise
+     : Negation (DeMorgan's theorem ?)
+     : Consider implementing Eq, UnifyL, UnifyLR as specializations of the same template (low priority)
+     : Use boost style macros to implement variadic version of relation_binder<>  (low priority)
+     : ILE support for operator lref::[] ? 
+            - Abandoned for now. Return type cannot be easily auto computed. To get this going it 
+              needs special support from types that implement[]... or wait for C++0x
+
+Performance comparisons:
+ Defined v/s undefined.
+ Array intersection in prolog, C++ and imperative style C++.
+ eq_f with Im/PureRelation style implementations
+ type erased/regular/via pointer/virtual function calls
+
+
+Topics for documentation:
+---------------------------------
+  - lref v/s lref& v/s const lref&
+  - Working with partial objects like struct pos{ lref<int> x, y; }; 
+  - inequality
+  - exceptions
+  - relation Error
+  - higher order relations.
+  - apply is not const member function in  class PureRelation to allow side effects in pure relations (like push-pop/IO)
+  - eq_f for turning other pure functions into relations
+  - operators not overloaded for creating ILE : *, ->, [], +=, -=, *=, /=, =, ++, --, &, ?:
+
+  
+Internals:
+  - why eq() and not ==  ... easier to read, operator precedence
+
+
+Notes:
+ const lref<>& use as param type when you want to disable passing by value semanics. when passing sequences
+ it is useful to disable pass by value semantics to avoid copying of elements. also when initialized lref
+ argument will be updated by relation (e.g. inc).
+ 
+Presentation
+------------------------
+Topic
+Agenda 
+Hidden agenda
+ - MP v/s UP ... perhaps not
+Introduction to computational models and programming paradigms
+Intro To LP
+Relations v/s functions
+Lazy evaluation
+
+
+Book
+-------------------
+Imperative Paradigm: 
+  - coroutines, and with 2 pram sets (e.g. andList or any recursive coroutine)
+  - type erasure
+Logic Paradigm
+  - runtime meta programming with dynamic relations
+  - difference lists
+  - Exceptions
+  - higher order relations
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+Ref manual : Documentation
+------------------------------------------------
+error relation
+
+Error<const char*> error( const char* err )
+
+template<typename ExceptionType>
+Error<ExceptionType> error( const ExceptionType& err )
+
+Declarative reading: Throw exception err.
+
+Template Parameters: 
+ExceptionType : The type of exception to be thrown.
+
+Parameters: 
+err :  The exception object (or  char*) to be thrown. 
+
+Exceptions: 
+ExceptionType or const char* depending on which overload is used.
+
+Notes: The error relation is the relational equivalent of the standard throw expression.
+
+Example: 
+    // throwing strings
+    int num;
+    cin >> num;
+    relation r1 =  Boolean(num<0) && error("value cannot be negative");
+    try { 
+        r2();
+    } catch (const char*) { 
+      ... 
+    }
+
+    // throwing specific exception types
+    std::exception e("value cannot be negative");
+    relation r2 =  Boolean(num<0) && error(e);
+    try { 
+        r2();
+    } catch (std::exception&) { 
+      ... 
+    }

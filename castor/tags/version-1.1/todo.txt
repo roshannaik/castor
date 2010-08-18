@@ -1,0 +1,87 @@
+  Todo
+------------
+HIGH
+- some ILEs have const methods (get,mcall) - result_type differs from the non-const method.
+- Document item_set, item_map and item overloads
+x allow binding lref<const int> i to lref<int>;
+- input only params should have _i suffix
++ All TLRs should be collection oriented also ?
+   - reverse/ritem
+- relocate zip - should it be an operator ?
+- Consider splitting set_ptr into two nullary methods
+- Item should be able to support random lookup for containers
++ Wrap up TLRs (consider renaming them .."TakeLeft" ?)
+- Breakup into namespaces/ headers 
+   - core(eq, relation, lref, ile, higher_order, cut, predicate, eval, recurse)
+   - named_ile, io, utils(util,collection), TLRs
+   - Move helper headers into detail directory
++ review shuffle and permute
+
+- Look into constrained generic operators && and ||
+
+group_by:
+x member function support for group_by
+
+ILE:
+> ILE support for []
+> Update example in eq_mem ref manual to use sum()
+> test ILEs with const objects
+x can empty base class optimization be applied to ILEs - no use
++ optimize ILEs
+
+
+LATER
+> consider bidirectionality for all TLRs
+> ILE support for positional parameters _1 _2
+> Assignment operator support for ILEs 
+> is it really necessary to derive ILE classes from binary_function or unary_function ?
+> Try quick-select algorithm for group_by
+> random()
+> Left recursion 
+> dynamic programming/Memoization support
+> Consider removing member typedef UseFastAnd and just rely on method reset()
+- writeAll_f(), writeAll_mf() 
+- writeAllTo_f(), writeAllTo_mf() 
+- split
+- Fast-testOnly relations
+  + Add fast&& support for && if both args support fast &&
+  + CutAnd needs support for fast && 
+ ?+ Consider adding fast && support to relation empty  - (but one of its overloads may not qualify)
+- Alternative unification using binding instead of assignment as in eq() - for simulating Prolog behavior
+
+
+- Tabling support
+- Look into perfect forwarding issues with create
+?- relations readAll and readAllFrom
+
+- Implement head_n, head_tail etc. in terms of views instead of lists.
+
+Document:
+    - Ref Manual - how to write named ILEs
+	- Coroutines should not have const and reference data members
+	- local variables wont work without exta {} 
+?	- normally passing local POT variables to relations is disastrous unless the members of the POT are all lrefs.
+	- 	{ // invoking const and non const operator() 
+			const Func cf=Func();
+			if(call<const Func>(cf,4)() != 4)
+				throw "failed test_call 3";
+			if(call<Func>(cf,4)() != 5)
+				throw "failed test_call 3";
+		}
+
+---------------------
+     Boostification
+---------------------
+ - Boostifying the documentation
+ - Boost build 
+ - Boost.Config
+ - Renaming .h files to .hpp, (moving some .h files into detail directory)
+ - Ability to #include more granular headers instead of castor.h (need to delay this to the end I feel)
+ - Replacing tabs with spaces (towards the end?)
+ - ALL files need a (MIT?) license and copyright.
+ - Example programs
+ - Tutorial : incorporate suggestions from Zach, Ali and others.
+ - Namespace refactoring
+ - Naming conventions
+ - No Tabs
+ - unique() using hash set
